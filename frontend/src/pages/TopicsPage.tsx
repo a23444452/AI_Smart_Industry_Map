@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useTopics, type Market } from "../api/topics";
+import { usePipelineStatus } from "../api/meta";
 import { TopicCard } from "../components/topics/TopicCard";
 import { RankFocusCards } from "../components/topics/RankFocusCards";
+import { DataFreshness } from "../components/topic/DataFreshness";
 
 // 市場五分頁設定
 const MARKET_TABS: { value: Market; label: string }[] = [
@@ -17,6 +19,9 @@ export function TopicsPage() {
   const [market, setMarket] = useState<Market>("tw");
   const [direction, setDirection] = useState<"up" | "down">("up");
   const { data, isLoading, isError, refetch } = useTopics(market, direction);
+  const { data: pipeline } = usePipelineStatus();
+  // F2 頁尾「資料更新於」綁定台股行情 job。
+  const quotesJob = pipeline?.find((j) => j.job_name === "fetch_tw_quotes");
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-10">
@@ -63,6 +68,16 @@ export function TopicsPage() {
             <TopicCard key={topic.slug} topic={topic} />
           ))}
         </div>
+      )}
+
+      {/* F2：頁尾台股行情資料更新時間 */}
+      {quotesJob && (
+        <footer className="mt-8 flex justify-end border-t border-border-line pt-4">
+          <DataFreshness
+            lastSuccessAt={quotesJob.last_success_at}
+            stale={quotesJob.last_status === "stale"}
+          />
+        </footer>
       )}
     </section>
   );

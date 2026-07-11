@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { TopicSummary } from "../../api/topics";
 import { formatPct, pctColorClass } from "../../lib/format";
 
@@ -7,7 +8,7 @@ interface TopicCardProps {
 
 /** 題材卡片：純展示元件，props 進、UI 出（漲跌帶色帶符號，台股紅漲綠跌）。 */
 export function TopicCard({ topic }: TopicCardProps) {
-  const { title, description, company_count, verified_at, change_pct_avg } =
+  const { slug, title, description, company_count, verified_at, change_pct_avg } =
     topic;
 
   return (
@@ -20,8 +21,15 @@ export function TopicCard({ topic }: TopicCardProps) {
         </span>
       </div>
 
-      {/* 標題 */}
-      <h3 className="mt-3 text-xl font-bold text-text-main">{title}</h3>
+      {/* 標題（連往題材總覽頁） */}
+      <h3 className="mt-3 text-xl font-bold text-text-main">
+        <Link
+          to={`/topic/${slug}`}
+          className="transition-colors hover:text-accent"
+        >
+          {title}
+        </Link>
+      </h3>
 
       {/* 描述（兩行截斷；null 不渲染空段落） */}
       {description !== null && (
