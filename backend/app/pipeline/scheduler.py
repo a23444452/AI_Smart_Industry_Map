@@ -18,7 +18,7 @@ from app.pipeline.runner import run_job
 
 
 def build_scheduler(engine: Engine) -> BackgroundScheduler:
-    """Build a scheduler registering the daily TW-quotes fetch.
+    """Build a scheduler registering the daily TW-quotes and institutional fetches.
 
     ``fetch_tw_quotes`` runs weekdays at 14:05 Asia/Taipei (just after the
     TWSE/TPEx close). ``misfire_grace_time`` tolerates a downtime window and
