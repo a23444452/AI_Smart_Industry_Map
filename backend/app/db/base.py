@@ -9,7 +9,9 @@ class Base(DeclarativeBase):
 
 
 def _utcnow() -> datetime:
-    return datetime.now(UTC)
+    # 本專案 datetime 一律儲存 naive UTC：SQLite 不保留 tzinfo，讀回的值
+    # 必為 naive；統一寫入 naive UTC 可避免 aware 與 naive 相減的 TypeError。
+    return datetime.now(UTC).replace(tzinfo=None)
 
 
 class TimestampMixin:
@@ -20,18 +22,19 @@ class TimestampMixin:
 
 
 def make_engine(path: str) -> Engine:
-    """Create a SQLite engine for ``path`` with WAL journaling enabled.
+    """Create a SQLite engine for ``path`` with WAL journaling and FK enforcement.
 
-    WAL is set per-connection via a connect event so every pooled
-    connection (and every fresh file) gets the pragma applied.
+    Both pragmas are set per-connection via a connect event so every pooled
+    connection (and every fresh file) gets them applied.
     """
     engine = create_engine(f"sqlite:///{path}")
 
     @event.listens_for(engine, "connect")
-    def _set_wal(dbapi_connection, connection_record):  # noqa: ANN001, ARG001
+    def _set_pragmas(dbapi_connection, connection_record):  # noqa: ANN001, ARG001
         cursor = dbapi_connection.cursor()
         try:
             cursor.execute("PRAGMA journal_mode=WAL")
+            cursor.execute("PRAGMA foreign_keys=ON")
         finally:
             cursor.close()
 
