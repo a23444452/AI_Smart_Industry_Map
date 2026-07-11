@@ -7,9 +7,11 @@ scripts/record_fixtures.py (first 5 rows + a known ticker).
 import json
 from pathlib import Path
 
+import httpx
 import pytest
 
-from app.pipeline.sources import tpex, twse
+from app.pipeline.sources import _common, tpex, twse
+from app.pipeline.sources._common import SourceFetchError
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 
@@ -114,3 +116,35 @@ def test_tpex_handles_empty_prices():
     rows = tpex.parse(empty)
     assert rows[0]["close"] is None
     assert rows[0]["change_pct"] is None
+
+
+def _mock_get(monkeypatch, content: bytes):
+    """Make httpx.Client.get return a canned 200 response (no network)."""
+
+    def fake_get(self, url, **kwargs):
+        return httpx.Response(
+            200,
+            content=content,
+            headers={"Content-Type": "application/json"},
+            request=httpx.Request("GET", url),
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", fake_get)
+
+
+def test_get_json_wraps_invalid_json_body(monkeypatch):
+    # 200 but body is not valid JSON (e.g. maintenance HTML page).
+    _mock_get(monkeypatch, b"<html>maintenance</html>")
+    with pytest.raises(SourceFetchError) as excinfo:
+        _common.get_json("https://example.invalid/x", source="TWSE")
+    assert excinfo.value.status_code == 200
+    assert "TWSE" in str(excinfo.value)
+
+
+def test_get_json_wraps_non_list_body(monkeypatch):
+    # 200 with valid JSON that is not the expected list-of-rows shape.
+    _mock_get(monkeypatch, b'{"error": "rate limited"}')
+    with pytest.raises(SourceFetchError) as excinfo:
+        _common.get_json("https://example.invalid/x", source="TPEx")
+    assert excinfo.value.status_code == 200
+    assert "TPEx" in str(excinfo.value)

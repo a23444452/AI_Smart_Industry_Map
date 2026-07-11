@@ -49,7 +49,8 @@ def get_json(url: str, *, source: str) -> list[dict]:
     """GET an OpenAPI endpoint and return the decoded JSON array.
 
     Raises SourceFetchError (friendly message + status code) on any non-200
-    response or connection/timeout failure.
+    response, connection/timeout failure, or a 200 whose body is not a valid
+    JSON list — so the job layer only ever needs to catch SourceFetchError.
     """
     try:
         with httpx.Client(
@@ -67,7 +68,23 @@ def get_json(url: str, *, source: str) -> list[dict]:
             f"{source} 資料來源回應異常（HTTP {resp.status_code}），請稍後再試",
             status_code=resp.status_code,
         )
-    return resp.json()
+
+    try:
+        data = resp.json()
+    except ValueError as exc:
+        raise SourceFetchError(
+            source,
+            f"{source} 資料來源回傳內容無法解析，請稍後再試",
+            status_code=resp.status_code,
+        ) from exc
+
+    if not isinstance(data, list):
+        raise SourceFetchError(
+            source,
+            f"{source} 資料來源回傳格式異常，請稍後再試",
+            status_code=resp.status_code,
+        )
+    return data
 
 
 def to_number(raw: object) -> float | None:
