@@ -6,19 +6,38 @@ computed in a single grouped query (no per-topic N+1); ``rank`` is derived in
 Python from the already-materialised cards.
 """
 
+from collections import defaultdict
+from datetime import datetime
 from typing import Literal
 
 from fastapi import APIRouter, Query, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.db.models import QuoteDaily, Topic, TopicCompany
+from app.api.serializers import to_utc_iso
+from app.db.models import (
+    Company,
+    InstitutionalFlow,
+    PipelineRun,
+    QuoteDaily,
+    Topic,
+    TopicCompany,
+)
 
 router = APIRouter(tags=["topics"])
 
 Market = Literal["tw", "us", "jp", "chain", "etf"]
 Direction = Literal["up", "down"]
+
+# 籌碼訊號視窗：每檔取最新 5 筆法人買賣超彙總。
+CHIP_WINDOW_DAYS = 5
+# treemap 週／月報酬的交易日偏移（以該 ticker 實際存在的交易日排序計算）。
+WEEK_OFFSET = 5
+MONTH_OFFSET = 21
+# quotes_updated_at 綁定的行情 job 名稱（見 app.pipeline.scheduler）。
+QUOTES_JOB_NAME = "fetch_tw_quotes"
 
 
 class TopicSummary(BaseModel):
@@ -134,3 +153,201 @@ def get_topics(
     with Session(engine) as session:
         topics = _query_topics(session, market)
     return TopicsResponse(topics=topics, rank=_rank(topics, direction))
+
+
+# ── GET /api/topics/{slug} — 題材詳情 ─────────────────────────────────────
+
+
+class TreemapItem(BaseModel):
+    ticker: str
+    name: str
+    change_pct: float | None
+
+
+class Treemap(BaseModel):
+    day: list[TreemapItem]
+    week: list[TreemapItem]
+    month: list[TreemapItem]
+
+
+class ChipSignals(BaseModel):
+    window_days: int
+    total: int
+    foreign_buy: int
+    trust_buy: int
+    # major（自營商）暫不計算，恆為 null——切片 4 再定義口徑。
+    major_buy: int | None
+    updated_at: str | None
+
+
+class TopicDetail(BaseModel):
+    slug: str
+    title: str
+    description: str | None
+    metrics: dict | None
+    verified_at: str | None
+    treemap: Treemap
+    chip_signals: ChipSignals
+    quotes_updated_at: str | None
+
+
+def _distinct_members(session: Session, slug: str) -> list[tuple[str, str]]:
+    """該題材的 distinct (ticker, name)，依 ticker 排序（同一 ticker 跨分類只列一次）。"""
+    stmt = (
+        select(TopicCompany.ticker, Company.name)
+        .join(Company, Company.ticker == TopicCompany.ticker)
+        .where(TopicCompany.topic_slug == slug)
+        .distinct()
+        .order_by(TopicCompany.ticker)
+    )
+    return [(row.ticker, row.name) for row in session.execute(stmt).all()]
+
+
+def _quotes_by_ticker(
+    session: Session, tickers: list[str]
+) -> dict[str, list]:
+    """成員近期 quotes 一次查回，按 ticker 分組、日期由新到舊排列。
+
+    資料量小（17 檔 × 數十交易日），一次撈全部再於 Python 分組即可；毋須 window
+    function。每組為降冪，故 index 0 是最新日、index N 是 N 個交易日前。
+    """
+    if not tickers:
+        return {}
+    stmt = (
+        select(
+            QuoteDaily.ticker,
+            QuoteDaily.date,
+            QuoteDaily.close,
+            QuoteDaily.change_pct,
+        )
+        .where(QuoteDaily.ticker.in_(tickers))
+        .order_by(QuoteDaily.ticker, QuoteDaily.date.desc())
+    )
+    grouped: dict[str, list] = defaultdict(list)
+    for row in session.execute(stmt).all():
+        grouped[row.ticker].append(row)
+    return grouped
+
+
+def _flows_by_ticker(
+    session: Session, tickers: list[str]
+) -> dict[str, list[InstitutionalFlow]]:
+    if not tickers:
+        return {}
+    stmt = (
+        select(InstitutionalFlow)
+        .where(InstitutionalFlow.ticker.in_(tickers))
+        .order_by(InstitutionalFlow.ticker, InstitutionalFlow.date.desc())
+    )
+    grouped: dict[str, list[InstitutionalFlow]] = defaultdict(list)
+    for flow in session.execute(stmt).scalars().all():
+        grouped[flow.ticker].append(flow)
+    return grouped
+
+
+def _period_change(rows: list, offset: int) -> float | None:
+    """(最新 close ÷ offset 個交易日前 close − 1)×100，round 2；資料不足或缺值 → None。"""
+    if len(rows) <= offset:
+        return None
+    latest_close = rows[0].close
+    base_close = rows[offset].close
+    if latest_close is None or base_close is None or base_close == 0:
+        return None
+    return round((latest_close / base_close - 1) * 100, 2)
+
+
+def _build_treemap(
+    members: list[tuple[str, str]], quotes: dict[str, list]
+) -> Treemap:
+    def items(kind: str) -> list[TreemapItem]:
+        out = []
+        for ticker, name in members:
+            rows = quotes.get(ticker, [])
+            if kind == "day":
+                change = rows[0].change_pct if rows else None
+            elif kind == "week":
+                change = _period_change(rows, WEEK_OFFSET)
+            else:  # month
+                change = _period_change(rows, MONTH_OFFSET)
+            out.append(TreemapItem(ticker=ticker, name=name, change_pct=change))
+        return out
+
+    return Treemap(day=items("day"), week=items("week"), month=items("month"))
+
+
+def _build_chip_signals(
+    members: list[tuple[str, str]],
+    flows: dict[str, list[InstitutionalFlow]],
+) -> ChipSignals:
+    foreign_buy = 0
+    trust_buy = 0
+    max_date: str | None = None
+    for ticker, _ in members:
+        member_flows = flows.get(ticker, [])
+        recent = member_flows[:CHIP_WINDOW_DAYS]
+        if sum((f.foreign_net or 0) for f in recent) > 0:
+            foreign_buy += 1
+        if sum((f.trust_net or 0) for f in recent) > 0:
+            trust_buy += 1
+        for flow in member_flows:
+            if max_date is None or flow.date > max_date:
+                max_date = flow.date
+
+    updated_at = (
+        to_utc_iso(datetime.fromisoformat(max_date)) if max_date else None
+    )
+    return ChipSignals(
+        window_days=CHIP_WINDOW_DAYS,
+        total=len(members),
+        foreign_buy=foreign_buy,
+        trust_buy=trust_buy,
+        major_buy=None,
+        updated_at=updated_at,
+    )
+
+
+def _quotes_updated_at(session: Session) -> str | None:
+    """最新一次 fetch_tw_quotes 成功 run 的 finished_at（帶 Z）；無紀錄 → None。"""
+    stmt = (
+        select(PipelineRun.finished_at)
+        .where(
+            PipelineRun.job_name == QUOTES_JOB_NAME,
+            PipelineRun.status == "success",
+        )
+        .order_by(PipelineRun.id.desc())
+        .limit(1)
+    )
+    row = session.execute(stmt).first()
+    return to_utc_iso(row[0]) if row is not None else None
+
+
+@router.get("/topics/{slug}")
+def get_topic_detail(slug: str, request: Request):
+    engine = request.app.state.engine
+    with Session(engine) as session:
+        topic = session.get(Topic, slug)
+        if topic is None:
+            # 統一錯誤格式（與全域 500 handler 一致）；直接回 JSONResponse，
+            # 不經 response_model 序列化。
+            return JSONResponse(
+                status_code=404,
+                content={
+                    "error": {"code": "not_found", "message": "找不到此題材"}
+                },
+            )
+
+        members = _distinct_members(session, slug)
+        tickers = [ticker for ticker, _ in members]
+        quotes = _quotes_by_ticker(session, tickers)
+        flows = _flows_by_ticker(session, tickers)
+
+        return TopicDetail(
+            slug=topic.slug,
+            title=topic.title,
+            description=topic.description,
+            metrics=topic.metrics,
+            verified_at=topic.verified_at,
+            treemap=_build_treemap(members, quotes),
+            chip_signals=_build_chip_signals(members, flows),
+            quotes_updated_at=_quotes_updated_at(session),
+        )

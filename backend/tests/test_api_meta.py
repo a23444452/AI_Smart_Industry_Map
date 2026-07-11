@@ -75,9 +75,14 @@ def test_pipeline_status_latest_status_and_last_success(client):
     # success timestamp still points at the older successful run.
     assert jobs["fetch"]["last_success_at"] is not None
     assert jobs["fetch"]["last_success_at"] != jobs["fetch"]["last_finished_at"]
+    # Timestamps serialize as UTC ISO8601 with a Z suffix (F1), not naive datetimes.
+    assert jobs["fetch"]["last_success_at"].endswith("Z")
+    assert jobs["fetch"]["last_finished_at"].endswith("Z")
+    assert "T" in jobs["fetch"]["last_finished_at"]
 
     assert jobs["seed"]["last_status"] == "success"
     assert jobs["seed"]["last_success_at"] == jobs["seed"]["last_finished_at"]
+    assert jobs["seed"]["last_success_at"].endswith("Z")
 
 
 def test_pipeline_status_stale_running(client):

@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.api.serializers import to_utc_iso
 from app.db.base import _utcnow
 from app.db.models import PipelineRun
 
@@ -25,8 +26,10 @@ STALE_AFTER = timedelta(hours=2)
 class PipelineStatusItem(BaseModel):
     job_name: str
     last_status: str
-    last_success_at: datetime | None
-    last_finished_at: datetime | None
+    # 時間戳輸出為 UTC ISO8601 帶 Z 尾碼字串（見 app.api.serializers.to_utc_iso）；
+    # 儲存的 naive datetime 若交由 Pydantic 自動序列化不會帶時區標記，前端無從辨識。
+    last_success_at: str | None
+    last_finished_at: str | None
 
 
 def _resolve_status(latest: PipelineRun, now: datetime) -> str:
@@ -69,8 +72,8 @@ def get_pipeline_status(request: Request) -> list[PipelineStatusItem]:
         PipelineStatusItem(
             job_name=job_name,
             last_status=_resolve_status(latest, now),
-            last_success_at=last_success_by_job.get(job_name),
-            last_finished_at=latest.finished_at,
+            last_success_at=to_utc_iso(last_success_by_job.get(job_name)),
+            last_finished_at=to_utc_iso(latest.finished_at),
         )
         for job_name, latest in latest_by_job.items()
     ]
