@@ -1,8 +1,11 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from loguru import logger
 
+from app.api import meta, topics
 from app.core.config import settings
 from app.db.base import Base, make_engine
 from app.pipeline.scheduler import build_scheduler
@@ -40,8 +43,21 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    @app.exception_handler(Exception)
+    async def _unhandled_exception_handler(request: Request, exc: Exception):
+        # Last-resort handler: log the real cause server-side, but never leak
+        # internal details (stack, SQL, paths) to the client.
+        logger.exception("unhandled error on {} {}", request.method, request.url.path)
+        return JSONResponse(
+            status_code=500,
+            content={"error": {"code": "internal", "message": "伺服器發生錯誤"}},
+        )
+
     @app.get("/healthz")
     def healthz():
         return {"status": "ok"}
+
+    app.include_router(topics.router, prefix="/api")
+    app.include_router(meta.router, prefix="/api")
 
     return app
