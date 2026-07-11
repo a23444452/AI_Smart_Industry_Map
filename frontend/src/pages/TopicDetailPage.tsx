@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { ApiError } from "../api/client";
 import { useTopicDetail } from "../api/topicDetail";
 import { Treemap } from "../charts/Treemap";
 import { MetricsCard } from "../components/topic/MetricsCard";
@@ -23,14 +24,16 @@ export function TopicDetailPage() {
   if (isLoading) return <DetailSkeleton />;
 
   if (isError) {
-    const is404 = (error?.message ?? "").includes("404");
+    // 以 ApiError.status 判斷 404，不解析 message 字串（slug 含 "404" 時不誤判）。
+    const is404 = error instanceof ApiError && error.status === 404;
     return is404 ? <NotFound /> : <ErrorCard onRetry={() => void refetch()} />;
   }
 
   if (!data) return <NotFound />;
 
-  const { title, description, metrics, verified_at, treemap, chip_signals } =
-    data;
+  const { title, description, verified_at, treemap, chip_signals } = data;
+  // 後端 metrics 為 dict | None——null 以空物件守護，下游 MetricsCard 介面不變。
+  const metrics = data.metrics ?? {};
   // items 直接引用 query data 的穩定陣列，避免 render 內新建陣列造成整圖重繪。
   const treemapItems = treemap[period];
 

@@ -22,7 +22,8 @@ export interface TopicDetail {
   slug: string;
   title: string;
   description: string | null;
-  metrics: Record<string, string>;
+  // 後端為 dict | None——可能為 null，呼叫端需守護。
+  metrics: Record<string, string> | null;
   verified_at: string | null;
   treemap: { day: TreemapItem[]; week: TreemapItem[]; month: TreemapItem[] };
   chip_signals: ChipSignalsData;
@@ -31,7 +32,7 @@ export interface TopicDetail {
 
 /**
  * 題材詳情 hook：依 slug 抓取單一題材完整資料。
- * staleTime 沿用全域設定；查無題材時後端回 404 → fetchJson throw（error.message 含 "404"）。
+ * staleTime 沿用全域設定；查無題材時後端回 404 → fetchJson throw ApiError（status 404）。
  * @param slug 題材代碼，例如 "silicon-photonics"
  */
 export function useTopicDetail(slug: string) {

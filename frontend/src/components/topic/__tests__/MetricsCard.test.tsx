@@ -38,4 +38,12 @@ describe("MetricsCard", () => {
     const { container } = render(<MetricsCard metrics={{}} />);
     expect(container.querySelectorAll("dt")).toHaveLength(0);
   });
+
+  it("頁面層守護：後端 metrics 為 null 時經 ?? {} 傳入不炸，渲染空狀態", () => {
+    // 模擬 TopicDetailPage 的 `data.metrics ?? {}` 守護（後端 dict | None）
+    const fromApi: Record<string, string> | null = null;
+    const { container } = render(<MetricsCard metrics={fromApi ?? {}} />);
+    expect(screen.getByText("關鍵指標")).toBeInTheDocument();
+    expect(container.querySelectorAll("dt")).toHaveLength(0);
+  });
 });
