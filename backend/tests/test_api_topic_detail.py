@@ -5,15 +5,25 @@
 已知 quotes / institutional_flows / pipeline_runs），API 讀到的就是測試寫入的。
 """
 
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.db import models
+from app.db.base import _utcnow
 from app.db.seed import load_seeds
 
 SLUG = "silicon-photonics"
+
+
+def _d(days_ago: int) -> str:
+    """今日（UTC）往回 ``days_ago`` 日曆日的 ISO 日期。
+
+    fixture 日期以「今日」為基準：quotes/flows 查詢有時間下界（60／21 日曆日），
+    固定日期會隨真實時間流逝掉出視窗，測試變成定時炸彈。
+    """
+    return (_utcnow().date() - timedelta(days=days_ago)).isoformat()
 
 
 def _engine(client):
@@ -74,15 +84,20 @@ def test_card_meta_matches_seed(client):
     assert body["metrics"]["tech_core"] == "CPO 共同封裝"
 
 
-# ── case 2: treemap.day 取每檔最新日 change_pct（插多日驗證取最新）─────────
-def test_treemap_day_uses_latest_day_change_pct(client):
+# ── case 2: treemap.day 取每檔最新日 change_pct（插多日驗證取最新；round 2）──
+def test_treemap_day_uses_latest_day_change_pct_rounded(client):
     _seed_real(client)
     _add_quotes(
         client,
         [
-            # 舊日應被忽略；最新日 2026-07-11 → -2.03
-            {"ticker": "2330", "date": "2026-07-10", "close": 100.0, "change_pct": 99.0},
-            {"ticker": "2330", "date": "2026-07-11", "close": 98.0, "change_pct": -2.03},
+            # 舊日應被忽略；最新日的原始值 -2.028397… → 伺服端 round 2 → -2.03
+            {"ticker": "2330", "date": _d(1), "close": 100.0, "change_pct": 99.0},
+            {
+                "ticker": "2330",
+                "date": _d(0),
+                "close": 98.0,
+                "change_pct": -2.028397565922921,
+            },
         ],
     )
     day = client.get(f"/api/topics/{SLUG}").json()["treemap"]["day"]
@@ -92,15 +107,10 @@ def test_treemap_day_uses_latest_day_change_pct(client):
 
 
 def _descending_quotes(ticker: str, closes: list[float], change_pct_newest=None):
-    """closes[0] 為最新日；日期由 2026-07-11 往回每日 -1（僅需 per-ticker 排序）。"""
-    base = date(2026, 7, 11)
+    """closes[0] 為最新日；日期由今日往回每日 -1（僅需 per-ticker 排序）。"""
     rows = []
     for i, close in enumerate(closes):
-        row = {
-            "ticker": ticker,
-            "date": (base - timedelta(days=i)).isoformat(),
-            "close": close,
-        }
+        row = {"ticker": ticker, "date": _d(i), "close": close}
         if i == 0 and change_pct_newest is not None:
             row["change_pct"] = change_pct_newest
         rows.append(row)
@@ -146,9 +156,9 @@ def test_treemap_week_boundary_exactly_six_days(client):
 def test_chip_signals_counts_and_updated_at(client):
     _seed_real(client)
     # 2330：6 筆 flows；最新 5 筆各 foreign_net=+100 / trust_net=+50 → 皆計入。
-    #   最舊一筆（07-01）巨額負值：若誤取 6 筆 SUM 會翻負 → 驗證只取最新 5 筆。
+    #   最舊一筆（6 日前）巨額負值：若誤取 6 筆 SUM 會翻負 → 驗證只取最新 5 筆。
     rows = []
-    dates = ["2026-07-06", "2026-07-05", "2026-07-04", "2026-07-03", "2026-07-02"]
+    dates = [_d(1), _d(2), _d(3), _d(4), _d(5)]
     for d in dates:
         rows.append(
             {"ticker": "2330", "date": d, "foreign_net": 100, "trust_net": 50}
@@ -156,7 +166,7 @@ def test_chip_signals_counts_and_updated_at(client):
     rows.append(
         {
             "ticker": "2330",
-            "date": "2026-07-01",
+            "date": _d(6),
             "foreign_net": -1_000_000,
             "trust_net": -1_000_000,
         }
@@ -175,7 +185,7 @@ def test_chip_signals_counts_and_updated_at(client):
     assert chip["trust_buy"] == 1
     assert chip["major_buy"] is None
     # updated_at＝flows 最大 date，帶 Z 尾碼
-    assert chip["updated_at"] == "2026-07-06T00:00:00Z"
+    assert chip["updated_at"] == f"{_d(1)}T00:00:00Z"
 
 
 def test_chip_signals_all_zero_when_no_flows(client):
@@ -234,3 +244,28 @@ def test_quotes_updated_at_from_fetch_tw_quotes_success(client):
 def test_quotes_updated_at_null_when_no_run(client):
     _seed_real(client)
     assert client.get(f"/api/topics/{SLUG}").json()["quotes_updated_at"] is None
+
+
+# ── 查詢時間下界：過舊資料不進入計算（避免無界掃描的行為驗證）──────────────
+def test_quotes_older_than_lookback_are_excluded(client):
+    _seed_real(client)
+    # 唯一一筆 quote 在 70 日曆日前（> 60 日下界）→ 視同無 quotes，day 為 null
+    _add_quotes(
+        client,
+        [{"ticker": "2330", "date": _d(70), "close": 100.0, "change_pct": 5.0}],
+    )
+    tm = client.get(f"/api/topics/{SLUG}").json()["treemap"]
+    assert _item(tm["day"], "2330")["change_pct"] is None
+
+
+def test_flows_older_than_lookback_are_excluded(client):
+    _seed_real(client)
+    # 唯一一筆 flow 在 30 日曆日前（> 21 日下界）→ 視同無 flows
+    _add_flows(
+        client,
+        [{"ticker": "2330", "date": _d(30), "foreign_net": 999, "trust_net": 999}],
+    )
+    chip = client.get(f"/api/topics/{SLUG}").json()["chip_signals"]
+    assert chip["foreign_buy"] == 0
+    assert chip["trust_buy"] == 0
+    assert chip["updated_at"] is None
