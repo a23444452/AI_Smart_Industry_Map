@@ -14,6 +14,7 @@ silently corrupt the mapping.
 from __future__ import annotations
 
 from app.pipeline.sources import _common
+from app.pipeline.sources._common import SourceFetchError
 
 URL_TEMPLATE = (
     "https://www.twse.com.tw/rwd/zh/fund/T86"
@@ -43,8 +44,11 @@ def parse(raw: dict, date: str) -> list[dict]:
 
     Output rows: ``{ticker, name, foreign_net, trust_net, dealer_net, date}``
     with net figures as ints (shares) and ``date`` the ISO date passed in.
-    Returns ``[]`` for a holiday / empty response (stat != "OK" or no data)
-    rather than raising.
+    ``date`` 以呼叫端請求日為準，不校驗 response 自帶日期。
+    Returns ``[]`` for a holiday / empty response (stat != "OK" or no data);
+    raises SourceFetchError when the ticker/name header columns disappear
+    (structural drift needs human attention). Missing numeric columns stay
+    tolerant (treated as 0).
     """
     if raw.get("stat") != "OK":
         return []
@@ -53,7 +57,13 @@ def parse(raw: dict, date: str) -> list[dict]:
     if not data:
         return []
 
-    idx = {name: i for i, name in enumerate(fields)}
+    # Header labels are matched after strip() so incidental whitespace in the
+    # source header can't break the mapping.
+    idx = {str(name).strip(): i for i, name in enumerate(fields)}
+    if _TICKER not in idx or _NAME not in idx:
+        raise SourceFetchError(
+            _SOURCE, f"{_SOURCE} 資料來源欄位結構變動（T86 欄位結構變動），請人工確認"
+        )
 
     def net(row: list, field: str) -> int:
         value = _common.to_int(row[idx[field]]) if field in idx else None

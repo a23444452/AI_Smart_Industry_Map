@@ -217,6 +217,25 @@ def test_t86_holiday_returns_empty(t86_holiday_fixture):
     assert twse_t86.parse(t86_holiday_fixture, "2026-07-11") == []
 
 
+def test_t86_field_names_with_whitespace_still_parse(t86_fixture):
+    # Header labels with incidental whitespace must still map correctly (M3).
+    padded = {**t86_fixture, "fields": [f"  {f} " for f in t86_fixture["fields"]]}
+    r = next(x for x in twse_t86.parse(padded, "2026-07-09") if x["ticker"] == "2330")
+    assert r["foreign_net"] == -12_748_541
+    assert r["dealer_net"] == 89_863
+
+
+def test_t86_missing_ticker_field_raises(t86_fixture):
+    # ticker/name header columns disappearing is structural drift -> raise (M3).
+    drifted = {
+        **t86_fixture,
+        "fields": ["改名代號", *t86_fixture["fields"][1:]],
+    }
+    with pytest.raises(SourceFetchError) as excinfo:
+        twse_t86.parse(drifted, "2026-07-09")
+    assert "TWSE-T86" in str(excinfo.value)
+
+
 def test_parse_tpex_institutional(tpex_insti_fixture):
     rows = tpex_institutional.parse(tpex_insti_fixture, "2026-07-09")
     r = next(x for x in rows if x["ticker"] == "3081")
@@ -240,6 +259,33 @@ def test_tpex_institutional_sum_to_total(tpex_insti_fixture):
 def test_tpex_institutional_holiday_returns_empty(tpex_insti_holiday_fixture):
     # Empty tables[0].data (stat stays "ok") -> empty list, no raise.
     assert tpex_institutional.parse(tpex_insti_holiday_fixture, "2026-07-11") == []
+
+
+def test_tpex_institutional_non_ok_stat_returns_empty(tpex_insti_fixture):
+    # stat other than "ok" (case-insensitive) -> holiday semantics, [] (M5).
+    assert tpex_institutional.parse({**tpex_insti_fixture, "stat": "error"}, "2026-07-09") == []
+    ok_upper = {**tpex_insti_fixture, "stat": "OK"}
+    assert len(tpex_institutional.parse(ok_upper, "2026-07-09")) > 0
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda f: f[:23],  # column removed -> count drift
+        lambda f: [*f[:10], "買進股數", *f[11:]],  # idx10 no longer a net column
+        lambda f: [*f[:22], "買進股數", f[23]],  # idx22 no longer a net column
+    ],
+)
+def test_tpex_institutional_field_drift_raises(tpex_insti_fixture, mutate):
+    # Column drift needs human attention -> raise, never silently return [] (I1).
+    table = tpex_insti_fixture["tables"][0]
+    drifted = {
+        **tpex_insti_fixture,
+        "tables": [{**table, "fields": mutate(list(table["fields"]))}],
+    }
+    with pytest.raises(SourceFetchError) as excinfo:
+        tpex_institutional.parse(drifted, "2026-07-09")
+    assert "TPEx" in str(excinfo.value)
 
 
 def test_t86_fetch_builds_yyyymmdd_url(monkeypatch):
