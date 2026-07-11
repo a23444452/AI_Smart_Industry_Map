@@ -87,6 +87,64 @@ def get_json(url: str, *, source: str) -> list[dict]:
     return data
 
 
+def get_json_dict(url: str, *, source: str) -> dict:
+    """GET a table-shaped endpoint and return the decoded JSON object.
+
+    The TWSE ``rwd`` (T86) and TPEx ``dailyTrade`` endpoints wrap their rows in
+    a ``{stat, fields, data}`` / ``{stat, tables:[...]}`` object rather than the
+    bare array that OpenAPI serves, so ``get_json`` (list-only) cannot be used.
+    Same friendly-error contract: raises SourceFetchError on any non-200,
+    connection/timeout failure, unparseable body, or a 200 that is not a dict.
+    """
+    try:
+        with httpx.Client(
+            timeout=TIMEOUT_SECONDS, follow_redirects=True, verify=_ssl_context()
+        ) as client:
+            resp = client.get(
+                url,
+                headers={"User-Agent": _USER_AGENT, "Accept": "application/json"},
+            )
+    except httpx.HTTPError as exc:
+        raise SourceFetchError(
+            source, f"{source} 資料來源連線失敗，請稍後再試"
+        ) from exc
+
+    if resp.status_code != 200:
+        raise SourceFetchError(
+            source,
+            f"{source} 資料來源回應異常（HTTP {resp.status_code}），請稍後再試",
+            status_code=resp.status_code,
+        )
+
+    try:
+        data = resp.json()
+    except ValueError as exc:
+        raise SourceFetchError(
+            source,
+            f"{source} 資料來源回傳內容無法解析，請稍後再試",
+            status_code=resp.status_code,
+        ) from exc
+
+    if not isinstance(data, dict):
+        raise SourceFetchError(
+            source,
+            f"{source} 資料來源回傳格式異常，請稍後再試",
+            status_code=resp.status_code,
+        )
+    return data
+
+
+def iso_to_yyyymmdd(iso: str) -> str:
+    """'2026-07-09' -> '20260709' (the TWSE ``rwd`` date parameter format)."""
+    return date.fromisoformat(iso).strftime("%Y%m%d")
+
+
+def iso_to_roc_slash(iso: str) -> str:
+    """'2026-07-09' -> '115/07/09' (the TPEx ``dailyTrade`` date parameter format)."""
+    d = date.fromisoformat(iso)
+    return f"{d.year - 1911}/{d.month:02d}/{d.day:02d}"
+
+
 def to_number(raw: object) -> float | None:
     """Parse an exchange numeric string to float; blanks/'--' → None.
 
