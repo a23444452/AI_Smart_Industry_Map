@@ -3,7 +3,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help seed
+.PHONY: help seed fetch
 
 help: ## 顯示可用指令清單
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -11,3 +11,6 @@ help: ## 顯示可用指令清單
 
 seed: ## 匯入題材 seeds
 	cd backend && uv run python -m cli seed
+
+fetch: ## 抓取台股收盤資料
+	cd backend && uv run python -m cli fetch

@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.db.base import Base, make_engine
 from app.db.seed import load_seeds
+from app.pipeline.jobs import fetch_tw_quotes
+from app.pipeline.runner import run_job
 
 
 def main() -> None:
@@ -29,7 +31,14 @@ def main() -> None:
             s.commit()
         print(f"seed 完成：{imported} 檔（{settings.seeds_dir} → {settings.db_path}）")
     elif cmd == "fetch":
-        raise SystemExit("fetch 將於後續 task 實作")
+        # runner 擁有交易邊界並記錄 PipelineRun；失敗時回傳 status="failed"
+        # （不 re-raise），由 CLI 依 status 決定結束碼。
+        run = run_job(eng, "fetch_tw_quotes", fetch_tw_quotes)
+        if run.status == "success":
+            print(f"fetch 完成：status={run.status}（{settings.db_path}）")
+        else:
+            print(f"fetch 失敗：status={run.status}，error={run.error}")
+            raise SystemExit(1)
     else:
         raise SystemExit(f"未知指令：{cmd}")
 
