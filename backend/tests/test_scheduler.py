@@ -53,6 +53,30 @@ def test_scheduler_enabled_registers_fetch_tw_quotes_job(monkeypatch):
     assert not scheduler.running
 
 
+def test_scheduler_registers_both_fetch_institutional_crons(monkeypatch):
+    monkeypatch.setattr(settings, "scheduler_enabled", True)
+
+    app = create_app()
+    with TestClient(app):
+        scheduler = app.state.scheduler
+        assert scheduler is not None
+
+        # 兩發平日 cron：16:10 與 17:10 Asia/Taipei。
+        for job_id, hour in (
+            ("fetch_institutional_1610", "16"),
+            ("fetch_institutional_1710", "17"),
+        ):
+            job = scheduler.get_job(job_id)
+            assert job is not None, f"missing job {job_id}"
+            assert job.args[1] == "fetch_institutional"
+            trigger = job.trigger
+            assert isinstance(trigger, CronTrigger)
+            assert _field(trigger, "day_of_week") == "mon-fri"
+            assert _field(trigger, "hour") == hour
+            assert _field(trigger, "minute") == "10"
+            assert str(trigger.timezone) == "Asia/Taipei"
+
+
 def test_scheduler_disabled_leaves_no_scheduler(monkeypatch):
     monkeypatch.setattr(settings, "scheduler_enabled", False)
 

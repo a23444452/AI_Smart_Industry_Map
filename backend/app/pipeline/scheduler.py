@@ -13,7 +13,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from sqlalchemy import Engine
 
-from app.pipeline.jobs import fetch_tw_quotes
+from app.pipeline.jobs import fetch_institutional, fetch_tw_quotes
 from app.pipeline.runner import run_job
 
 
@@ -38,4 +38,21 @@ def build_scheduler(engine: Engine) -> BackgroundScheduler:
         misfire_grace_time=3600,
         coalesce=True,
     )
+
+    # ``fetch_institutional`` fires twice on weekdays — 16:10 and 17:10
+    # Asia/Taipei. T86 publishes shortly after the 13:30 close but the exact
+    # time drifts; the second pass is a cheap idempotent catch-up (upsert) that
+    # backstops a late/missed first publish. Same misfire/coalesce policy as the
+    # quotes job.
+    for hour in (16, 17):
+        scheduler.add_job(
+            run_job,
+            trigger=CronTrigger(
+                day_of_week="mon-fri", hour=hour, minute=10, timezone="Asia/Taipei"
+            ),
+            args=(engine, "fetch_institutional", fetch_institutional),
+            id=f"fetch_institutional_{hour:02d}10",
+            misfire_grace_time=3600,
+            coalesce=True,
+        )
     return scheduler

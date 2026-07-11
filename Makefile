@@ -3,7 +3,7 @@
 
 .DEFAULT_GOAL := help
 
-.PHONY: help seed fetch dev dev-backend dev-frontend test
+.PHONY: help seed fetch backfill dev dev-backend dev-frontend test
 
 help: ## 顯示可用指令清單
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -14,6 +14,9 @@ seed: ## 匯入題材 seeds
 
 fetch: ## 抓取台股收盤資料
 	cd backend && uv run python -m cli fetch
+
+backfill: ## 回填歷史行情與法人資料
+	cd backend && uv run python -m cli backfill
 
 dev: ## 同時啟動後端＋前端開發伺服器
 	$(MAKE) -j2 dev-backend dev-frontend

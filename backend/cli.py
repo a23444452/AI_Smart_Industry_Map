@@ -1,6 +1,7 @@
-"""命令列入口：`python -m cli seed|fetch`。"""
+"""命令列入口：`python -m cli seed|fetch|backfill`。"""
 
 import sys
+from functools import partial
 from pathlib import Path
 
 from sqlalchemy.orm import Session
@@ -9,12 +10,13 @@ from app.core.config import settings
 from app.db.base import Base, make_engine
 from app.db.seed import load_seeds
 from app.pipeline.jobs import fetch_tw_quotes
+from app.pipeline.jobs_backfill import backfill_institutional, backfill_quotes
 from app.pipeline.runner import run_job
 
 
 def main() -> None:
     if len(sys.argv) < 2:
-        raise SystemExit("用法：python -m cli seed|fetch")
+        raise SystemExit("用法：python -m cli seed|fetch|backfill")
     cmd = sys.argv[1]
 
     # 確保 DB 檔的父目錄存在（首次執行時 backend/data/ 可能尚未建立）。
@@ -39,6 +41,23 @@ def main() -> None:
         else:
             print(f"fetch 失敗：status={run.status}，error={run.error}")
             raise SystemExit(1)
+    elif cmd == "backfill":
+        # 依序回填歷史行情與法人資料；每個 job 各自透過 runner 記 PipelineRun。
+        # partial 包住 days 參數以符合 run_job 的 fn(session) 契約。任一 job
+        # failed → 印狀態後以 exit 1 收場（CI/Make 可據此判斷）。
+        jobs = (
+            ("backfill_quotes", partial(backfill_quotes, days=35)),
+            ("backfill_institutional", partial(backfill_institutional, days=10)),
+        )
+        failed = False
+        for name, fn in jobs:
+            run = run_job(eng, name, fn)
+            print(f"{name}：status={run.status}", end="")
+            print("" if run.status == "success" else f"，error={run.error}")
+            failed = failed or run.status != "success"
+        if failed:
+            raise SystemExit(1)
+        print(f"backfill 完成（{settings.db_path}）")
     else:
         raise SystemExit(f"未知指令：{cmd}")
 
