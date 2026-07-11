@@ -5,6 +5,10 @@ interface RankFocusCardsProps {
   rank: TopicSummary[];
   direction: "up" | "down";
   onDirectionChange: (direction: "up" | "down") => void;
+  /** 首次載入中：顯示焦點區 skeleton（keepPreviousData 下切換方向不會觸發） */
+  isLoading?: boolean;
+  /** 載入失敗：顯示錯誤語意，避免誤導的「今日尚無資料」 */
+  isError?: boolean;
 }
 
 // 排行方向 toggle 按鈕組設定
@@ -18,6 +22,8 @@ export function RankFocusCards({
   rank,
   direction,
   onDirectionChange,
+  isLoading = false,
+  isError = false,
 }: RankFocusCardsProps) {
   return (
     <section className="mb-8">
@@ -32,6 +38,7 @@ export function RankFocusCards({
             <button
               key={d.value}
               type="button"
+              aria-pressed={direction === d.value}
               onClick={() => onDirectionChange(d.value)}
               className={[
                 "px-3 py-1.5 text-sm transition-colors",
@@ -46,8 +53,22 @@ export function RankFocusCards({
         </div>
       </div>
 
-      {/* 前三名大卡；空資料時佔位 */}
-      {rank.length === 0 ? (
+      {/* 前三名大卡；載入中 skeleton／錯誤語意／空資料佔位 */}
+      {isLoading ? (
+        <div className="grid gap-4 md:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              data-testid="rank-skeleton"
+              className="h-32 animate-pulse rounded-xl border border-border-line bg-surface"
+            />
+          ))}
+        </div>
+      ) : isError ? (
+        <div className="rounded-xl border border-border-line bg-surface p-8 text-center text-sm text-text-dim">
+          焦點載入失敗，請稍後再試。
+        </div>
+      ) : rank.length === 0 ? (
         <div className="rounded-xl border border-border-line bg-surface p-8 text-center text-sm text-text-dim">
           今日尚無資料
         </div>

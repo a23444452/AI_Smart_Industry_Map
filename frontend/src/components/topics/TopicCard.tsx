@@ -23,8 +23,12 @@ export function TopicCard({ topic }: TopicCardProps) {
       {/* 標題 */}
       <h3 className="mt-3 text-xl font-bold text-text-main">{title}</h3>
 
-      {/* 描述（兩行截斷） */}
-      <p className="mt-1.5 line-clamp-2 text-sm text-text-dim">{description}</p>
+      {/* 描述（兩行截斷；null 不渲染空段落） */}
+      {description !== null && (
+        <p className="mt-1.5 line-clamp-2 text-sm text-text-dim">
+          {description}
+        </p>
+      )}
 
       {/* 漲跌均值（帶色帶符號） */}
       <div className="mt-4 flex items-baseline gap-2">
@@ -46,7 +50,10 @@ export function TopicCard({ topic }: TopicCardProps) {
         >
           探索產業地圖
         </button>
-        <span className="text-xs text-text-dim">核實於 {verified_at}</span>
+        {/* 核實日期：null 時不顯示該行 */}
+        {verified_at !== null && (
+          <span className="text-xs text-text-dim">核實於 {verified_at}</span>
+        )}
       </div>
     </article>
   );

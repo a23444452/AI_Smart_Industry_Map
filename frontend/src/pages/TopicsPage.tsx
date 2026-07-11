@@ -24,6 +24,8 @@ export function TopicsPage() {
         rank={data?.rank ?? []}
         direction={direction}
         onDirectionChange={setDirection}
+        isLoading={isLoading}
+        isError={isError}
       />
 
       {/* 市場五分頁：active 底部 accent 線 */}
@@ -32,6 +34,7 @@ export function TopicsPage() {
           <button
             key={tab.value}
             type="button"
+            aria-current={market === tab.value ? "true" : undefined}
             onClick={() => setMarket(tab.value)}
             className={[
               "border-b-2 px-4 py-2 text-sm transition-colors",

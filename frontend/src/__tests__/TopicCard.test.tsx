@@ -51,4 +51,12 @@ describe("TopicCard", () => {
     render(<TopicCard topic={makeTopic({ company_count: 3 })} />);
     expect(screen.getByText("3 家公司")).toBeInTheDocument();
   });
+
+  it("description/verified_at 為 null 時不渲染對應區塊", () => {
+    render(
+      <TopicCard topic={makeTopic({ description: null, verified_at: null })} />,
+    );
+    expect(screen.queryByText(/矽光子技術結合光學與半導體/)).toBeNull();
+    expect(screen.queryByText(/核實於/)).toBeNull();
+  });
 });
