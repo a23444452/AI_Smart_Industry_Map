@@ -16,9 +16,7 @@ def main() -> None:
     cmd = sys.argv[1]
 
     # 確保 DB 檔的父目錄存在（首次執行時 backend/data/ 可能尚未建立）。
-    db_parent = Path(settings.db_path).parent
-    if str(db_parent):
-        db_parent.mkdir(parents=True, exist_ok=True)
+    Path(settings.db_path).parent.mkdir(parents=True, exist_ok=True)
 
     eng = make_engine(settings.db_path)
     Base.metadata.create_all(eng)
@@ -27,9 +25,9 @@ def main() -> None:
         # seeds 路徑來自 config（以 __file__ 推導 repo root），不寫死相對路徑，
         # 從 backend/ 或 repo root 執行皆可正確定位。
         with Session(eng) as s:
-            load_seeds(settings.seeds_dir, s)
+            imported = load_seeds(settings.seeds_dir, s)
             s.commit()
-        print(f"seed 完成：{settings.seeds_dir} → {settings.db_path}")
+        print(f"seed 完成：{imported} 檔（{settings.seeds_dir} → {settings.db_path}）")
     elif cmd == "fetch":
         raise SystemExit("fetch 將於後續 task 實作")
     else:

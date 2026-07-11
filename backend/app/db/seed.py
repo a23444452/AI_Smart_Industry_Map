@@ -2,6 +2,10 @@
 
 真理來源是 `data/seeds/*.yaml`。每次 `load_seeds` 都以主鍵查存在→更新、否則新增，
 因此可安全重跑（idempotent）。匯入順序遵守 FK：先 companies / topics，再 topic_companies。
+
+**Known limitation（upsert-only）**：本匯入僅 insert/update，不做刪除同步——
+從 YAML 移除的公司、分類或題材不會從 DB 移除。若需完全重建，請先刪除 DB 檔
+再重跑 seed。
 """
 
 from pathlib import Path
@@ -99,10 +103,20 @@ def load_seed_doc(doc: dict, s: Session) -> None:
     s.flush()
 
 
-def load_seeds(seeds_dir: str, s: Session) -> None:
-    """讀取 ``seeds_dir`` 下所有 *.yaml，冪等 upsert 至資料庫（不 commit）。"""
+def load_seeds(seeds_dir: str, s: Session) -> int:
+    """讀取 ``seeds_dir`` 下所有 *.yaml，冪等 upsert 至資料庫（不 commit）。
+
+    回傳實際匯入的檔案數（空目錄回傳 0）。upsert-only：不會刪除 DB 中
+    已不存在於 YAML 的資料，詳見模組 docstring。
+    """
     directory = Path(seeds_dir)
+    imported = 0
     for path in sorted(directory.glob("*.yaml")):
-        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        try:
+            doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except (yaml.YAMLError, OSError) as exc:
+            raise ValueError(f"seed 檔解析失敗: {path}: {exc}") from exc
         if doc:
             load_seed_doc(doc, s)
+            imported += 1
+    return imported
