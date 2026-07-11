@@ -25,6 +25,7 @@ def test_create_all_and_wal(tmp_path):
         "topic_companies",
         "quotes_daily",
         "pipeline_runs",
+        "institutional_flows",
     } <= names
     with eng.connect() as c:
         assert c.execute(text("PRAGMA journal_mode")).scalar() == "wal"
@@ -49,6 +50,25 @@ def test_quote_roundtrip(tmp_path):
         )
         s.commit()
         assert s.get(models.QuoteDaily, ("2330", "2026-07-11")).close == 1090
+
+
+def test_institutional_flow_roundtrip(tmp_path):
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        s.add(
+            models.InstitutionalFlow(
+                ticker="2330",
+                date="2026-07-10",
+                foreign_net=1200000,
+                trust_net=-50000,
+                dealer_net=None,
+            )
+        )
+        s.commit()
+        row = s.get(models.InstitutionalFlow, ("2330", "2026-07-10"))
+        assert row.foreign_net == 1200000
+        assert row.trust_net == -50000
+        assert row.dealer_net is None
 
 
 def test_orphan_topic_company_rejected(tmp_path):

@@ -61,6 +61,19 @@ class QuoteDaily(TimestampMixin, Base):
     change_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
 
 
+class InstitutionalFlow(TimestampMixin, Base):
+    __tablename__ = "institutional_flows"
+    # 不加 FK 到 companies：與 quotes_daily 同策略，fetch_institutional job 於
+    # 寫入前先過濾未知 ticker，DB 層不強制外鍵以免拖累批次匯入。
+
+    ticker: Mapped[str] = mapped_column(String, primary_key=True)
+    date: Mapped[str] = mapped_column(String, primary_key=True)  # ISO YYYY-MM-DD
+    # 單位：股；來源缺欄時容忍 NULL。
+    foreign_net: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    trust_net: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    dealer_net: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+
 class PipelineRun(TimestampMixin, Base):
     __tablename__ = "pipeline_runs"
 
