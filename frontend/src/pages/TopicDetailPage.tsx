@@ -6,6 +6,7 @@ import { Treemap } from "../charts/Treemap";
 import { MetricsCard } from "../components/topic/MetricsCard";
 import { ChipSignals } from "../components/topic/ChipSignals";
 import { DataFreshness } from "../components/topic/DataFreshness";
+import { formatDateTaipei } from "../lib/format";
 
 const TREEMAP_TABS = [
   { value: "day", label: "單日" },
@@ -36,6 +37,8 @@ export function TopicDetailPage() {
   const metrics = data.metrics ?? {};
   // items 直接引用 query data 的穩定陣列，避免 render 內新建陣列造成整圖重繪。
   const treemapItems = treemap[period];
+  // chip_signals.updated_at 為資料日期（後端 max flow date、時間恆 00:00:00Z）
+  const chipDate = formatDateTaipei(chip_signals.updated_at);
 
   return (
     <section className="mx-auto max-w-6xl px-6 py-10">
@@ -125,12 +128,12 @@ export function TopicDetailPage() {
         </div>
       </div>
 
-      {/* 5. 籌碼訊號 */}
+      {/* 5. 籌碼訊號（updated_at 語意為資料日期，只顯示台北時區日期） */}
       <div className="mt-6">
         <ChipSignals data={chip_signals} />
-        {chip_signals.updated_at !== null && (
+        {chipDate !== null && (
           <p className="mt-2 text-right text-xs text-text-dim">
-            籌碼資料截至 {chip_signals.updated_at}
+            籌碼資料截至 {chipDate}
           </p>
         )}
       </div>

@@ -16,3 +16,14 @@ export function pctColorClass(value: number | null): string {
   if (value === null || value === 0) return "text-text-dim";
   return value > 0 ? "text-up" : "text-down";
 }
+
+/**
+ * 將 UTC ISO 時間字串格式化為台北時區日期（如 "2026/7/11"）。
+ * null 或無法解析時回傳 null，由呼叫端決定是否渲染。
+ */
+export function formatDateTaipei(iso: string | null): string | null {
+  if (iso === null) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("zh-TW", { timeZone: "Asia/Taipei" });
+}
