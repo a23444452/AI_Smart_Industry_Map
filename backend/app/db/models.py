@@ -26,6 +26,10 @@ class Topic(TimestampMixin, Base):
     market_tab: Mapped[str] = mapped_column(String)  # tw | us | jp | chain | etf
     metrics: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     verified_at: Mapped[str | None] = mapped_column(String, nullable=True)  # ISO date
+    # 產業鏈骨架（level → categories 的 name/desc/placeholder 順序）。公司歸屬仍
+    # 正規化存於 topic_companies；但「無公司的 placeholder 分類」無法用關聯表表達，
+    # 故將整個分類骨架（含 placeholder 與描述、排序）存於此 JSON 欄位。
+    chain_meta: Mapped[list | None] = mapped_column(JSON, nullable=True)
 
 
 class TopicCompany(TimestampMixin, Base):

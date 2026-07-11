@@ -1,0 +1,86 @@
+slug: silicon-photonics
+title: 光通訊｜矽光子與 CPO
+market_tab: tw
+description: >-
+  CPO（Co-Packaged Optics）把光通訊元件與邏輯晶片共同封裝，直接縮短電訊號的傳輸路徑，
+  用以緩解 AI 資料中心持續攀升的傳輸功耗與頻寬瓶頸。此技術屬於半導體異質整合的尖端領域，
+  牽動晶圓製程、先進封裝與光學元件的整合能力，而台積電 COUPE 平台正是驅動整個矽光子生態的核心。
+verified_at: "2026-07-11"
+metrics:
+  cagr: "45%+"
+  market_size: "10.2 (USD B)"
+  tech_core: "CPO 共同封裝"
+  main_spec: "1.6T 導入 / 3.2T 驗證"
+  commercial_node: "2026 大規模量產"
+  barrier: "台積電生態系 / 高度客製化"
+
+companies:
+  - {ticker: "2330", name: 台積電, has_futures: true}
+  - {ticker: "3443", name: 創意, has_futures: true}
+  - {ticker: "3081", name: 聯亞, has_futures: true}
+  - {ticker: "3450", name: 聯鈞}
+  - {ticker: "4979", name: 華星光}
+  - {ticker: "2426", name: 鼎元}
+  - {ticker: "6442", name: 光聖}
+  - {ticker: "3163", name: 波若威}
+  - {ticker: "2489", name: 瑞軒, has_futures: true}
+  - {ticker: "3711", name: 日月光投控, has_futures: true}
+  - {ticker: "4977", name: 眾達-KY}
+  - {ticker: "6789", name: 采鈺}
+  - {ticker: "3363", name: 上詮}
+  - {ticker: "6223", name: 旺矽, has_futures: true}
+  - {ticker: "6515", name: 穎崴}
+  - {ticker: "3289", name: 宜特}
+  - {ticker: "6451", name: 訊芯-KY}
+
+chain:
+  - level: 上游
+    categories:
+      - name: 矽光子製程代工平台
+        desc: 提供矽光子晶圓的製程代工與平台級設計服務，是整條供應鏈得以成形的技術地基。
+        companies:
+          - {ticker: "2330", role: 龍頭, relevance: 高}
+          - {ticker: "3443", role: 龍頭, relevance: 中}
+      - name: 外部光源與雷射引擎
+        desc: 專注於 InP 磊晶、外部雷射源（ELS）與雷射二極體，為整套系統供應穩定的光訊號來源。
+        companies:
+          - {ticker: "3081", role: 龍頭, relevance: 高}
+          - {ticker: "3450", role: 利基, relevance: 高}
+          - {ticker: "4979", role: 利基, relevance: 高}
+          - {ticker: "2426", role: 利基, relevance: 中}
+      - name: 高密度光纖套件與被動元件
+        desc: 涵蓋光纖配線、shuffle 模組與各式光學連接套件等被動元件，負責訊號在封裝間的實體路由。
+        companies:
+          - {ticker: "6442", role: 龍頭, relevance: 高}
+          - {ticker: "3163", role: 利基, relevance: 高}
+          - {ticker: "2489", role: 新興, relevance: 低}
+  - level: 中游
+    categories:
+      - name: CPO 共同封裝與異質整合
+        desc: 運用 2.5D／3D 封裝技術，把光子與電子晶片整合於同一封裝之內，是 CPO 落地的關鍵環節。
+        companies:
+          - {ticker: "3711", role: 龍頭, relevance: 高}
+          - {ticker: "4977", role: 挑戰, relevance: 高}
+          - {ticker: "6789", role: 挑戰, relevance: 中}
+          - {ticker: "3363", role: 利基, relevance: 高}
+          - {ticker: "3450", role: 利基, relevance: 高}
+          - {ticker: "6451", role: 利基, relevance: 中}
+      - name: 高密度光纖陣列 (FAU)
+        desc: 負責晶片與光纖之間的高精度耦光介面，確保光訊號能有效率地進出封裝。
+        companies:
+          - {ticker: "3363", role: 利基, relevance: 高}
+      - name: 矽光子測試介面與檢測
+        desc: 提供光電混合晶片的晶圓級高速測試與品質檢測能力，把關良率與可靠度。
+        companies:
+          - {ticker: "3711", role: 龍頭, relevance: 高}
+          - {ticker: "6223", role: 龍頭, relevance: 高}
+          - {ticker: "6515", role: 利基, relevance: 高}
+          - {ticker: "3289", role: 利基, relevance: 中}
+  - level: 下游
+    categories:
+      - name: CPO 整合交換器系統
+        desc: 搭載矽光子引擎的次世代資料中心交換器系統，將 CPO 技術轉化為實際的網路產品。
+        placeholder: true
+      - name: AI 算力單元與高效能運算
+        desc: 具備矽光子互連能力的 GPU 與 ASIC 等高效能運算單元，是 CPO 頻寬升級的最終受益端。
+        placeholder: true

@@ -1,0 +1,108 @@
+"""YAML seed 匯入：讀取 seeds 目錄下所有 *.yaml，冪等 upsert 至 DB。
+
+真理來源是 `data/seeds/*.yaml`。每次 `load_seeds` 都以主鍵查存在→更新、否則新增，
+因此可安全重跑（idempotent）。匯入順序遵守 FK：先 companies / topics，再 topic_companies。
+"""
+
+from pathlib import Path
+
+import yaml
+from sqlalchemy.orm import Session
+
+from app.db import models
+
+
+def _upsert_topic(s: Session, doc: dict) -> None:
+    slug = doc["slug"]
+    # 只保留分類骨架（level → categories 的 name/desc/placeholder 與排序），
+    # 公司歸屬另存 topic_companies；placeholder 分類無公司，只能靠此骨架保留。
+    chain_meta = [
+        {
+            "level": level["level"],
+            "categories": [
+                {
+                    "name": cat["name"],
+                    "desc": cat.get("desc"),
+                    "placeholder": bool(cat.get("placeholder", False)),
+                }
+                for cat in level.get("categories", [])
+            ],
+        }
+        for level in doc.get("chain", [])
+    ]
+
+    topic = s.get(models.Topic, slug)
+    if topic is None:
+        topic = models.Topic(slug=slug)
+        s.add(topic)
+    topic.title = doc["title"]
+    topic.description = doc.get("description")
+    topic.market_tab = doc.get("market_tab", "tw")
+    topic.metrics = doc.get("metrics")
+    topic.verified_at = doc.get("verified_at")
+    topic.chain_meta = chain_meta
+
+
+def _upsert_company(s: Session, entry: dict) -> None:
+    ticker = str(entry["ticker"])
+    company = s.get(models.Company, ticker)
+    if company is None:
+        company = models.Company(ticker=ticker)
+        s.add(company)
+    company.name = entry["name"]
+    company.market = entry.get("market", "TW")
+    company.has_futures = bool(entry.get("has_futures", False))
+
+
+def _upsert_topic_company(
+    s: Session,
+    topic_slug: str,
+    chain_level: str,
+    category_name: str,
+    category_desc: str | None,
+    entry: dict,
+) -> None:
+    ticker = str(entry["ticker"])
+    key = (topic_slug, ticker, category_name)
+    tc = s.get(models.TopicCompany, key)
+    if tc is None:
+        tc = models.TopicCompany(
+            topic_slug=topic_slug, ticker=ticker, category=category_name
+        )
+        s.add(tc)
+    tc.chain_level = chain_level
+    tc.category_desc = category_desc
+    tc.role = entry.get("role")
+    tc.relevance = entry.get("relevance")
+
+
+def load_seed_doc(doc: dict, s: Session) -> None:
+    """匯入單一 YAML 文件的內容（不 commit，由呼叫端負責）。"""
+    # 先 topics + companies（被 FK 參照的父表），flush 後再寫 topic_companies。
+    _upsert_topic(s, doc)
+    for entry in doc.get("companies", []):
+        _upsert_company(s, entry)
+    s.flush()
+
+    for level in doc.get("chain", []):
+        chain_level = level["level"]
+        for cat in level.get("categories", []):
+            for entry in cat.get("companies", []):
+                _upsert_topic_company(
+                    s,
+                    topic_slug=doc["slug"],
+                    chain_level=chain_level,
+                    category_name=cat["name"],
+                    category_desc=cat.get("desc"),
+                    entry=entry,
+                )
+    s.flush()
+
+
+def load_seeds(seeds_dir: str, s: Session) -> None:
+    """讀取 ``seeds_dir`` 下所有 *.yaml，冪等 upsert 至資料庫（不 commit）。"""
+    directory = Path(seeds_dir)
+    for path in sorted(directory.glob("*.yaml")):
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if doc:
+            load_seed_doc(doc, s)
