@@ -1,0 +1,116 @@
+"""Tests for TWSE/TPEx source clients — parsing only, no network.
+
+Fixtures under tests/fixtures/ are real API responses recorded once via
+scripts/record_fixtures.py (first 5 rows + a known ticker).
+"""
+
+import json
+from pathlib import Path
+
+import pytest
+
+from app.pipeline.sources import tpex, twse
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+NEUTRAL_KEYS = {
+    "ticker",
+    "name",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "change_pct",
+    "date",
+}
+
+
+@pytest.fixture
+def twse_fixture() -> list[dict]:
+    return json.loads(
+        (FIXTURES_DIR / "twse_stock_day_all.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def tpex_fixture() -> list[dict]:
+    return json.loads(
+        (FIXTURES_DIR / "tpex_daily_close.json").read_text(encoding="utf-8")
+    )
+
+
+def test_parse_twse(twse_fixture):
+    rows = twse.parse(twse_fixture)
+    r = next(x for x in rows if x["ticker"] == "2330")
+    assert set(r) == NEUTRAL_KEYS
+    assert r["close"] > 0 and abs(r["change_pct"]) < 30
+    assert r["name"] == "台積電"
+    assert r["date"] == "2026-07-09"  # ROC 1150709 -> ISO
+    assert r["volume"] == 34681018
+
+
+def test_parse_tpex(tpex_fixture):
+    rows = tpex.parse(tpex_fixture)
+    r = next(x for x in rows if x["ticker"] == "3081")
+    assert set(r) == NEUTRAL_KEYS
+    assert r["close"] > 0 and abs(r["change_pct"]) < 30
+    assert r["name"] == "聯亞"
+    assert r["date"] == "2026-07-09"
+
+
+def test_twse_change_pct_matches_manual(twse_fixture):
+    # 2330: Change=-50, Close=2415 -> prev close 2465 -> -50/2465*100
+    rows = twse.parse(twse_fixture)
+    r = next(x for x in rows if x["ticker"] == "2330")
+    assert r["change_pct"] == pytest.approx(-50 / 2465 * 100, abs=1e-9)
+
+
+def test_tpex_change_pct_handles_signed_change(tpex_fixture):
+    # 3081: Change="-90.00 " (signed, trailing space), Close=2005 -> prev 2095
+    rows = tpex.parse(tpex_fixture)
+    r = next(x for x in rows if x["ticker"] == "3081")
+    assert r["change_pct"] == pytest.approx(-90 / 2095 * 100, abs=1e-9)
+
+
+def test_parse_handles_dash_prices():
+    # Suspended / no-trade row: TWSE uses "--" in price columns.
+    dash = [
+        {
+            "Date": "1150709",
+            "Code": "9999",
+            "Name": "停牌股",
+            "TradeVolume": "0",
+            "TradeValue": "0",
+            "OpeningPrice": "--",
+            "HighestPrice": "--",
+            "LowestPrice": "--",
+            "ClosingPrice": "--",
+            "Change": "--",
+            "Transaction": "0",
+        }
+    ]
+    rows = twse.parse(dash)
+    assert rows[0]["close"] is None
+    assert rows[0]["open"] is None
+    assert rows[0]["change_pct"] is None
+
+
+def test_tpex_handles_empty_prices():
+    # No-trade row: empty-string price columns -> None.
+    empty = [
+        {
+            "Date": "1150709",
+            "SecuritiesCompanyCode": "8888",
+            "CompanyName": "無成交",
+            "Close": "",
+            "Change": "",
+            "Open": "",
+            "High": "",
+            "Low": "",
+            "TradingShares": "0",
+        }
+    ]
+    rows = tpex.parse(empty)
+    assert rows[0]["close"] is None
+    assert rows[0]["change_pct"] is None
