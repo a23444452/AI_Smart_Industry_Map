@@ -1,4 +1,5 @@
 import { formatPct } from "../lib/format";
+import { UP_COLORS, DOWN_COLORS, FLAT_COLOR } from "./theme";
 
 /** treemap 單筆輸入：一檔個股的當期漲跌 */
 export interface TreemapInput {
@@ -18,13 +19,6 @@ export interface EChartsTreemapNode {
   /** 依漲跌方向與幅度分級的色塊 */
   itemStyle: { color: string };
 }
-
-// 色票（台股慣例：紅漲綠跌）。四級由淺到深對應幅度 <1% / ≥1% / ≥3% / ≥5%。
-// 紅系基於 --color-up #f6465d、綠系基於 --color-down #2ebd85 的深淺變化。
-export const UP_COLORS = ["#f99aa8", "#f6465d", "#cf2942", "#a01d30"] as const;
-export const DOWN_COLORS = ["#86e3c0", "#2ebd85", "#1f9268", "#14664a"] as const;
-/** 持平（change_pct === 0）灰塊 */
-export const FLAT_COLOR = "#3a4358";
 
 /** value 下限：跌 0.01% 的股票也要看得見 */
 const MIN_VALUE = 0.3;

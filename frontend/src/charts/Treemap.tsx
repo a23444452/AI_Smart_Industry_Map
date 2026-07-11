@@ -5,6 +5,7 @@ import { TooltipComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import type { EChartsType } from "echarts/core";
 import { toTreemapData, type TreemapInput } from "./toTreemapData";
+import { CHART_BG, CHART_SURFACE, CHART_BORDER, CHART_TEXT } from "./theme";
 
 echarts.use([TreemapChart, TooltipComponent, CanvasRenderer]);
 
@@ -14,9 +15,6 @@ interface TreemapProps {
   className?: string;
 }
 
-// 深色底邊框，與頁面背景 --color-bg 一致，讓色塊之間有分隔感
-const BORDER_COLOR = "#0b1220";
-
 function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
@@ -25,10 +23,10 @@ function buildOption(items: TreemapInput[]): echarts.EChartsCoreOption {
   const data = toTreemapData(items);
   return {
     tooltip: {
-      backgroundColor: "#111a2e",
-      borderColor: "#24304d",
+      backgroundColor: CHART_SURFACE,
+      borderColor: CHART_BORDER,
       borderWidth: 1,
-      textStyle: { color: "#e6ebf5" },
+      textStyle: { color: CHART_TEXT },
       // node.name 內含「名稱\n{formatPct}」——tooltip 拆兩行顯示 name＋漲跌
       formatter: (info: unknown) => {
         const p = info as { name?: string };
@@ -55,8 +53,9 @@ function buildOption(items: TreemapInput[]): echarts.EChartsCoreOption {
           lineHeight: 16,
           overflow: "truncate",
         },
+        // 色塊分隔邊框用頁面底色，與 --color-bg 一致，讓色塊之間有分隔感
         itemStyle: {
-          borderColor: BORDER_COLOR,
+          borderColor: CHART_BG,
           borderWidth: 2,
           gapWidth: 2,
         },
@@ -98,3 +97,6 @@ export function Treemap({ items, className = "h-80" }: TreemapProps) {
 
   return <div ref={containerRef} className={`w-full ${className}`} />;
 }
+
+// default export 供 React.lazy 動態載入（把 echarts 從主 bundle 拆出）
+export default Treemap;

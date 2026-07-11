@@ -39,6 +39,8 @@ MONTH_OFFSET = 21
 # quotes_updated_at 綁定的行情 job 名稱（見 app.pipeline.scheduler）。
 QUOTES_JOB_NAME = "fetch_tw_quotes"
 
+_NOT_FOUND_BODY = {"error": {"code": "not_found", "message": "找不到此題材"}}
+
 
 class TopicSummary(BaseModel):
     slug: str
@@ -281,20 +283,33 @@ def _quotes_updated_at(session: Session) -> str | None:
     return to_utc_iso(row[0]) if row is not None else None
 
 
-@router.get("/topics/{slug}", response_model=TopicDetail)
+@router.get(
+    "/topics/{slug}",
+    response_model=TopicDetail,
+    responses={
+        404: {
+            "description": "題材不存在",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "error": {
+                            "code": "not_found",
+                            "message": "找不到此題材",
+                        }
+                    }
+                }
+            },
+        }
+    },
+)
 def get_topic_detail(slug: str, request: Request):
     engine = request.app.state.engine
     with Session(engine) as session:
         topic = session.get(Topic, slug)
         if topic is None:
-            # 統一錯誤格式（與全域 500 handler 一致）；直接回 JSONResponse，
-            # 不經 response_model 序列化。
-            return JSONResponse(
-                status_code=404,
-                content={
-                    "error": {"code": "not_found", "message": "找不到此題材"}
-                },
-            )
+            # 統一錯誤格式（與 topic map、全域 500 handler 一致）；直接回
+            # JSONResponse，不經 response_model 序列化。
+            return JSONResponse(status_code=404, content=_NOT_FOUND_BODY)
 
         members = _distinct_members(session, slug)
         tickers = [ticker for ticker, _ in members]

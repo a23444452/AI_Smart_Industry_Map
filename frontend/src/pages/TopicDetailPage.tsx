@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiError } from "../api/client";
 import { useTopicDetail } from "../api/topicDetail";
-import { Treemap } from "../charts/Treemap";
 import { MetricsCard } from "../components/topic/MetricsCard";
 import { ChipSignals } from "../components/topic/ChipSignals";
 import { DataFreshness } from "../components/topic/DataFreshness";
@@ -15,6 +14,9 @@ const TREEMAP_TABS = [
 ] as const;
 
 type TreemapPeriod = (typeof TREEMAP_TABS)[number]["value"];
+
+// echarts 較重，lazy 拆成獨立 chunk，僅在題材詳情頁需要時才載入。
+const Treemap = lazy(() => import("../charts/Treemap"));
 
 /** 題材總覽頁：描述卡＋關鍵指標＋漲跌熱力圖＋籌碼訊號，含載入／404／錯誤四態。 */
 export function TopicDetailPage() {
@@ -122,7 +124,11 @@ export function TopicDetailPage() {
             ))}
           </div>
         </div>
-        <Treemap items={treemapItems} className="mt-4 h-96" />
+        <Suspense
+          fallback={<div className="mt-4 h-96 animate-pulse rounded-xl bg-surface" />}
+        >
+          <Treemap items={treemapItems} className="mt-4 h-96" />
+        </Suspense>
         <div className="mt-2 flex justify-end">
           <DataFreshness lastSuccessAt={data.quotes_updated_at} />
         </div>

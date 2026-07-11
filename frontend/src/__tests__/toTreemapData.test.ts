@@ -1,11 +1,6 @@
 import { describe, it, expect } from "vitest";
-import {
-  toTreemapData,
-  UP_COLORS,
-  DOWN_COLORS,
-  FLAT_COLOR,
-  type TreemapInput,
-} from "../charts/toTreemapData";
+import { toTreemapData, type TreemapInput } from "../charts/toTreemapData";
+import { UP_COLORS, DOWN_COLORS, FLAT_COLOR } from "../charts/theme";
 
 function make(overrides: Partial<TreemapInput> = {}): TreemapInput {
   return {
