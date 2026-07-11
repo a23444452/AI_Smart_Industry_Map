@@ -2,7 +2,7 @@
 export function TopicsPage() {
   return (
     <section className="mx-auto max-w-6xl px-6 py-10">
-      <p className="text-sm text-[var(--text-dim)]">題材總覽載入中…</p>
+      <p className="text-sm text-text-dim">題材總覽載入中…</p>
     </section>
   );
 }

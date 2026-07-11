@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
-/* 深色金融資訊站主題變數（台股慣例：紅漲綠跌） */
-:root {
-  --bg: #0b1220; /* 頁面底 */
-  --surface: #111a2e; /* 卡片底 */
-  --surface-2: #1a2540; /* hover/次層 */
-  --border: #24304d;
-  --text: #e6ebf5;
-  --text-dim: #8b96ad;
-  --accent: #6366f1; /* indigo 主色 */
-  --up: #f6465d; /* 紅漲 */
-  --down: #2ebd85; /* 綠跌 */
+/* 深色金融資訊站主題（台股慣例：紅漲綠跌）——以 Tailwind v4 @theme 產生 utility
+   命名避開內建 border/text token：border-line、text-main */
+@theme {
+  --color-bg: #0b1220; /* 頁面底 */
+  --color-surface: #111a2e; /* 卡片底 */
+  --color-surface-2: #1a2540; /* hover/次層 */
+  --color-border-line: #24304d; /* 分隔線 */
+  --color-text-main: #e6ebf5; /* 主文字 */
+  --color-text-dim: #8b96ad; /* 次要文字 */
+  --color-accent: #6366f1; /* indigo 主色 */
+  --color-up: #f6465d; /* 紅漲 */
+  --color-down: #2ebd85; /* 綠跌 */
 }
 
 /* 固定深色主題 */
@@ -19,10 +20,9 @@ html {
 }
 
 body {
+  @apply bg-bg text-text-main;
   margin: 0;
   min-height: 100svh;
-  background: var(--bg);
-  color: var(--text);
   font-family: system-ui, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei",
     sans-serif;
   -webkit-font-smoothing: antialiased;

@@ -1,32 +1,7 @@
-# React + TypeScript + Vite
+# AI 智慧產業地圖 — 前端
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+深色金融資訊站風格的 React 前端（Vite + React 19 + TypeScript + Tailwind v4 + TanStack Query + React Router）。
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+- 開發：`npm run dev`（或專案根目錄 `make dev-frontend`；後端 API 預設 `http://localhost:8000`，可用 `VITE_API_BASE` 覆寫）
+- 測試：`npm test`（vitest + Testing Library）；建置：`npm run build`
+- 主題色定義於 `src/index.css` 的 `@theme` 區塊（台股慣例：紅漲綠跌）
