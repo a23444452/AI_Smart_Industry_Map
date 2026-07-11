@@ -1,0 +1,18 @@
+# ===== 作業系統 =====
+.DS_Store
+
+# ===== Python（後端）=====
+.venv/
+__pycache__/
+*.py[cod]
+*.db
+*.db-shm
+*.db-wal
+data/raw/
+
+# ===== Node（前端）=====
+node_modules/
+dist/
+
+# ===== 環境變數 =====
+.env

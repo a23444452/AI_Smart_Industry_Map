@@ -1,0 +1,80 @@
+[
+  {
+    "Date": "1150709",
+    "Code": "00400A",
+    "Name": "主動國泰動能高息",
+    "TradeVolume": "34113465",
+    "TradeValue": "489845382",
+    "OpeningPrice": "14.29",
+    "HighestPrice": "14.51",
+    "LowestPrice": "14.20",
+    "ClosingPrice": "14.25",
+    "Change": "0.0000",
+    "Transaction": "6040"
+  },
+  {
+    "Date": "1150709",
+    "Code": "00401A",
+    "Name": "主動摩根台灣鑫收",
+    "TradeVolume": "6538409",
+    "TradeValue": "87754094",
+    "OpeningPrice": "13.27",
+    "HighestPrice": "13.55",
+    "LowestPrice": "13.10",
+    "ClosingPrice": "13.38",
+    "Change": "0.1100",
+    "Transaction": "640"
+  },
+  {
+    "Date": "1150709",
+    "Code": "00402A",
+    "Name": "主動安聯美國科技",
+    "TradeVolume": "5863745",
+    "TradeValue": "57173474",
+    "OpeningPrice": "9.71",
+    "HighestPrice": "9.78",
+    "LowestPrice": "9.70",
+    "ClosingPrice": "9.75",
+    "Change": "0.1000",
+    "Transaction": "1086"
+  },
+  {
+    "Date": "1150709",
+    "Code": "00403A",
+    "Name": "主動統一升級50",
+    "TradeVolume": "163473334",
+    "TradeValue": "1723918939",
+    "OpeningPrice": "10.45",
+    "HighestPrice": "10.66",
+    "LowestPrice": "10.42",
+    "ClosingPrice": "10.48",
+    "Change": "0.0700",
+    "Transaction": "25303"
+  },
+  {
+    "Date": "1150709",
+    "Code": "00404A",
+    "Name": "主動聯博動能50",
+    "TradeVolume": "9510671",
+    "TradeValue": "94502511",
+    "OpeningPrice": "9.98",
+    "HighestPrice": "10.04",
+    "LowestPrice": "9.88",
+    "ClosingPrice": "9.89",
+    "Change": "-0.0700",
+    "Transaction": "1641"
+  },
+  {
+    "Date": "1150709",
+    "Code": "2330",
+    "Name": "台積電",
+    "TradeVolume": "34681018",
+    "TradeValue": "84397735035",
+    "OpeningPrice": "2450.00",
+    "HighestPrice": "2460.00",
+    "LowestPrice": "2415.00",
+    "ClosingPrice": "2415.00",
+    "Change": "-50.0000",
+    "Transaction": "201698"
+  }
+]
