@@ -15,13 +15,19 @@ from __future__ import annotations
 import time
 
 from app.pipeline.sources import _common
-from app.pipeline.sources._common import SourceFetchError
 
 URL_TEMPLATE = (
     "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY"
     "?date={date}&stockNo={ticker}&response=json"
 )
 _SOURCE = "TWSE-History"
+
+# Politeness rate-limit between requests (seconds). Deliberately applied inside
+# fetch() rather than by the backfill caller: the only cost is one spurious
+# 0.4s sleep before the first request — negligible against a 17-stock ×
+# N-month walk — and it keeps every call site throttled by construction
+# instead of by convention.
+_RATE_LIMIT_SECONDS = 0.4
 
 # Real field labels for the columns we keep. 成交股數 is already in **shares**
 # (unlike TPEx's 張/lots), so no unit conversion is needed. 漲跌價差 is dropped:
@@ -41,9 +47,7 @@ def fetch(ticker: str, year: int, month: int) -> dict:
     The date parameter is the AD first-of-month (``YYYYMM01``); the server
     returns every trading day of that month regardless of the day component.
     """
-    # Politeness rate-limit: backfill hits this endpoint once per stock per
-    # month across 17 stocks, so pace calls to stay well under any throttle.
-    time.sleep(0.4)
+    time.sleep(_RATE_LIMIT_SECONDS)  # politeness pacing — see constant above
     url = URL_TEMPLATE.format(date=f"{year:04d}{month:02d}01", ticker=ticker)
     return _common.get_json_dict(url, source=_SOURCE)
 
@@ -67,12 +71,7 @@ def parse(raw: dict, ticker: str) -> list[dict]:
     if not data:
         return []
 
-    idx = {str(name).strip(): i for i, name in enumerate(fields)}
-    if any(col not in idx for col in _REQUIRED):
-        raise SourceFetchError(
-            _SOURCE,
-            f"{_SOURCE} 資料來源欄位結構變動（STOCK_DAY 欄位結構變動），請人工確認",
-        )
+    idx = _common.resolve_field_index(fields, _REQUIRED, source=_SOURCE)
 
     rows: list[dict] = []
     for row in data:

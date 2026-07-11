@@ -145,6 +145,29 @@ def iso_to_roc_slash(iso: str) -> str:
     return f"{d.year - 1911}/{d.month:02d}/{d.day:02d}"
 
 
+def resolve_field_index(
+    fields: list,
+    required: tuple[str, ...],
+    *,
+    source: str,
+    normalize=str.strip,
+) -> dict[str, int]:
+    """Map header labels to column indices, guarding against structural drift.
+
+    Returns ``{normalized_label: index}`` for every header in ``fields``.
+    Raises SourceFetchError when any ``required`` label is missing — a table
+    endpoint dropping/renaming an expected column needs human attention, not a
+    silent empty parse. ``normalize`` is applied to each header before matching
+    (default strip(); pass a whitespace-collapsing fn for headers like '日 期').
+    """
+    idx = {normalize(str(name)): i for i, name in enumerate(fields)}
+    if any(col not in idx for col in required):
+        raise SourceFetchError(
+            source, f"{source} 資料來源欄位結構變動，請人工確認"
+        )
+    return idx
+
+
 def roc_slash_to_iso(raw: object) -> str | None:
     """Convert a slash Minguo (ROC) date like '115/06/03' to ISO '2026-06-03'.
 

@@ -14,7 +14,6 @@ silently corrupt the mapping.
 from __future__ import annotations
 
 from app.pipeline.sources import _common
-from app.pipeline.sources._common import SourceFetchError
 
 URL_TEMPLATE = (
     "https://www.twse.com.tw/rwd/zh/fund/T86"
@@ -58,12 +57,9 @@ def parse(raw: dict, date: str) -> list[dict]:
         return []
 
     # Header labels are matched after strip() so incidental whitespace in the
-    # source header can't break the mapping.
-    idx = {str(name).strip(): i for i, name in enumerate(fields)}
-    if _TICKER not in idx or _NAME not in idx:
-        raise SourceFetchError(
-            _SOURCE, f"{_SOURCE} 資料來源欄位結構變動（T86 欄位結構變動），請人工確認"
-        )
+    # source header can't break the mapping. Only ticker/name are required;
+    # the numeric columns stay tolerant (see docstring).
+    idx = _common.resolve_field_index(fields, (_TICKER, _NAME), source=_SOURCE)
 
     def net(row: list, field: str) -> int:
         value = _common.to_int(row[idx[field]]) if field in idx else None

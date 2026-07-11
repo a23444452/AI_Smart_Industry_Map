@@ -420,6 +420,7 @@ def test_twse_history_fetch_builds_url(monkeypatch):
         return {"stat": "OK", "fields": [], "data": []}
 
     monkeypatch.setattr(_common, "get_json_dict", fake_get_json_dict)
+    monkeypatch.setattr(twse_history.time, "sleep", lambda _s: None)  # 不真睡
     twse_history.fetch("2330", 2026, 6)
     assert "date=20260601" in captured["url"]
     assert "stockNo=2330" in captured["url"]
@@ -472,6 +473,7 @@ def test_tpex_history_fetch_builds_url(monkeypatch):
         return {"stat": "ok", "tables": [{"fields": [], "data": []}]}
 
     monkeypatch.setattr(_common, "get_json_dict", fake_get_json_dict)
+    monkeypatch.setattr(tpex_history.time, "sleep", lambda _s: None)  # 不真睡
     tpex_history.fetch("3081", 2026, 6)
     assert "date=2026/06/01" in captured["url"] or "date=2026%2F06%2F01" in captured["url"]
     assert "code=3081" in captured["url"]
