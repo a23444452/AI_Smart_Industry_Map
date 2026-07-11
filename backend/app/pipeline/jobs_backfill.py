@@ -21,7 +21,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import models
-from app.pipeline.jobs import _TAIPEI, upsert_institutional_rows
+from app.pipeline.jobs import _TAIPEI, _known_tickers, upsert_institutional_rows
 from app.pipeline.sources import tpex_history, tpex_institutional, twse_history, twse_t86
 
 # 每檔最多回溯的月數上限：即使湊不滿目標交易日數也停手，避免無界翻頁。
@@ -45,7 +45,8 @@ def _collect_ticker_history(ticker: str, target_days: int) -> dict[str, dict]:
     write means a mid-walk failure leaves no partial rows for that ticker.
     """
     collected: dict[str, dict] = {}
-    year, month = datetime.now(_TAIPEI).date().year, datetime.now(_TAIPEI).date().month
+    today = datetime.now(_TAIPEI).date()  # 取一次，避免跨午夜時 year/month 不一致
+    year, month = today.year, today.month
     for _ in range(_MAX_MONTHS):
         rows = twse_history.parse(twse_history.fetch(ticker, year, month), ticker)
         if not rows:
@@ -101,27 +102,40 @@ def backfill_quotes(session: Session, days: int = 35) -> int:
                 )
             )
             written += 1
+    if tickers and skipped == len(tickers):
+        # 全部檔都失敗不是個別股票的問題——多半是端點掛掉/封鎖或欄位全面變動，
+        # 屬系統性失敗，升級為 error 讓人工注意（單檔失敗仍只是 warning）。
+        logger.error(
+            "backfill_quotes: 全部 {} 檔皆失敗，疑似系統性失敗（端點異常或結構變動），請人工確認",
+            len(tickers),
+        )
     logger.info(
         "backfill_quotes: 寫入 {} 列（{} 檔，跳過 {} 檔）", written, len(tickers), skipped
     )
     return written
 
 
-def backfill_institutional(session: Session, days: int = 10) -> int:
+def backfill_institutional(session: Session, days: int = 14) -> int:
     """Seed ``institutional_flows`` by walking the last ``days`` calendar days.
+
+    ``days=14`` 預設：日曆日中夾雜週末與國定假日（春節等長假可連休 4+ 日），
+    14 個日曆日約保證 8–10 個交易日的法人資料；10 日在長假期邊界可能只剩 5–6
+    個交易日，不足以畫趨勢。
 
     For each calendar day (today back): fetch + parse both T86 and TPEx feeds
     and upsert. Weekends/holidays parse to ``[]`` and are naturally no-ops, so
     walking calendar days (not trading days) needs no holiday calendar. A single
     day that raises is logged and skipped so one bad response can't abort the
-    batch. Returns the number of rows written (direct-call tests; CLI uses
-    sqlite3).
+    batch; if **every** day raises, that is escalated to ``logger.error`` as a
+    suspected systemic failure（假日的空回應不 raise，不算失敗）. Returns the
+    number of rows written (direct-call tests; CLI uses sqlite3).
 
     Contract: stages changes only; the runner commits/rolls back.
     """
-    known = set(session.scalars(select(models.Company.ticker)).all())
+    known = _known_tickers(session)
     today = datetime.now(_TAIPEI).date()
     written = 0
+    failed_days = 0
     for offset in range(days):
         day: date = today - timedelta(days=offset)
         date_iso = day.isoformat()
@@ -130,8 +144,16 @@ def backfill_institutional(session: Session, days: int = 10) -> int:
                 twse_t86.fetch(date_iso), date_iso
             ) + tpex_institutional.parse(tpex_institutional.fetch(date_iso), date_iso)
         except Exception as exc:  # noqa: BLE001 - one day must not abort the batch
+            failed_days += 1
             logger.warning("backfill_institutional: 跳過 {} — {}", date_iso, exc)
             continue
         written += upsert_institutional_rows(session, rows, known)
+    if days and failed_days == days:
+        # 每一天都 exception（非假日空回應）→ 疑似端點掛掉或結構全面變動，
+        # 屬系統性失敗，升級為 error 讓人工注意。
+        logger.error(
+            "backfill_institutional: 近 {} 日全部失敗，疑似系統性失敗（端點異常或結構變動），請人工確認",
+            days,
+        )
     logger.info("backfill_institutional: 寫入 {} 列（近 {} 日）", written, days)
     return written

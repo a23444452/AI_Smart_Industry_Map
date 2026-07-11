@@ -47,7 +47,7 @@ def main() -> None:
         # failed → 印狀態後以 exit 1 收場（CI/Make 可據此判斷）。
         jobs = (
             ("backfill_quotes", partial(backfill_quotes, days=35)),
-            ("backfill_institutional", partial(backfill_institutional, days=10)),
+            ("backfill_institutional", partial(backfill_institutional, days=14)),
         )
         failed = False
         for name, fn in jobs:

@@ -323,6 +323,89 @@ def test_backfill_quotes_skips_failing_ticker(monkeypatch, eng):
         assert written == 21
 
 
+def _make_twse_history_raw(year: int, month: int, n_days: int) -> dict:
+    """合成一個 (year, month) 的 TWSE STOCK_DAY raw，含 1..n_days 日各一列。"""
+    return {
+        "stat": "OK",
+        "date": f"{year:04d}{month:02d}01",
+        "title": f"{year - 1911}年{month:02d}月 測試",
+        "fields": [
+            "日期", "成交股數", "成交金額", "開盤價", "最高價",
+            "最低價", "收盤價", "漲跌價差", "成交筆數", "註記",
+        ],
+        "data": [
+            [
+                f"{year - 1911}/{month:02d}/{day:02d}",
+                "1,000", "10,500", "10.00", "11.00", "9.00", "10.50",
+                "+0.10", "5", "",
+            ]
+            for day in range(1, n_days + 1)
+        ],
+    }
+
+
+def _recent_months(n: int) -> list[tuple[int, int]]:
+    """由當月起往回 n 個月的 (year, month) 列表（新到舊）。"""
+    today = datetime.now(ZoneInfo("Asia/Taipei")).date()
+    months = [(today.year, today.month)]
+    for _ in range(n - 1):
+        months.append(jobs_backfill._prev_month(*months[-1]))
+    return months
+
+
+def test_collect_history_accumulates_across_months(monkeypatch):
+    # 當月只有 3 筆、前兩個月各 21 筆 → 3+21=24 < 35 要再走第三個月，
+    # 45 ≥ 35 才停：驗證跨月累加、月序（新到舊）與日期正確性。
+    m0, m1, m2 = _recent_months(3)
+    days_by_month = {m0: 3, m1: 21, m2: 21}
+    calls: list[tuple[int, int]] = []
+
+    def fake_twse(ticker: str, year: int, month: int) -> dict:
+        calls.append((year, month))
+        return _make_twse_history_raw(year, month, days_by_month.get((year, month), 0))
+
+    monkeypatch.setattr(twse_history, "fetch", fake_twse)
+    monkeypatch.setattr(
+        tpex_history,
+        "fetch",
+        lambda ticker, year, month: _load("tpex_history_nodata.json"),
+    )
+
+    collected = jobs_backfill._collect_ticker_history("2330", 35)
+
+    assert len(collected) == 45  # 3 + 21 + 21 跨月累加
+    assert calls == [m0, m1, m2]  # 新到舊走訪，且到第三個月即停（達標）
+    # 日期正確：每個月的首日與末日都在，且鍵為正確的 ISO 日期。
+    for (year, month), n in days_by_month.items():
+        first, last = f"{year:04d}-{month:02d}-01", f"{year:04d}-{month:02d}-{n:02d}"
+        assert first in collected
+        assert last in collected
+        assert collected[last]["close"] == 10.5
+
+
+def test_collect_history_stops_early_when_target_met(monkeypatch):
+    # 前兩個月已湊滿 42 ≥ 35 → 第三個月不再抓（提前停，非月數上限停）。
+    m0, m1, _m2 = _recent_months(3)
+    days_by_month = {m0: 21, m1: 21}
+    calls: list[tuple[int, int]] = []
+
+    def fake_twse(ticker: str, year: int, month: int) -> dict:
+        calls.append((year, month))
+        return _make_twse_history_raw(year, month, days_by_month.get((year, month), 0))
+
+    monkeypatch.setattr(twse_history, "fetch", fake_twse)
+    monkeypatch.setattr(
+        tpex_history,
+        "fetch",
+        lambda ticker, year, month: _load("tpex_history_nodata.json"),
+    )
+
+    collected = jobs_backfill._collect_ticker_history("2330", 35)
+
+    assert len(collected) == 42
+    assert calls == [m0, m1]  # 達標即停，第三個月從未被抓
+
+
 # --------------------------------------------------------------------------- #
 # backfill_institutional — walk recent calendar days
 # --------------------------------------------------------------------------- #

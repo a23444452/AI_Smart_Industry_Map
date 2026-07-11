@@ -37,7 +37,12 @@ def upsert_institutional_rows(
 
     One row per ``(ticker, date)`` — parsed ``date`` is authoritative. Unknown
     tickers (not in ``known``) are dropped. Overwrites existing rows (fetch is
-    the source of truth for a trading day). Returns the number of rows written.
+    the source of truth for a trading day) — the **opposite** of
+    ``backfill_quotes``'s insert-only policy. Overwrite is safe only because the
+    daily fetch and ``backfill_institutional`` funnel through the *same* parse
+    with identical columns; should the daily fetch ever gain a column the
+    backfill does not produce, this must switch to insert-only or the backfill
+    would null that column out. Returns the number of rows written.
 
     Shared by :func:`fetch_institutional` and ``backfill_institutional`` so the
     daily fetch and the historical walk stay byte-identical in their persistence.
