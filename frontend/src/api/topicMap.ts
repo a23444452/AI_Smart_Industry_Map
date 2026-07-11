@@ -6,8 +6,8 @@ import { fetchJson } from "./client";
 export interface MapCompany {
   ticker: string;
   name: string;
-  role: string;
-  relevance: string;
+  role: string | null;
+  relevance: string | null;
   close: number | null;
   change_pct: number | null;
   badges: string[];

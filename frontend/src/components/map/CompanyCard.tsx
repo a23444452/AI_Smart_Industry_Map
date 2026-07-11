@@ -34,9 +34,9 @@ function formatClose(close: number | null): string {
 /** 公司卡片：純展示元件，緊湊呈現名稱、報價、角色與徽章（台股紅漲綠跌）。 */
 export function CompanyCard({ company }: CompanyCardProps) {
   const { ticker, name, role, relevance, close, change_pct, badges } = company;
-  // 未知 role 原樣顯示、走中性色，不炸。
-  const roleStyle = ROLE_STYLES[role] ?? {
-    label: role,
+  // role null → 中性 chip「未分類」；未知 role 原樣顯示、走中性色，不炸。
+  const roleStyle = (role !== null ? ROLE_STYLES[role] : undefined) ?? {
+    label: role ?? "未分類",
     className: "border-border-line bg-surface-2 text-text-dim",
   };
 
@@ -65,7 +65,8 @@ export function CompanyCard({ company }: CompanyCardProps) {
         >
           {roleStyle.label}
         </span>
-        <span className="text-xs text-text-dim">{relevance} 關聯度</span>
+        {/* relevance null → 顯示「— 關聯度」 */}
+        <span className="text-xs text-text-dim">{relevance ?? "—"} 關聯度</span>
       </div>
 
       {/* 下列：badges chips（空陣列不渲染） */}

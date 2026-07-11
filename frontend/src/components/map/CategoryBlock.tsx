@@ -48,6 +48,7 @@ export function CategoryBlock({ category }: CategoryBlockProps) {
           {hasMore && (
             <button
               type="button"
+              aria-expanded={expanded}
               onClick={() => setExpanded((prev) => !prev)}
               className="mt-3 w-full rounded-lg border border-border-line py-2 text-sm text-text-dim transition-colors hover:bg-surface-2"
             >

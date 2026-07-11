@@ -71,6 +71,14 @@ describe("CompanyCard", () => {
     expect(screen.getByText(/神秘角色/)).toBeInTheDocument();
   });
 
+  it("role null → 中性 chip「未分類」；relevance null → 「— 關聯度」", () => {
+    render(
+      <CompanyCard company={makeCompany({ role: null, relevance: null })} />,
+    );
+    expect(screen.getByText("未分類")).toBeInTheDocument();
+    expect(screen.getByText(/— 關聯度/)).toBeInTheDocument();
+  });
+
   it("badges：非空 → 每個 chip；空陣列 → 不渲染徽章", () => {
     const { rerender } = render(
       <CompanyCard
