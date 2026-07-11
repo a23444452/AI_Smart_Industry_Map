@@ -48,9 +48,25 @@ def create_app() -> FastAPI:
         # Last-resort handler: log the real cause server-side, but never leak
         # internal details (stack, SQL, paths) to the client.
         logger.exception("unhandled error on {} {}", request.method, request.url.path)
+        # This handler is served by Starlette's ServerErrorMiddleware, which
+        # wraps the app OUTSIDE CORSMiddleware — its response never passes
+        # through CORS processing. Without these headers a browser blocks the
+        # 500 body and the frontend can't read the friendly error message, so
+        # we echo whitelisted Origins manually (Vary: Origin keeps shared
+        # caches from serving one origin's header to another).
+        headers = {}
+        origin = request.headers.get("origin")
+        if origin is not None and (
+            origin in settings.cors_origins or "*" in settings.cors_origins
+        ):
+            headers = {
+                "Access-Control-Allow-Origin": origin,
+                "Vary": "Origin",
+            }
         return JSONResponse(
             status_code=500,
             content={"error": {"code": "internal", "message": "伺服器發生錯誤"}},
+            headers=headers,
         )
 
     @app.get("/healthz")
