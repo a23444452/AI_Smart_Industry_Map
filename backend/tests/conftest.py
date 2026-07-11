@@ -10,7 +10,15 @@ os.environ["AISM_SCHEDULER_ENABLED"] = "false"
 import pytest
 from fastapi.testclient import TestClient
 
+from app.core.config import settings
 from app.main import create_app
+
+
+@pytest.fixture(autouse=True)
+def _tmp_db(tmp_path, monkeypatch):
+    # The lifespan always builds an engine at settings.db_path; point it at a
+    # per-test tmp file so no test can ever write the real ./data/aism.db.
+    monkeypatch.setattr(settings, "db_path", str(tmp_path / "aism.db"))
 
 
 @pytest.fixture
