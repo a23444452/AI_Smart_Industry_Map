@@ -106,7 +106,11 @@ def _query_topics(session: Session, market: str) -> list[TopicSummary]:
             market_tab=row.market_tab,
             company_count=row.company_count,
             verified_at=row.verified_at,
-            change_pct_avg=row.change_pct_avg,
+            # Server-side rounding to 2 decimals fixes the API contract — the
+            # UI renders "X.XX%" and must not depend on float artifacts.
+            change_pct_avg=(
+                None if row.change_pct_avg is None else round(row.change_pct_avg, 2)
+            ),
         )
         for row in session.execute(stmt).all()
     ]

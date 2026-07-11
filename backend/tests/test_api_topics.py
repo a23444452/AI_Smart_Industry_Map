@@ -86,6 +86,24 @@ def test_change_pct_avg_is_latest_day_mean_skipping_null(client):
     assert sp["company_count"] == 17
 
 
+def test_change_pct_avg_is_rounded_to_two_decimals(client):
+    _seed_real(client)
+    # mean of {1.0, 2.0, 2.5} = 1.8333... → server rounds to 1.83, fixing the
+    # API contract so the UI never sees float artifacts.
+    _add_quotes(
+        client,
+        [
+            {"ticker": "2330", "date": "2026-07-11", "change_pct": 1.0},
+            {"ticker": "3443", "date": "2026-07-11", "change_pct": 2.0},
+            {"ticker": "3081", "date": "2026-07-11", "change_pct": 2.5},
+        ],
+    )
+    body = client.get("/api/topics?market=tw").json()
+    assert _find(body["topics"], "silicon-photonics")["change_pct_avg"] == 1.83
+    # rank carries the same rounded value
+    assert body["rank"][0]["change_pct_avg"] == 1.83
+
+
 def _seed_three_topics_with_avgs(client) -> None:
     """Three tw topics whose single member fixes a known change_pct_avg."""
     with Session(_engine(client)) as s:

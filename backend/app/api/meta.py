@@ -46,6 +46,9 @@ def get_pipeline_status(request: Request) -> list[PipelineStatusItem]:
     # Newest first per job (id is a monotonic surrogate for insertion order), so
     # the first row seen for each job_name is its latest run. Single scan → no
     # per-job query.
+    # TODO: 若 job 高頻化（pipeline_runs 列數大增），改用 window 查詢
+    #       （ROW_NUMBER() OVER (PARTITION BY job_name ORDER BY id DESC)）
+    #       並加 (job_name, id) 索引，避免全表掃描。
     stmt = select(PipelineRun).order_by(PipelineRun.id.desc())
 
     with Session(engine) as session:
