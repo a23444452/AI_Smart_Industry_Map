@@ -67,4 +67,10 @@ describe("TopicCard", () => {
     expect(screen.queryByText(/矽光子技術結合光學與半導體/)).toBeNull();
     expect(screen.queryByText(/核實於/)).toBeNull();
   });
+
+  it("探索產業地圖為啟用連結，指向 /topic/:slug/map", () => {
+    renderCard(makeTopic({ slug: "silicon-photonics" }));
+    const link = screen.getByRole("link", { name: "探索產業地圖" });
+    expect(link).toHaveAttribute("href", "/topic/silicon-photonics/map");
+  });
 });

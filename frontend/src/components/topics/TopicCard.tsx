@@ -48,16 +48,14 @@ export function TopicCard({ topic }: TopicCardProps) {
         </span>
       </div>
 
-      {/* 底列：探索按鈕（切片 4 才實作）＋核實日期 */}
+      {/* 底列：探索產業地圖（連往產業地圖頁）＋核實日期 */}
       <div className="mt-4 flex items-center justify-between border-t border-border-line pt-4">
-        <button
-          type="button"
-          disabled
-          title="切片 4 實作"
-          className="cursor-not-allowed rounded-lg border border-border-line px-3 py-1.5 text-xs text-text-dim opacity-60"
+        <Link
+          to={`/topic/${slug}/map`}
+          className="rounded-lg border border-accent px-3 py-1.5 text-xs text-accent transition-colors hover:bg-accent hover:text-text-main"
         >
           探索產業地圖
-        </button>
+        </Link>
         {/* 核實日期：null 時不顯示該行 */}
         {verified_at !== null && (
           <span className="text-xs text-text-dim">核實於 {verified_at}</span>

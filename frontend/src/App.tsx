@@ -4,6 +4,7 @@ import { ApiError } from "./api/client";
 import { NavBar } from "./components/layout/NavBar";
 import { TopicsPage } from "./pages/TopicsPage";
 import { TopicDetailPage } from "./pages/TopicDetailPage";
+import { TopicMapPage } from "./pages/TopicMapPage";
 
 // 全域 React Query 客戶端：30 秒內視為新鮮、切回視窗不自動重抓。
 // retry：4xx 為明確的客戶端錯誤（如 404）不重試、立即進錯誤態；其餘（5xx／網路）重試 1 次。
@@ -37,6 +38,7 @@ function App() {
             <Route path="/" element={<Navigate to="/topics" replace />} />
             <Route path="/topics" element={<TopicsPage />} />
             <Route path="/topic/:slug" element={<TopicDetailPage />} />
+            <Route path="/topic/:slug/map" element={<TopicMapPage />} />
           </Routes>
         </main>
       </BrowserRouter>

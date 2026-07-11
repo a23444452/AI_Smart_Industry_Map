@@ -70,23 +70,20 @@ export function TopicDetailPage() {
         )}
       </div>
 
-      {/* 2. 總覽／產業鏈 toggle（產業鏈切片 4 才實作） */}
+      {/* 2. 總覽／產業鏈 toggle（總覽為 active，產業鏈連往產業地圖頁） */}
       <div className="mt-6 flex gap-1 border-b border-border-line">
-        <button
-          type="button"
-          aria-pressed="true"
+        <span
+          aria-current="page"
           className="border-b-2 border-accent px-4 py-2 text-sm text-text-main"
         >
           總覽
-        </button>
-        <button
-          type="button"
-          disabled
-          title="切片 4 實作"
-          className="cursor-not-allowed border-b-2 border-transparent px-4 py-2 text-sm text-text-dim opacity-50"
+        </span>
+        <Link
+          to={`/topic/${slug}/map`}
+          className="border-b-2 border-transparent px-4 py-2 text-sm text-text-dim transition-colors hover:text-text-main"
         >
           產業鏈
-        </button>
+        </Link>
       </div>
 
       {/* 3. 關鍵指標 */}
