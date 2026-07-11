@@ -190,7 +190,7 @@ metrics:
 companies:            # 公司主檔（17 檔，market 皆 TW）
   - {ticker: "2330", name: 台積電, has_futures: true}
   - {ticker: "3443", name: 創意, has_futures: true}
-  # ⋯⋯其餘 15 檔（3081/3450/4979/2426/6442/3163/2489/3711/4977/6789/3363/6223/6515/3289/3661）
+  # ⋯⋯其餘 15 檔（3081/3450/4979/2426/6442/3163/2489/3711/4977/6789/3363/6223/6515/3289/6451）
 chain:
   - level: 上游
     categories:
@@ -210,7 +210,7 @@ chain:
       - name: CPO 共同封裝與異質整合
         companies: [{ticker: "3711", role: 龍頭, relevance: 高}, {ticker: "4977", role: 挑戰, relevance: 高},
                     {ticker: "6789", role: 挑戰, relevance: 中}, {ticker: "3363", role: 利基, relevance: 高},
-                    {ticker: "3450", role: 利基, relevance: 高}, {ticker: "3661", role: 利基, relevance: 中}]
+                    {ticker: "3450", role: 利基, relevance: 高}, {ticker: "6451", role: 利基, relevance: 中}]
       - name: 高密度光纖陣列 (FAU)
         companies: [{ticker: "3363", role: 利基, relevance: 高}]
       - name: 矽光子測試介面與檢測
