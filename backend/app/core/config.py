@@ -14,6 +14,9 @@ class Settings(BaseSettings):
 
     db_path: str = "./data/aism.db"
     seeds_dir: str = str(_REPO_ROOT / "data" / "seeds")
+    # Only the real service process (uvicorn) should schedule background jobs;
+    # tests/CI set AISM_SCHEDULER_ENABLED=false so no timers spin up under pytest.
+    scheduler_enabled: bool = True
     # NoDecode: skip pydantic-settings' JSON decoding of the env var so the raw
     # string reaches the validator below (supports comma-separated values).
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]

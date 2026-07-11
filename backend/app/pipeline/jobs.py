@@ -24,8 +24,9 @@ def fetch_tw_quotes(session: Session) -> None:
     ``(ticker, date)``.
 
     Rows whose parsed ``date`` is None (missing/malformed ROC date) are skipped
-    with a warning. A source fetch failure (``SourceFetchError``) is left to
-    propagate so the runner can retry — it is not swallowed here.
+    with a warning. date 為 None 的列一律跳過（不 fallback 今日）——真實來源皆自帶
+    Date 欄，異常時跳過比標錯日期安全。A source fetch failure (``SourceFetchError``)
+    is left to propagate so the runner can retry — it is not swallowed here.
 
     Contract: stages changes only; the runner commits/rolls back.
     """
