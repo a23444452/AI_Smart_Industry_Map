@@ -57,6 +57,7 @@ make dev                   # 同時啟動後端(:8000) 與前端(:5173)
 | GET | `/healthz` | 健康檢查 |
 | GET | `/api/topics?market=tw` | 題材清單＋排行（含 company_count、change_pct_avg） |
 | GET | `/api/topics/{slug}` | 單一題材詳情（metrics、treemap 三週期漲跌、chip_signals 籌碼訊號、quotes_updated_at） |
+| GET | `/api/topics/{slug}/map` | 產業地圖：供應鏈分層（上游／中游／下游）、各分類公司卡（角色、關聯度、收盤漲跌、籌碼徽章），下游含 placeholder 分類 |
 | GET | `/api/meta/pipeline-status` | 各 pipeline job 最近執行狀態 |
 
 ## 目錄結構
@@ -71,13 +72,13 @@ AI_Smart_Industry_Map/
 │   │   ├── pipeline/       # runner、jobs、scheduler
 │   │   │   └── sources/    # TWSE / TPEx client
 │   │   └── main.py         # app factory
-│   └── tests/              # pytest（111 tests）
+│   └── tests/              # pytest（125 tests）
 ├── frontend/               # React + Vite 前端
 │   └── src/
 │       ├── api/            # API client
 │       ├── components/     # layout、topics 元件
-│       ├── pages/          # TopicsPage、TopicDetailPage
-│       └── __tests__/      # vitest（43 tests）
+│       ├── pages/          # TopicsPage、TopicDetailPage、TopicMapPage
+│       └── __tests__/      # vitest（58 tests）
 ├── data/seeds/             # 題材種子資料（YAML）
 ├── docs/superpowers/       # 設計 spec 與實作計畫
 ├── .env.example            # 環境變數範本
@@ -93,7 +94,7 @@ AI_Smart_Industry_Map/
 
 ## 開發狀態
 
-切片 1＋2＋3 已完成，後端 111 tests、前端 43 tests 全數通過。已實作功能：
+切片 1-4 已完成，後端 125 tests、前端 58 tests 全數通過。已實作功能：
 
 切片 1＋2（foundation）：
 
@@ -112,8 +113,17 @@ AI_Smart_Industry_Map/
 - 歷史行情回填 CLI（`make backfill`：近 2-3 月行情＋近 14 日法人）
 - API 時間戳 UTC 序列化（Z 尾碼）與前端「資料更新於」顯示
 
+切片 4（產業地圖頁）：
+
+- 產業地圖頁（`/topic/:slug/map`）與 `/api/topics/{slug}/map` API
+- 供應鏈分層檢視（上游／中游／下游），各層依分類分組
+- 公司卡片：角色標籤（龍頭／要角）、關聯度、收盤漲跌、籌碼徽章（有股票期貨／投信買超等）
+- 下游未布局分類以 placeholder 呈現
+- ECharts 改採 lazy-load（動態 import），與題材色彩同源
+
 設計文件：
 
 - 設計 spec：[`docs/superpowers/specs/2026-07-11-ai-stock-map-clone-design.md`](docs/superpowers/specs/2026-07-11-ai-stock-map-clone-design.md)
 - 實作計畫（切片 1＋2）：[`docs/superpowers/plans/2026-07-11-slice-1-2-foundation.md`](docs/superpowers/plans/2026-07-11-slice-1-2-foundation.md)
 - 實作計畫（切片 3）：[`docs/superpowers/plans/2026-07-11-slice-3-topic-detail.md`](docs/superpowers/plans/2026-07-11-slice-3-topic-detail.md)
+- 實作計畫（切片 4）：[`docs/superpowers/plans/2026-07-12-slice-4-industry-map.md`](docs/superpowers/plans/2026-07-12-slice-4-industry-map.md)
