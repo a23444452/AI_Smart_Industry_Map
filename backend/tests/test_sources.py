@@ -13,8 +13,10 @@ import pytest
 from app.pipeline.sources import (
     _common,
     tpex,
+    tpex_history,
     tpex_institutional,
     twse,
+    twse_history,
     twse_t86,
 )
 from app.pipeline.sources._common import SourceFetchError
@@ -321,3 +323,156 @@ def test_get_json_dict_wraps_non_dict_body(monkeypatch):
         _common.get_json_dict("https://example.invalid/x", source="TWSE-T86")
     assert excinfo.value.status_code == 200
     assert "TWSE-T86" in str(excinfo.value)
+
+
+# --- 個股歷史行情 (per-stock monthly OHLCV history, backfill source) --------
+
+HISTORY_KEYS = {
+    "ticker",
+    "date",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "change_pct",
+}
+
+
+@pytest.fixture
+def twse_history_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "twse_history.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def twse_history_nodata_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "twse_history_nodata.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def tpex_history_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "tpex_history.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def tpex_history_nodata_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "tpex_history_nodata.json").read_text(encoding="utf-8")
+    )
+
+
+def test_roc_slash_to_iso():
+    assert _common.roc_slash_to_iso("115/06/03") == "2026-06-03"
+    assert _common.roc_slash_to_iso("115/6/3") == "2026-06-03"  # non-padded
+    assert _common.roc_slash_to_iso("") is None
+    assert _common.roc_slash_to_iso("--") is None
+    assert _common.roc_slash_to_iso("115/13/40") is None  # out of range
+
+
+def test_parse_twse_history_shape(twse_history_fixture):
+    rows = twse_history.parse(twse_history_fixture, "2330")
+    assert len(rows) == 21  # one row per trading day of 2026-06
+    for r in rows:
+        assert set(r) == HISTORY_KEYS
+        assert r["ticker"] == "2330"
+        assert r["change_pct"] is None  # history change column intentionally dropped
+
+
+def test_parse_twse_history_known_day(twse_history_fixture):
+    # 2026-06-03 (ROC 115/06/03): close 2,425.00; volume 29,219,904 shares.
+    rows = twse_history.parse(twse_history_fixture, "2330")
+    r = next(x for x in rows if x["date"] == "2026-06-03")
+    assert r["close"] == 2425.0  # matches fixture raw '2,425.00'
+    assert r["open"] == 2425.0
+    assert r["high"] == 2440.0
+    assert r["low"] == 2410.0
+    assert r["volume"] == 29_219_904  # 成交股數 is already in shares
+
+
+def test_twse_history_nodata_returns_empty(twse_history_nodata_fixture):
+    # Future month: stat != "OK" -> [] (no raise).
+    assert twse_history.parse(twse_history_nodata_fixture, "2330") == []
+
+
+def test_twse_history_field_drift_raises(twse_history_fixture):
+    # Missing a price/date column is structural drift -> raise, never silent [].
+    drifted = {
+        **twse_history_fixture,
+        "fields": ["改名日期", *twse_history_fixture["fields"][1:]],
+    }
+    with pytest.raises(SourceFetchError) as excinfo:
+        twse_history.parse(drifted, "2330")
+    assert "TWSE" in str(excinfo.value)
+
+
+def test_twse_history_fetch_builds_url(monkeypatch):
+    captured = {}
+
+    def fake_get_json_dict(url, *, source):
+        captured["url"] = url
+        captured["source"] = source
+        return {"stat": "OK", "fields": [], "data": []}
+
+    monkeypatch.setattr(_common, "get_json_dict", fake_get_json_dict)
+    twse_history.fetch("2330", 2026, 6)
+    assert "date=20260601" in captured["url"]
+    assert "stockNo=2330" in captured["url"]
+    assert captured["source"] == "TWSE-History"
+
+
+def test_parse_tpex_history_shape(tpex_history_fixture):
+    rows = tpex_history.parse(tpex_history_fixture, "3081")
+    assert len(rows) == 21
+    for r in rows:
+        assert set(r) == HISTORY_KEYS
+        assert r["ticker"] == "3081"
+        assert r["change_pct"] is None
+
+
+def test_parse_tpex_history_known_day(tpex_history_fixture):
+    # 2026-06-01 (ROC 115/06/01): close 2,685.00; volume 1,639 lots -> shares.
+    rows = tpex_history.parse(tpex_history_fixture, "3081")
+    r = next(x for x in rows if x["date"] == "2026-06-01")
+    assert r["close"] == 2685.0  # matches fixture raw '2,685.00'
+    assert r["open"] == 2620.0
+    assert r["high"] == 2740.0
+    assert r["low"] == 2585.0
+    # 成交張數 is in 張 (lots); source flagField='張數'. Normalised to shares (x1000).
+    assert r["volume"] == 1_639 * 1000
+
+
+def test_tpex_history_nodata_returns_empty(tpex_history_nodata_fixture):
+    # Future month: stat stays "ok" but tables[0].data empty -> [] (no raise).
+    assert tpex_history.parse(tpex_history_nodata_fixture, "3081") == []
+
+
+def test_tpex_history_field_drift_raises(tpex_history_fixture):
+    table = tpex_history_fixture["tables"][0]
+    drifted = {
+        **tpex_history_fixture,
+        "tables": [{**table, "fields": ["日 期", "成交仟元", *table["fields"][2:]]}],
+    }
+    with pytest.raises(SourceFetchError) as excinfo:
+        tpex_history.parse(drifted, "3081")
+    assert "TPEx" in str(excinfo.value)
+
+
+def test_tpex_history_fetch_builds_url(monkeypatch):
+    captured = {}
+
+    def fake_get_json_dict(url, *, source):
+        captured["url"] = url
+        captured["source"] = source
+        return {"stat": "ok", "tables": [{"fields": [], "data": []}]}
+
+    monkeypatch.setattr(_common, "get_json_dict", fake_get_json_dict)
+    tpex_history.fetch("3081", 2026, 6)
+    assert "date=2026/06/01" in captured["url"] or "date=2026%2F06%2F01" in captured["url"]
+    assert "code=3081" in captured["url"]
+    assert captured["source"] == "TPEx-History"

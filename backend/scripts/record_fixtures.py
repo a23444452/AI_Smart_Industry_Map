@@ -44,6 +44,25 @@ TPEX_INSTI_URL = (
     "?type=Daily&sect=EW&date={date}&response=json"
 )
 
+# Per-stock monthly OHLCV history (backfill source). TWSE STOCK_DAY takes an
+# AD ``YYYYMM01`` date; TPEx tradingStock takes an AD ``YYYY/MM/DD`` (day fixed
+# to 01) date. Both return one row per trading day of that month. 2026-06 is a
+# settled month; 2027-01 is in the future, so each source returns its own
+# "no data" shape (recorded as the *_nodata fixtures).
+HIST_TWSE_TICKER = "2330"  # 台積電 (上市)
+HIST_TPEX_TICKER = "3081"  # 聯亞 (上櫃)
+HIST_YM = ("2026", "06")
+HIST_FUTURE_YM = ("2027", "01")
+
+TWSE_HISTORY_URL = (
+    "https://www.twse.com.tw/rwd/zh/afterTrading/STOCK_DAY"
+    "?date={date}&stockNo={ticker}&response=json"
+)
+TPEX_HISTORY_URL = (
+    "https://www.tpex.org.tw/www/zh-tw/afterTrading/tradingStock"
+    "?code={ticker}&date={date}&response=json"
+)
+
 
 def _ticker_of(row: dict) -> str:
     """Best-effort extraction of the ticker code from a raw row."""
@@ -180,6 +199,85 @@ def _record_tpex_insti() -> None:
     )
 
 
+def _record_twse_history() -> None:
+    y, m = HIST_YM
+    url = TWSE_HISTORY_URL.format(date=f"{y}{m}01", ticker=HIST_TWSE_TICKER)
+    print(f"GET {url}")
+    raw = _fetch(url)
+    rows = raw.get("data") or []
+    print(f"  stat={raw.get('stat')} rows={len(rows)} fields={raw.get('fields')}")
+    _write(
+        "twse_history.json",
+        {
+            "stat": raw["stat"],
+            "date": raw.get("date"),
+            "title": raw.get("title"),
+            "fields": raw["fields"],
+            "data": rows,  # ~21 rows, small enough to keep whole
+        },
+    )
+
+    fy, fm = HIST_FUTURE_YM
+    nd_url = TWSE_HISTORY_URL.format(date=f"{fy}{fm}01", ticker=HIST_TWSE_TICKER)
+    print(f"GET {nd_url}")
+    nodata = _fetch(nd_url)
+    print(f"  no-data stat={nodata.get('stat')} keys={sorted(nodata)}")
+    _write("twse_history_nodata.json", nodata)
+
+
+def _record_tpex_history() -> None:
+    y, m = HIST_YM
+    url = TPEX_HISTORY_URL.format(date=f"{y}/{m}/01", ticker=HIST_TPEX_TICKER)
+    print(f"GET {url}")
+    raw = _fetch(url)
+    table = raw["tables"][0]
+    rows = table.get("data") or []
+    print(f"  stat={raw.get('stat')} rows={len(rows)} fields={table.get('fields')}")
+    _write(
+        "tpex_history.json",
+        {
+            "stat": raw.get("stat"),
+            "date": raw.get("date"),
+            "code": raw.get("code"),
+            "name": raw.get("name"),
+            "flagField": raw.get("flagField"),
+            "tables": [
+                {
+                    "title": table.get("title"),
+                    "date": table.get("date"),
+                    "fields": table["fields"],
+                    "data": rows,
+                }
+            ],
+        },
+    )
+
+    fy, fm = HIST_FUTURE_YM
+    nd_url = TPEX_HISTORY_URL.format(date=f"{fy}/{fm}/01", ticker=HIST_TPEX_TICKER)
+    print(f"GET {nd_url}")
+    nodata = _fetch(nd_url)
+    ntable = nodata["tables"][0]
+    print(f"  no-data stat={nodata.get('stat')} rows={len(ntable.get('data') or [])}")
+    _write(
+        "tpex_history_nodata.json",
+        {
+            "stat": nodata.get("stat"),
+            "date": nodata.get("date"),
+            "code": nodata.get("code"),
+            "name": nodata.get("name"),
+            "flagField": nodata.get("flagField"),
+            "tables": [
+                {
+                    "title": ntable.get("title"),
+                    "date": ntable.get("date"),
+                    "fields": ntable["fields"],
+                    "data": ntable.get("data") or [],
+                }
+            ],
+        },
+    )
+
+
 def main() -> None:
     FIXTURES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -203,6 +301,8 @@ def main() -> None:
 
     _record_t86()
     _record_tpex_insti()
+    _record_twse_history()
+    _record_tpex_history()
 
 
 if __name__ == "__main__":

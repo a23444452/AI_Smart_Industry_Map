@@ -145,6 +145,26 @@ def iso_to_roc_slash(iso: str) -> str:
     return f"{d.year - 1911}/{d.month:02d}/{d.day:02d}"
 
 
+def roc_slash_to_iso(raw: object) -> str | None:
+    """Convert a slash Minguo (ROC) date like '115/06/03' to ISO '2026-06-03'.
+
+    The per-stock *history* endpoints render each row's date as ``YYY/MM/DD``
+    (slash-separated) rather than the packed ``1150603`` the T86/OpenAPI feeds
+    use, so ``roc_to_iso`` can't parse it directly. Tolerates non-padded parts
+    ('115/6/3'); returns None for blank or malformed input.
+    """
+    if raw is None:
+        return None
+    parts = str(raw).strip().split("/")
+    if len(parts) != 3 or not all(p.isdigit() for p in parts):
+        return None
+    year, month, day = (int(p) for p in parts)
+    try:
+        return date(year + 1911, month, day).isoformat()
+    except ValueError:
+        return None
+
+
 def to_number(raw: object) -> float | None:
     """Parse an exchange numeric string to float; blanks/'--' → None.
 
