@@ -253,6 +253,73 @@ def test_unknown_slug_returns_404(client):
     assert r.json() == {"error": {"code": "not_found", "message": "找不到此題材"}}
 
 
+# ── case 7: 跨 level 同名分類互不污染（(chain_level, category) 雙鍵回歸）───
+def test_same_category_name_across_levels_not_cross_contaminated(client):
+    """合成 fixture：「測試介面」同名分類同時掛上游與中游、各配不同成員。
+
+    公司歸屬 join 必須同時比對 chain_level＋分類名稱——若實作只用分類名稱
+    單鍵比對，兩格會互相污染（各出現對方成員），此測試即失敗。
+    """
+    with Session(_engine(client)) as s:
+        s.add(
+            models.Topic(
+                slug="dup-cat",
+                title="同名分類題材",
+                market_tab="tw",
+                chain_meta=[
+                    {
+                        "level": "上游",
+                        "categories": [
+                            {"name": "測試介面", "desc": "上游版", "placeholder": False}
+                        ],
+                    },
+                    {
+                        "level": "中游",
+                        "categories": [
+                            {"name": "測試介面", "desc": "中游版", "placeholder": False}
+                        ],
+                    },
+                ],
+            )
+        )
+        s.add(models.Company(ticker="1111", name="上游公司", market="TW"))
+        s.add(models.Company(ticker="2222", name="中游公司", market="TW"))
+        s.flush()
+        s.add(
+            models.TopicCompany(
+                topic_slug="dup-cat",
+                ticker="1111",
+                category="測試介面",
+                chain_level="上游",
+                role="龍頭",
+                relevance="高",
+            )
+        )
+        s.add(
+            models.TopicCompany(
+                topic_slug="dup-cat",
+                ticker="2222",
+                category="測試介面",
+                chain_level="中游",
+                role="利基",
+                relevance="中",
+            )
+        )
+        s.commit()
+
+    r = client.get("/api/topics/dup-cat/map")
+    assert r.status_code == 200
+    body = r.json()
+
+    up_cat = _category(_level(body, "上游"), "測試介面")
+    mid_cat = _category(_level(body, "中游"), "測試介面")
+    assert up_cat["desc"] == "上游版"
+    assert mid_cat["desc"] == "中游版"
+    # 各格只含自己 level 的成員，互不污染
+    assert [c["ticker"] for c in up_cat["companies"]] == ["1111"]
+    assert [c["ticker"] for c in mid_cat["companies"]] == ["2222"]
+
+
 # ── case 6b: chain_meta 為 null 的 topic → levels: [] 不炸 ─────────────────
 def test_null_chain_meta_yields_empty_levels(client):
     with Session(_engine(client)) as s:

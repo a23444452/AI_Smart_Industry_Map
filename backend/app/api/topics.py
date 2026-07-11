@@ -6,8 +6,7 @@ computed in a single grouped query (no per-topic N+1); ``rank`` is derived in
 Python from the already-materialised cards.
 """
 
-from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Literal
 
 from fastapi import APIRouter, Query, Request
@@ -16,8 +15,8 @@ from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.api.queries import flows_by_ticker, quotes_by_ticker
 from app.api.serializers import to_utc_iso
-from app.db.base import _utcnow
 from app.db.models import (
     Company,
     InstitutionalFlow,
@@ -39,15 +38,6 @@ WEEK_OFFSET = 5
 MONTH_OFFSET = 21
 # quotes_updated_at 綁定的行情 job 名稱（見 app.pipeline.scheduler）。
 QUOTES_JOB_NAME = "fetch_tw_quotes"
-# 查詢時間下界（日曆日）：避免無界掃描。60 日曆日覆蓋 21 個交易日＋假期餘裕；
-# 21 日曆日覆蓋 5 個交易日餘裕。
-QUOTES_LOOKBACK_DAYS = 60
-FLOWS_LOOKBACK_DAYS = 21
-
-
-def _cutoff_date(lookback_days: int) -> str:
-    """今日（UTC）往回 ``lookback_days`` 日曆日的 ISO 日期字串（date 欄為 ISO 字串，可直接字串比較）。"""
-    return (_utcnow().date() - timedelta(days=lookback_days)).isoformat()
 
 
 class TopicSummary(BaseModel):
@@ -213,57 +203,6 @@ def _distinct_members(session: Session, slug: str) -> list[tuple[str, str]]:
     return [(row.ticker, row.name) for row in session.execute(stmt).all()]
 
 
-def _quotes_by_ticker(
-    session: Session, tickers: list[str]
-) -> dict[str, list]:
-    """成員近 60 日曆日 quotes 一次查回，按 ticker 分組、日期由新到舊排列。
-
-    資料量小（17 檔 × 數十交易日），一次撈全部再於 Python 分組即可；毋須 window
-    function。每組為降冪，故 index 0 是最新日、index N 是 N 個交易日前。
-    下界 60 日曆日足以覆蓋 month 偏移所需的 21 個交易日（含假期），並避免
-    歷史回填累積後的無界掃描。
-    """
-    if not tickers:
-        return {}
-    stmt = (
-        select(
-            QuoteDaily.ticker,
-            QuoteDaily.date,
-            QuoteDaily.close,
-            QuoteDaily.change_pct,
-        )
-        .where(
-            QuoteDaily.ticker.in_(tickers),
-            QuoteDaily.date >= _cutoff_date(QUOTES_LOOKBACK_DAYS),
-        )
-        .order_by(QuoteDaily.ticker, QuoteDaily.date.desc())
-    )
-    grouped: dict[str, list] = defaultdict(list)
-    for row in session.execute(stmt).all():
-        grouped[row.ticker].append(row)
-    return grouped
-
-
-def _flows_by_ticker(
-    session: Session, tickers: list[str]
-) -> dict[str, list[InstitutionalFlow]]:
-    """成員近 21 日曆日法人買賣超，按 ticker 分組、日期由新到舊排列（覆蓋 5 個交易日餘裕）。"""
-    if not tickers:
-        return {}
-    stmt = (
-        select(InstitutionalFlow)
-        .where(
-            InstitutionalFlow.ticker.in_(tickers),
-            InstitutionalFlow.date >= _cutoff_date(FLOWS_LOOKBACK_DAYS),
-        )
-        .order_by(InstitutionalFlow.ticker, InstitutionalFlow.date.desc())
-    )
-    grouped: dict[str, list[InstitutionalFlow]] = defaultdict(list)
-    for flow in session.execute(stmt).scalars().all():
-        grouped[flow.ticker].append(flow)
-    return grouped
-
-
 def _period_change(rows: list, offset: int) -> float | None:
     """(最新 close ÷ offset 個交易日前 close − 1)×100，round 2；資料不足或缺值 → None。"""
     if len(rows) <= offset:
@@ -359,8 +298,8 @@ def get_topic_detail(slug: str, request: Request):
 
         members = _distinct_members(session, slug)
         tickers = [ticker for ticker, _ in members]
-        quotes = _quotes_by_ticker(session, tickers)
-        flows = _flows_by_ticker(session, tickers)
+        quotes = quotes_by_ticker(session, tickers)
+        flows = flows_by_ticker(session, tickers)
 
         return TopicDetail(
             slug=topic.slug,
