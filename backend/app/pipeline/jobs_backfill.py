@@ -22,7 +22,15 @@ from sqlalchemy.orm import Session
 
 from app.db import models
 from app.pipeline.jobs import _TAIPEI, _known_tickers, upsert_institutional_rows
-from app.pipeline.sources import tpex_history, tpex_institutional, twse_history, twse_t86
+from app.pipeline.jobs_daily import _upsert_margin_balances, _upsert_market_flows
+from app.pipeline.sources import (
+    tpex_history,
+    tpex_institutional,
+    twse_bfi82u,
+    twse_history,
+    twse_margin,
+    twse_t86,
+)
 
 # 每檔最多回溯的月數上限：即使湊不滿目標交易日數也停手，避免無界翻頁。
 _MAX_MONTHS = 3
@@ -156,4 +164,44 @@ def backfill_institutional(session: Session, days: int = 14) -> int:
             days,
         )
     logger.info("backfill_institutional: 寫入 {} 列（近 {} 日）", written, days)
+    return written
+
+
+def backfill_market_stats(session: Session, days: int = 30) -> int:
+    """Seed ``market_flows`` + ``margin_balances`` over the last ``days`` days.
+
+    Mirrors :func:`backfill_institutional`: for each calendar day (today back)
+    fetch + parse both BFI82U and MI_MARGN and upsert via the shared
+    ``jobs_daily`` helpers. Weekends/holidays parse to ``[]`` (natural no-ops),
+    so walking calendar days needs no holiday calendar. A single day that raises
+    is logged and skipped so one bad response can't abort the batch; if **every**
+    day raises, that is escalated to ``logger.error`` as a suspected systemic
+    failure（假日的空回應不 raise，不算失敗）. Returns the number of rows written
+    (direct-call tests; CLI uses sqlite3).
+
+    Contract: stages changes only; the runner commits/rolls back.
+    """
+    today = datetime.now(_TAIPEI).date()
+    written = 0
+    failed_days = 0
+    for offset in range(days):
+        day: date = today - timedelta(days=offset)
+        date_iso = day.isoformat()
+        try:
+            flows = twse_bfi82u.parse(twse_bfi82u.fetch(date_iso), date_iso)
+            margins = twse_margin.parse(twse_margin.fetch(date_iso), date_iso)
+        except Exception as exc:  # noqa: BLE001 - one day must not abort the batch
+            failed_days += 1
+            logger.warning("backfill_market_stats: 跳過 {} — {}", date_iso, exc)
+            continue
+        written += _upsert_market_flows(session, flows)
+        written += _upsert_margin_balances(session, margins)
+    if days and failed_days == days:
+        # 每一天都 exception（非假日空回應）→ 疑似端點掛掉或結構全面變動，
+        # 屬系統性失敗，升級為 error 讓人工注意。
+        logger.error(
+            "backfill_market_stats: 近 {} 日全部失敗，疑似系統性失敗（端點異常或結構變動），請人工確認",
+            days,
+        )
+    logger.info("backfill_market_stats: 寫入 {} 列（近 {} 日）", written, days)
     return written

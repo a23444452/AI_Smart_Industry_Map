@@ -14,6 +14,7 @@ from apscheduler.triggers.cron import CronTrigger
 from sqlalchemy import Engine
 
 from app.pipeline.jobs import fetch_institutional, fetch_tw_quotes
+from app.pipeline.jobs_daily import fetch_indices, fetch_market_stats, fetch_mops
 from app.pipeline.runner import run_job
 
 
@@ -55,4 +56,50 @@ def build_scheduler(engine: Engine) -> BackgroundScheduler:
             misfire_grace_time=3600,
             coalesce=True,
         )
+
+    # 每日焦點三 job（S5）。共用 misfire/coalesce 政策。
+    #
+    # ``fetch_indices``：盤中每 15 分鐘刷新指數快照，平日 08–22 時（涵蓋台股盤前、
+    # 台股盤中、美股/日經時段的粗略觀察窗）。
+    scheduler.add_job(
+        run_job,
+        trigger=CronTrigger(
+            day_of_week="mon-fri",
+            hour="8-22",
+            minute="*/15",
+            timezone="Asia/Taipei",
+        ),
+        args=(engine, "fetch_indices", fetch_indices),
+        id="fetch_indices",
+        misfire_grace_time=3600,
+        coalesce=True,
+    )
+
+    # ``fetch_market_stats``：BFI82U 法人金額與信用交易餘額於收盤後陸續公布、
+    # 確切時間漂移，故三發（16:20 / 17:20 / 21:45）冪等 upsert 補抓晚出的資料。
+    for hour, minute in ((16, 20), (17, 20), (21, 45)):
+        scheduler.add_job(
+            run_job,
+            trigger=CronTrigger(
+                day_of_week="mon-fri",
+                hour=hour,
+                minute=minute,
+                timezone="Asia/Taipei",
+            ),
+            args=(engine, "fetch_market_stats", fetch_market_stats),
+            id=f"fetch_market_stats_{hour:02d}{minute:02d}",
+            misfire_grace_time=3600,
+            coalesce=True,
+        )
+
+    # ``fetch_mops``：重大訊息**每日** 19:10（含週末——公司於假日亦可能發布公告）。
+    # 無 day_of_week 限制即為每天。
+    scheduler.add_job(
+        run_job,
+        trigger=CronTrigger(hour=19, minute=10, timezone="Asia/Taipei"),
+        args=(engine, "fetch_mops", fetch_mops),
+        id="fetch_mops",
+        misfire_grace_time=3600,
+        coalesce=True,
+    )
     return scheduler

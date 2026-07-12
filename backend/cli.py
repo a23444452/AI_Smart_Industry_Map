@@ -10,7 +10,11 @@ from app.core.config import settings
 from app.db.base import Base, make_engine
 from app.db.seed import load_seeds
 from app.pipeline.jobs import fetch_tw_quotes
-from app.pipeline.jobs_backfill import backfill_institutional, backfill_quotes
+from app.pipeline.jobs_backfill import (
+    backfill_institutional,
+    backfill_market_stats,
+    backfill_quotes,
+)
 from app.pipeline.runner import run_job
 
 
@@ -48,6 +52,7 @@ def main() -> None:
         jobs = (
             ("backfill_quotes", partial(backfill_quotes, days=35)),
             ("backfill_institutional", partial(backfill_institutional, days=14)),
+            ("backfill_market_stats", partial(backfill_market_stats, days=30)),
         )
         failed = False
         for name, fn in jobs:

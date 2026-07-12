@@ -940,3 +940,16 @@ def test_mops_fetch_otc_url(monkeypatch):
     mops.fetch_otc()
     assert captured["url"] == mops.OTC_URL
     assert "上櫃" in captured["source"]
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        ("235959", (23, 59, 59)),  # 上界合法：23:59:59
+        ("000000", (0, 0, 0)),  # 下界合法：00:00:00
+        ("256060", None),  # 時/分/秒皆越界（25:60:60）→ None
+        ("1234567", None),  # 七位數（zfill 後仍 != 6 位）→ None
+    ],
+)
+def test_mops_parse_time_boundaries(raw, expected):
+    assert mops._parse_time(raw) == expected

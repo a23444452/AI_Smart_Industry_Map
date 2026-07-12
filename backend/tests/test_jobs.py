@@ -16,15 +16,19 @@ from sqlalchemy.orm import Session
 
 from app.db import models
 from app.db.base import Base, make_engine
-from app.pipeline import jobs, jobs_backfill
+from app.pipeline import jobs, jobs_backfill, jobs_daily
 from app.pipeline.sources import (
     _common,
+    mops,
     tpex,
     tpex_history,
     tpex_institutional,
     twse,
+    twse_bfi82u,
     twse_history,
+    twse_margin,
     twse_t86,
+    yahoo_indices,
 )
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -452,3 +456,336 @@ def test_backfill_institutional_skips_failing_day(monkeypatch, eng):
     with Session(eng) as s:
         # 今天被跳過 → 只剩 2 天資料。
         assert len({r.date for r in s.query(models.InstitutionalFlow).all()}) == 2
+
+
+# --------------------------------------------------------------------------- #
+# fetch_indices — Yahoo 指數快照 into index_snapshots
+# --------------------------------------------------------------------------- #
+
+
+def test_fetch_indices_upserts_all_symbols(monkeypatch, eng):
+    twii = _load("yahoo_twii.json")
+    # 每檔都回同一份 raw；parse 以 symbol 決定 name/PK，故 7 檔各寫一列。
+    monkeypatch.setattr(yahoo_indices, "fetch", lambda symbol: twii)
+
+    with Session(eng) as s:
+        jobs_daily.fetch_indices(s)
+        s.commit()
+
+    with Session(eng) as s:
+        snaps = s.query(models.IndexSnapshot).all()
+        assert len(snaps) == len(yahoo_indices.SYMBOLS) == 7
+        twii_snap = s.get(models.IndexSnapshot, "^TWII")
+        assert twii_snap is not None
+        assert twii_snap.name == "加權指數"  # 名稱來自 SYMBOLS 表，非 Yahoo
+        assert twii_snap.price == 45354.61
+        # change/pct 由 price - chartPreviousClose(45734.41) 導出
+        assert twii_snap.change == pytest.approx(45354.61 - 45734.41, abs=0.01)
+        assert twii_snap.fetched_at is not None
+
+
+def test_fetch_indices_overwrites_existing_symbol(monkeypatch, eng):
+    twii = _load("yahoo_twii.json")
+    monkeypatch.setattr(yahoo_indices, "fetch", lambda symbol: twii)
+    with Session(eng) as s:
+        jobs_daily.fetch_indices(s)
+        s.commit()
+    with Session(eng) as s:
+        jobs_daily.fetch_indices(s)  # 重跑覆寫，不新增列
+        s.commit()
+    with Session(eng) as s:
+        assert s.query(models.IndexSnapshot).count() == 7  # symbol PK 覆寫
+
+
+def test_fetch_indices_skips_single_failing_symbol(monkeypatch, eng):
+    twii = _load("yahoo_twii.json")
+
+    def flaky(symbol: str) -> dict:
+        if symbol == "^SOX":  # 單一 symbol 失敗
+            raise _common.SourceFetchError("Yahoo", "查無資料")
+        return twii
+
+    monkeypatch.setattr(yahoo_indices, "fetch", flaky)
+    with Session(eng) as s:
+        jobs_daily.fetch_indices(s)  # 不因 ^SOX 中止
+        s.commit()
+
+    with Session(eng) as s:
+        # 6 檔成功、^SOX 被跳過。
+        assert s.query(models.IndexSnapshot).count() == 6
+        assert s.get(models.IndexSnapshot, "^SOX") is None
+        assert s.get(models.IndexSnapshot, "^TWII") is not None
+
+
+def test_fetch_indices_all_fail_raises(monkeypatch, eng):
+    def boom(symbol: str) -> dict:
+        raise _common.SourceFetchError("Yahoo", "端點封鎖")
+
+    monkeypatch.setattr(yahoo_indices, "fetch", boom)
+    with Session(eng) as s:
+        with pytest.raises(RuntimeError):
+            jobs_daily.fetch_indices(s)
+
+
+def test_fetch_indices_skips_null_price(monkeypatch, eng):
+    # 成功 fetch/parse 但 price 為 None（meta 缺 regularMarketPrice）→ 跳過（price NOT NULL）。
+    priceless = {"chart": {"error": None, "result": [{"meta": {}}]}}
+    monkeypatch.setattr(yahoo_indices, "fetch", lambda symbol: priceless)
+    with Session(eng) as s:
+        # 全部 7 檔皆 price None → 等同全失敗 → raise。
+        with pytest.raises(RuntimeError):
+            jobs_daily.fetch_indices(s)
+
+
+# --------------------------------------------------------------------------- #
+# fetch_market_stats — BFI82U + MI_MARGN into market_flows / margin_balances
+# --------------------------------------------------------------------------- #
+
+
+def _patch_market_stats(monkeypatch, bfi_raw, margin_raw) -> None:
+    monkeypatch.setattr(twse_bfi82u, "fetch", lambda date: bfi_raw)
+    monkeypatch.setattr(twse_margin, "fetch", lambda date: margin_raw)
+
+
+def test_fetch_market_stats_upserts_both(monkeypatch, eng):
+    _patch_market_stats(
+        monkeypatch, _load("twse_bfi82u.json"), _load("twse_margin.json")
+    )
+    today = _taipei_today()
+
+    with Session(eng) as s:
+        jobs_daily.fetch_market_stats(s)
+        s.commit()
+
+    with Session(eng) as s:
+        flows = s.query(models.MarketFlow).all()
+        # BFI82U fixture 有 6 身份別，「合計」跳過 → 5 列入庫。
+        assert len(flows) == 5
+        assert all(f.unit != "合計" for f in flows)
+        assert all(f.date == today for f in flows)
+        investa = s.get(models.MarketFlow, (today, "投信"))
+        assert investa is not None
+        assert investa.net == 19_900_600_663
+        # margin：3 個 item 全入庫。
+        margins = s.query(models.MarginBalance).all()
+        assert len(margins) == 3
+        m = s.get(models.MarginBalance, (today, "融資金額(仟元)"))
+        assert m is not None
+        assert m.today_balance == 619_648_244
+
+
+def test_fetch_market_stats_is_idempotent(monkeypatch, eng):
+    _patch_market_stats(
+        monkeypatch, _load("twse_bfi82u.json"), _load("twse_margin.json")
+    )
+    with Session(eng) as s:
+        jobs_daily.fetch_market_stats(s)
+        s.commit()
+    with Session(eng) as s:
+        jobs_daily.fetch_market_stats(s)  # 同日重跑
+        s.commit()
+    with Session(eng) as s:
+        assert s.query(models.MarketFlow).count() == 5
+        assert s.query(models.MarginBalance).count() == 3
+
+
+def test_fetch_market_stats_holiday_both_empty(monkeypatch, eng):
+    _patch_market_stats(
+        monkeypatch,
+        _load("twse_bfi82u_holiday.json"),
+        _load("twse_margin_holiday.json"),
+    )
+    with Session(eng) as s:
+        jobs_daily.fetch_market_stats(s)  # 假日兩者空，不 raise
+        s.commit()
+    with Session(eng) as s:
+        assert s.query(models.MarketFlow).count() == 0
+        assert s.query(models.MarginBalance).count() == 0
+
+
+def test_fetch_market_stats_one_source_fails_other_persists(monkeypatch, eng):
+    # BFI82U 失敗，margin 成功：margin 的資料仍須 stage 且不 raise。
+    def boom(date: str) -> dict:
+        raise _common.SourceFetchError("TWSE-BFI82U", "連線失敗")
+
+    monkeypatch.setattr(twse_bfi82u, "fetch", boom)
+    monkeypatch.setattr(twse_margin, "fetch", lambda date: _load("twse_margin.json"))
+
+    with Session(eng) as s:
+        jobs_daily.fetch_market_stats(s)  # 單來源失敗不 raise
+        s.commit()
+
+    with Session(eng) as s:
+        assert s.query(models.MarketFlow).count() == 0  # BFI82U 無資料
+        assert s.query(models.MarginBalance).count() == 3  # margin 照常入庫
+
+
+def test_fetch_market_stats_both_fail_raises(monkeypatch, eng):
+    def boom(date: str) -> dict:
+        raise _common.SourceFetchError("TWSE", "連線失敗")
+
+    monkeypatch.setattr(twse_bfi82u, "fetch", boom)
+    monkeypatch.setattr(twse_margin, "fetch", boom)
+
+    with Session(eng) as s:
+        with pytest.raises(_common.SourceFetchError):
+            jobs_daily.fetch_market_stats(s)
+
+
+# --------------------------------------------------------------------------- #
+# fetch_mops — 上市 + 上櫃 重大訊息 into mops_announcements
+# --------------------------------------------------------------------------- #
+
+
+def test_fetch_mops_inserts_merged_markets(monkeypatch, eng):
+    listed = _load("mops_listed.json")
+    otc = _load("mops_otc.json")
+    monkeypatch.setattr(mops, "fetch_listed", lambda: listed)
+    monkeypatch.setattr(mops, "fetch_otc", lambda: otc)
+
+    with Session(eng) as s:
+        jobs_daily.fetch_mops(s)
+        s.commit()
+
+    with Session(eng) as s:
+        rows = s.query(models.MopsAnnouncement).all()
+        # 不過濾公司：兩市場 parse 出的列全入庫。
+        expected = len(mops.parse(listed + otc))
+        assert expected > 0
+        assert len(rows) == expected
+        tickers = {r.ticker for r in rows}
+        assert "1721" in tickers  # 上市三晃
+        assert "4530" in tickers  # 上櫃宏易
+
+
+def test_fetch_mops_skips_duplicates_on_rerun(monkeypatch, eng):
+    listed = _load("mops_listed.json")
+    monkeypatch.setattr(mops, "fetch_listed", lambda: listed)
+    monkeypatch.setattr(mops, "fetch_otc", lambda: [])
+
+    with Session(eng) as s:
+        jobs_daily.fetch_mops(s)
+        s.commit()
+    with Session(eng) as s:
+        first = s.query(models.MopsAnnouncement).count()
+    with Session(eng) as s:
+        jobs_daily.fetch_mops(s)  # 重跑：撞 unique 全跳過
+        s.commit()
+    with Session(eng) as s:
+        assert s.query(models.MopsAnnouncement).count() == first
+
+
+def test_fetch_mops_one_market_fails_other_inserts(monkeypatch, eng):
+    listed = _load("mops_listed.json")
+
+    def boom() -> list[dict]:
+        raise _common.SourceFetchError("MOPS-上櫃", "連線失敗")
+
+    monkeypatch.setattr(mops, "fetch_listed", lambda: listed)
+    monkeypatch.setattr(mops, "fetch_otc", boom)
+
+    with Session(eng) as s:
+        jobs_daily.fetch_mops(s)  # 單市場失敗不中止
+        s.commit()
+
+    with Session(eng) as s:
+        assert s.query(models.MopsAnnouncement).count() == len(mops.parse(listed))
+
+
+def test_fetch_mops_both_markets_fail_raises(monkeypatch, eng):
+    def boom() -> list[dict]:
+        raise _common.SourceFetchError("MOPS", "連線失敗")
+
+    monkeypatch.setattr(mops, "fetch_listed", boom)
+    monkeypatch.setattr(mops, "fetch_otc", boom)
+
+    with Session(eng) as s:
+        with pytest.raises(_common.SourceFetchError):
+            jobs_daily.fetch_mops(s)
+
+
+def test_fetch_mops_warns_on_field_drift(monkeypatch, eng):
+    # raw 非空但 parse 全 skip（發言日期/時間欄漂移）→ log warning，不入庫。
+    drifted = [{"公司代號": "1721", "主旨 ": "x", "壞日期": "1150711", "壞時間": "70003"}]
+    monkeypatch.setattr(mops, "fetch_listed", lambda: drifted)
+    monkeypatch.setattr(mops, "fetch_otc", lambda: [])
+
+    # 專案用 loguru（非 stdlib logging），以 sink 收集訊息。
+    from loguru import logger
+
+    messages: list[str] = []
+    sink_id = logger.add(lambda m: messages.append(m), level="WARNING")
+    try:
+        with Session(eng) as s:
+            jobs_daily.fetch_mops(s)
+            s.commit()
+    finally:
+        logger.remove(sink_id)
+
+    with Session(eng) as s:
+        assert s.query(models.MopsAnnouncement).count() == 0
+    assert any("欄名漂移" in msg for msg in messages)
+
+
+def test_fetch_mops_truncates_over_limit(monkeypatch, eng):
+    # 合成 > 500 筆，各列唯一（不同 title），驗證只取前 500。
+    big = [
+        {
+            "公司代號": "1721",
+            "公司名稱": "測試",
+            "主旨 ": f"公告事項 {i}",
+            "發言日期": "1150711",
+            "發言時間": "070003",
+        }
+        for i in range(600)
+    ]
+    monkeypatch.setattr(mops, "fetch_listed", lambda: big)
+    monkeypatch.setattr(mops, "fetch_otc", lambda: [])
+
+    with Session(eng) as s:
+        jobs_daily.fetch_mops(s)
+        s.commit()
+
+    with Session(eng) as s:
+        assert s.query(models.MopsAnnouncement).count() == 500
+
+
+# --------------------------------------------------------------------------- #
+# backfill_market_stats — walk recent calendar days
+# --------------------------------------------------------------------------- #
+
+
+def test_backfill_market_stats_writes_recent_days(monkeypatch, eng):
+    monkeypatch.setattr(twse_bfi82u, "fetch", lambda date: _load("twse_bfi82u.json"))
+    monkeypatch.setattr(twse_margin, "fetch", lambda date: _load("twse_margin.json"))
+
+    with Session(eng) as s:
+        written = jobs_backfill.backfill_market_stats(s, days=3)
+        s.commit()
+
+    with Session(eng) as s:
+        # 每日 5 市場流 + 3 信用列 = 8；3 日 = 24 列。
+        assert s.query(models.MarketFlow).count() == 15
+        assert s.query(models.MarginBalance).count() == 9
+        assert len({f.date for f in s.query(models.MarketFlow).all()}) == 3
+        assert written == 24
+
+
+def test_backfill_market_stats_skips_failing_day(monkeypatch, eng):
+    today = datetime.now(ZoneInfo("Asia/Taipei")).date().isoformat()
+
+    def flaky_bfi(date: str) -> dict:
+        if date == today:  # 只讓今天壞
+            raise _common.SourceFetchError("TWSE-BFI82U", "連線失敗")
+        return _load("twse_bfi82u.json")
+
+    monkeypatch.setattr(twse_bfi82u, "fetch", flaky_bfi)
+    monkeypatch.setattr(twse_margin, "fetch", lambda date: _load("twse_margin.json"))
+
+    with Session(eng) as s:
+        jobs_backfill.backfill_market_stats(s, days=3)  # 壞一天不中止其餘
+        s.commit()
+
+    with Session(eng) as s:
+        # 今天整天被跳過（bfi 先 raise，margin 也不寫）→ 只剩 2 天。
+        assert len({f.date for f in s.query(models.MarketFlow).all()}) == 2

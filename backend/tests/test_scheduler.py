@@ -95,3 +95,66 @@ def test_engine_mounted_with_schema_when_disabled(monkeypatch):
         # Schema was created: core tables must exist and be queryable.
         tables = set(inspect(engine).get_table_names())
         assert "pipeline_runs" in tables
+
+
+def test_scheduler_registers_fetch_indices_cron(monkeypatch):
+    monkeypatch.setattr(settings, "scheduler_enabled", True)
+
+    app = create_app()
+    with TestClient(app):
+        scheduler = app.state.scheduler
+        job = scheduler.get_job("fetch_indices")
+        assert job is not None
+        assert job.args[1] == "fetch_indices"
+        assert job.misfire_grace_time == 3600
+        assert job.coalesce is True
+
+        trigger = job.trigger
+        assert isinstance(trigger, CronTrigger)
+        # 盤中每 15 分鐘、平日 08–22 時。
+        assert _field(trigger, "minute") == "*/15"
+        assert _field(trigger, "hour") == "8-22"
+        assert _field(trigger, "day_of_week") == "mon-fri"
+        assert str(trigger.timezone) == "Asia/Taipei"
+
+
+def test_scheduler_registers_three_market_stats_crons(monkeypatch):
+    monkeypatch.setattr(settings, "scheduler_enabled", True)
+
+    app = create_app()
+    with TestClient(app):
+        scheduler = app.state.scheduler
+        # 三發平日 cron：16:20 / 17:20 / 21:45，job id 帶時間 suffix。
+        for job_id, hour, minute in (
+            ("fetch_market_stats_1620", "16", "20"),
+            ("fetch_market_stats_1720", "17", "20"),
+            ("fetch_market_stats_2145", "21", "45"),
+        ):
+            job = scheduler.get_job(job_id)
+            assert job is not None, f"missing job {job_id}"
+            assert job.args[1] == "fetch_market_stats"
+            trigger = job.trigger
+            assert isinstance(trigger, CronTrigger)
+            assert _field(trigger, "day_of_week") == "mon-fri"
+            assert _field(trigger, "hour") == hour
+            assert _field(trigger, "minute") == minute
+            assert str(trigger.timezone) == "Asia/Taipei"
+
+
+def test_scheduler_registers_fetch_mops_daily_cron(monkeypatch):
+    monkeypatch.setattr(settings, "scheduler_enabled", True)
+
+    app = create_app()
+    with TestClient(app):
+        scheduler = app.state.scheduler
+        job = scheduler.get_job("fetch_mops")
+        assert job is not None
+        assert job.args[1] == "fetch_mops"
+
+        trigger = job.trigger
+        assert isinstance(trigger, CronTrigger)
+        # 每日 19:10（含週末）——day_of_week 不限制即為每天 "*"。
+        assert _field(trigger, "hour") == "19"
+        assert _field(trigger, "minute") == "10"
+        assert _field(trigger, "day_of_week") == "*"
+        assert str(trigger.timezone) == "Asia/Taipei"
