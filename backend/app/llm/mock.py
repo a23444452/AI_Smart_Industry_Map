@@ -5,7 +5,7 @@
 
     {
       "scores":  {<五面向>: int 60-95, ...},
-      "reasons": {<五面向>: str（每面向 2 句、含「（模擬分析）」）, ...},
+      "reasons": {<五面向>: list[str]（每面向 2 句、含「（模擬分析）」）, ...},
       "summary": str（一句）
     }
 
@@ -18,9 +18,9 @@ from __future__ import annotations
 import hashlib
 import json
 
-# 台股慣用的五面向分析框架，對應本專案已蒐集的資料（行情／三大法人／營收／
-# 本益比／集保／重大訊息）。此順序即 seed byte 的取用順序。
-_ASPECTS = ("基本面", "技術面", "籌碼面", "消息面", "產業面")
+# 計畫 Task 1（AiAnalysis 註解）明定的五面向鍵名——與原站的分析框架一致。
+# 此順序即 seed byte 的取用順序。
+_ASPECTS = ("題材面", "基本面", "技術面", "籌碼面", "新聞面")
 
 # 分數落點 60-95（含），共 36 個可能值。
 _SCORE_MIN = 60
@@ -42,14 +42,14 @@ class MockProvider:
         seed = hashlib.sha256(user.encode()).digest()
 
         scores: dict[str, int] = {}
-        reasons: dict[str, str] = {}
+        reasons: dict[str, list[str]] = {}
         for i, aspect in enumerate(_ASPECTS):
             score = _SCORE_MIN + seed[i] % _SCORE_SPAN
             scores[aspect] = score
-            reasons[aspect] = (
-                f"{aspect}評分為 {score}，屬於{_level(score)}區間（模擬分析）。"
-                "此為依輸入內容雜湊派生的確定性結果，非真實 AI 判斷。"
-            )
+            reasons[aspect] = [
+                f"{aspect}評分為 {score}，屬於{_level(score)}區間（模擬分析）。",
+                "此為依輸入內容雜湊派生的確定性結果，非真實 AI 判斷。",
+            ]
 
         avg = round(sum(scores.values()) / len(scores))
         summary = (

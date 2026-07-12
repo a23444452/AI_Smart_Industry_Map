@@ -145,16 +145,20 @@ def test_mock_different_user_differs():
 
 
 def test_mock_schema_valid_json_five_keys():
+    # 五面向鍵名依計畫 Task 1（AiAnalysis 註解）明定，是 Task 3 service 的解析契約。
+    expected_aspects = {"題材面", "基本面", "技術面", "籌碼面", "新聞面"}
     p = MockProvider()
     data = json.loads(p.complete("s", "台積電 2330"))
     assert set(data.keys()) == {"scores", "reasons", "summary"}
-    assert len(data["scores"]) == 5
-    assert len(data["reasons"]) == 5
-    assert set(data["scores"]) == set(data["reasons"])
+    assert set(data["scores"]) == expected_aspects
+    assert set(data["reasons"]) == expected_aspects
     for score in data["scores"].values():
         assert isinstance(score, int) and 60 <= score <= 95
-    for reason in data["reasons"].values():
-        assert "（模擬分析）" in reason
+    for sentences in data["reasons"].values():
+        # 每面向為 2-3 句的 list[str]，且含「（模擬分析）」字樣。
+        assert isinstance(sentences, list) and 2 <= len(sentences) <= 3
+        assert all(isinstance(s, str) for s in sentences)
+        assert any("（模擬分析）" in s for s in sentences)
     assert isinstance(data["summary"], str) and data["summary"]
 
 
