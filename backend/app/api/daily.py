@@ -17,8 +17,14 @@ from pydantic import BaseModel
 from sqlalchemy import distinct, func, select
 from sqlalchemy.orm import Session
 
-from app.api.queries import period_change, quotes_by_ticker
+from app.api.queries import (
+    QUOTES_LOOKBACK_DAYS,
+    cutoff_date,
+    period_change,
+    quotes_by_ticker,
+)
 from app.api.serializers import to_utc_iso
+from app.db.base import utcnow
 from app.db.models import (
     Company,
     IndexSnapshot,
@@ -40,6 +46,9 @@ MONTH_OFFSET = 21
 MOVERS_TOP_N = 30
 # announcements_dates 取最近幾個有公告的台北日期。
 ANNOUNCEMENTS_DATE_LIMIT = 7
+# announcements_dates 查詢時間下界（日曆日）：比照 queries.py 的 lookback 慣例，
+# 避免公告累積後的無界掃描；60 日涵蓋 7 個有公告日綽綽有餘。
+ANNOUNCEMENTS_LOOKBACK_DAYS = 60
 
 
 # ── Pydantic response models ──────────────────────────────────────────────
@@ -173,9 +182,12 @@ def _build_movers(session: Session) -> Movers:
     day＝最新日 change_pct（round 2），week/month＝5/21 交易日 offset 報酬。name 取自
     companies；quotes-only ticker（無對應 company）退回以 ticker 為 name。
     """
-    tickers = [
-        t for (t,) in session.execute(select(distinct(QuoteDaily.ticker))).all()
-    ]
+    # 帶時間下界（重用 quotes_by_ticker 同一常數）：避免歷史回填累積後的無界
+    # 掃描；下界外的 ticker 在 quotes_by_ticker 也查不到列，行為不變。
+    tickers_stmt = select(distinct(QuoteDaily.ticker)).where(
+        QuoteDaily.date >= cutoff_date(QUOTES_LOOKBACK_DAYS)
+    )
+    tickers = [t for (t,) in session.execute(tickers_stmt).all()]
     if not tickers:
         return Movers(day=[], week=[], month=[])
 
@@ -221,8 +233,20 @@ def _taipei_date(dt: datetime) -> date_type:
 
 
 def _build_announcements_dates(session: Session) -> list[str]:
-    """mops_announcements 依 published_at（轉台北日期）distinct 降冪取 7 天。"""
-    published = session.execute(select(MopsAnnouncement.published_at)).scalars().all()
+    """mops_announcements 依 published_at（轉台北日期）distinct 降冪取 7 天。
+
+    帶 60 日曆日時間下界（見 ANNOUNCEMENTS_LOOKBACK_DAYS），避免無界掃描。
+    """
+    lookback_cutoff = utcnow() - timedelta(days=ANNOUNCEMENTS_LOOKBACK_DAYS)
+    published = (
+        session.execute(
+            select(MopsAnnouncement.published_at).where(
+                MopsAnnouncement.published_at >= lookback_cutoff
+            )
+        )
+        .scalars()
+        .all()
+    )
     dates = {_taipei_date(dt).isoformat() for dt in published}
     return sorted(dates, reverse=True)[:ANNOUNCEMENTS_DATE_LIMIT]
 

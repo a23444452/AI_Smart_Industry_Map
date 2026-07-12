@@ -3,12 +3,12 @@
 `client` fixture 跑真實 lifespan 對 per-test tmp DB，engine 掛在
 `app.state.engine`；測試透過同一 engine 手插已知資料，API 讀到的就是測試寫入的。
 
-日期策略：indices／market_flows／margin／announcements 無查詢時間下界，用固定日期；
-movers 走 ``quotes_by_ticker``（60 日曆日下界），故 quotes 用相對「今日」日期，避免
-固定日期隨真實時間流逝掉出視窗。
+日期策略：indices／market_flows／margin／單日 announcements 無查詢時間下界，用固定
+日期；movers（quotes 60 日曆日下界）與 announcements_dates（60 日曆日下界）用相對
+「今日」日期，避免固定日期隨真實時間流逝掉出視窗。
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 
 from sqlalchemy.orm import Session
 
@@ -201,18 +201,41 @@ def test_daily_movers_name_from_companies_with_fallback(client):
 
 
 # ── announcements_dates：published_at 轉台北日期、distinct 降冪取 7 ─────────
+def _naive_utc(days_ago: int, hh: int, mm: int) -> datetime:
+    """今日（UTC）往回 ``days_ago`` 日曆日的 hh:mm naive UTC datetime。
+
+    announcements_dates 有 60 日曆日下界，故 published_at 用相對日期。
+    """
+    d = _utcnow().date() - timedelta(days=days_ago)
+    return datetime.combine(d, time(hh, mm))
+
+
 def test_daily_announcements_dates_taipei_distinct_desc(client):
     # UTC 15:30 → 台北 23:30 同日；UTC 16:30 → 台北隔日 00:30。驗證跨日換算與去重。
+    # 相對日期：D-1 是昨日（UTC）、D0 是今日；D-1 16:30 UTC → 台北 D0。
     _add(
         client,
         [
-            _ann(datetime(2026, 7, 10, 15, 30), ticker="2330", title="a"),
-            _ann(datetime(2026, 7, 10, 16, 30), ticker="2330", title="b"),  # 台北 7/11
-            _ann(datetime(2026, 7, 11, 2, 0), ticker="3443", title="c"),  # 台北 7/11（去重）
+            _ann(_naive_utc(1, 15, 30), ticker="2330", title="a"),  # 台北 D-1
+            _ann(_naive_utc(1, 16, 30), ticker="2330", title="b"),  # 台北 D0
+            _ann(_naive_utc(0, 2, 0), ticker="3443", title="c"),  # 台北 D0（去重）
         ],
     )
     dates = client.get("/api/daily").json()["announcements_dates"]
-    assert dates == ["2026-07-11", "2026-07-10"]
+    assert dates == [_d(0), _d(1)]
+
+
+def test_daily_announcements_dates_older_than_lookback_excluded(client):
+    # 唯一一筆公告在 70 日曆日前（> 60 日下界）→ 不出現在 dates
+    _add(
+        client,
+        [
+            _ann(_naive_utc(70, 2, 0), ticker="2330", title="舊"),
+            _ann(_naive_utc(0, 2, 0), ticker="3443", title="新"),  # 台北 D0
+        ],
+    )
+    dates = client.get("/api/daily").json()["announcements_dates"]
+    assert dates == [_d(0)]
 
 
 def _ann(published_at, *, ticker, title, category="重大事件", name="某公司"):
