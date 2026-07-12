@@ -40,8 +40,6 @@ MONTH_OFFSET = 21
 MOVERS_TOP_N = 30
 # announcements_dates 取最近幾個有公告的台北日期。
 ANNOUNCEMENTS_DATE_LIMIT = 7
-# 過濾掉的公告類別（澄清回應多為雜訊，每日焦點不列）。
-_EXCLUDED_CATEGORY = "澄清回應"
 
 
 # ── Pydantic response models ──────────────────────────────────────────────
@@ -246,6 +244,9 @@ def get_daily(request: Request) -> DailyResponse:
 def get_daily_announcements(
     request: Request,
     date: date_type = Query(..., description="台北日期 YYYY-MM-DD"),
+    category: str | None = Query(
+        None, description="公告分類篩選（如「澄清回應」）；未帶回全部分類"
+    ),
 ) -> list[AnnouncementItem]:
     # 台北日 [date 00:00, date+1 00:00) → naive UTC 半開區間過濾（published_at 存 naive UTC）。
     start_taipei = datetime.combine(date, time.min, tzinfo=TAIPEI)
@@ -257,10 +258,11 @@ def get_daily_announcements(
         .where(
             MopsAnnouncement.published_at >= start_utc,
             MopsAnnouncement.published_at < end_utc,
-            MopsAnnouncement.category != _EXCLUDED_CATEGORY,
         )
         .order_by(MopsAnnouncement.published_at.desc())
     )
+    if category is not None:
+        stmt = stmt.where(MopsAnnouncement.category == category)
     engine = request.app.state.engine
     with Session(engine) as session:
         return [
