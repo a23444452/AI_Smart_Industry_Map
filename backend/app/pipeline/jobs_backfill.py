@@ -29,11 +29,12 @@ from app.pipeline.sources import (
     twse_bfi82u,
     twse_history,
     twse_margin,
+    twse_per_history,
     twse_t86,
 )
 
 # 每檔最多回溯的月數上限：即使湊不滿目標交易日數也停手，避免無界翻頁。
-_MAX_MONTHS = 3
+_MAX_MONTHS = 6
 
 
 def _prev_month(year: int, month: int) -> tuple[int, int]:
@@ -207,4 +208,94 @@ def backfill_market_stats(session: Session, days: int = 30) -> int:
             days,
         )
     logger.info("backfill_market_stats: 寫入 {} 列（近 {} 日）", written, days)
+    return written
+
+
+# --------------------------------------------------------------------------- #
+# backfill_per — 每檔月本益比歷史 into per_daily
+# --------------------------------------------------------------------------- #
+
+
+def _collect_ticker_per_history(ticker: str, months: int) -> dict[str, dict]:
+    """Walk ``months`` calendar months (newest first) of one ticker's PER history.
+
+    A deliberate *parallel* of :func:`_collect_ticker_history` (quotes) rather
+    than a reuse of it, because two of that walk's traits don't fit PER backfill:
+
+    * **No TPEx fallback** — 上櫃 has no per-stock month endpoint (see
+      ``twse_per_history`` docstring), so an OTC ticker simply collects nothing
+      here (the 上市 endpoint returns no rows for an OTC 代號) and is a natural
+      no-op; there is no second source to try.
+    * **No target-day early-stop** — PER backfill wants every trading day across
+      the fixed ``months`` window, so it always walks the full range.
+
+    Rows are deduped by ISO date. Raises whatever the source raises — the caller
+    wraps each ticker so one failure is skipped, not fatal; collecting the whole
+    ticker before any DB write means a mid-walk failure leaves no partial rows.
+    """
+    collected: dict[str, dict] = {}
+    today = datetime.now(_TAIPEI).date()  # 取一次，避免跨午夜時 year/month 不一致
+    year, month = today.year, today.month
+    for _ in range(months):
+        rows = twse_per_history.parse(
+            twse_per_history.fetch(ticker, year, month), ticker
+        )
+        for row in rows:
+            d = row["date"]
+            if d and d not in collected:
+                collected[d] = row
+        year, month = _prev_month(year, month)
+    return collected
+
+
+def backfill_per(session: Session, months: int = 3) -> int:
+    """Seed ``per_daily`` with each company's trailing monthly PER/PBR/yield history.
+
+    Per company: walk ``months`` months (newest first) via
+    :func:`_collect_ticker_per_history`, then insert only ``(ticker, date)`` rows
+    that do **not** already exist — insert-only mirrors :func:`backfill_quotes`
+    so a row today's :func:`~app.pipeline.jobs_daily.fetch_per` already wrote is
+    never re-touched. 上櫃 檔自然回空（上市月檔端點對上櫃代號無資料）→ no-op.
+
+    A single stock that raises (``SourceFetchError`` or anything else) is logged
+    and skipped so one bad response can't abort the batch; if **every** stock
+    fails that is escalated to ``logger.error`` as a suspected systemic failure.
+    Returns the number of rows written (direct-call tests; CLI verifies via
+    sqlite3).
+
+    Contract: stages changes only; the runner commits/rolls back.
+    """
+    tickers = list(session.scalars(select(models.Company.ticker)).all())
+    written = 0
+    skipped = 0
+    for ticker in tickers:
+        try:
+            history = _collect_ticker_per_history(ticker, months)
+        except Exception as exc:  # noqa: BLE001 - one stock must not abort the batch
+            skipped += 1
+            logger.warning("backfill_per: 跳過 {} — {}", ticker, exc)
+            continue
+        for d, row in history.items():
+            if session.get(models.PerDaily, (ticker, d)) is not None:
+                continue  # 不覆蓋既有列（保留 fetch_per 當日已寫入的值）
+            session.add(
+                models.PerDaily(
+                    ticker=ticker,
+                    date=d,
+                    per=row["per"],
+                    pbr=row["pbr"],
+                    dividend_yield=row["dividend_yield"],
+                )
+            )
+            written += 1
+    if tickers and skipped == len(tickers):
+        # 全部檔皆失敗多半是端點掛掉/封鎖或欄位全面變動，屬系統性失敗，升級為 error
+        # 讓人工注意（單檔失敗仍只是 warning）。
+        logger.error(
+            "backfill_per: 全部 {} 檔皆失敗，疑似系統性失敗（端點異常或結構變動），請人工確認",
+            len(tickers),
+        )
+    logger.info(
+        "backfill_per: 寫入 {} 列（{} 檔，跳過 {} 檔）", written, len(tickers), skipped
+    )
     return written

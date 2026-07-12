@@ -16,17 +16,23 @@ from sqlalchemy.orm import Session
 
 from app.db import models
 from app.db.base import Base, make_engine
-from app.pipeline import jobs, jobs_backfill, jobs_daily
+from app.pipeline import jobs, jobs_backfill, jobs_daily, jobs_monthly
 from app.pipeline.sources import (
     _common,
     mops,
+    tdcc_holders,
     tpex,
     tpex_history,
     tpex_institutional,
+    tpex_per,
+    tpex_revenue,
     twse,
     twse_bfi82u,
     twse_history,
     twse_margin,
+    twse_per,
+    twse_per_history,
+    twse_revenue,
     twse_t86,
     yahoo_indices,
 )
@@ -410,6 +416,28 @@ def test_collect_history_stops_early_when_target_met(monkeypatch):
     assert calls == [m0, m1]  # 達標即停，第三個月從未被抓
 
 
+def test_collect_history_stops_at_month_cap(monkeypatch):
+    # target 遠大於可得（每月僅 1 交易日）→ 湊不滿也停手，走滿 _MAX_MONTHS(6) 個月即止。
+    months = _recent_months(jobs_backfill._MAX_MONTHS)
+    calls: list[tuple[int, int]] = []
+
+    def fake_twse(ticker: str, year: int, month: int) -> dict:
+        calls.append((year, month))
+        return _make_twse_history_raw(year, month, 1)
+
+    monkeypatch.setattr(twse_history, "fetch", fake_twse)
+    monkeypatch.setattr(
+        tpex_history,
+        "fetch",
+        lambda ticker, year, month: _load("tpex_history_nodata.json"),
+    )
+
+    collected = jobs_backfill._collect_ticker_history("2330", 999)
+
+    assert len(collected) == jobs_backfill._MAX_MONTHS  # 每月 1 日 × 6 月
+    assert calls == months  # 走滿月數上限，未提前停
+
+
 # --------------------------------------------------------------------------- #
 # backfill_institutional — walk recent calendar days
 # --------------------------------------------------------------------------- #
@@ -789,3 +817,314 @@ def test_backfill_market_stats_skips_failing_day(monkeypatch, eng):
     with Session(eng) as s:
         # 今天整天被跳過（bfi 先 raise，margin 也不寫）→ 只剩 2 天。
         assert len({f.date for f in s.query(models.MarketFlow).all()}) == 2
+
+
+# --------------------------------------------------------------------------- #
+# fetch_per — 上市 BWIBBU + 上櫃 peratio into per_daily（兩來源隔離）
+# --------------------------------------------------------------------------- #
+
+
+def _patch_per_sources(monkeypatch, listed_raw, otc_raw) -> None:
+    monkeypatch.setattr(twse_per, "fetch", lambda: listed_raw)
+    monkeypatch.setattr(tpex_per, "fetch", lambda: otc_raw)
+
+
+def test_fetch_per_upserts_both_markets(monkeypatch, eng):
+    _patch_per_sources(
+        monkeypatch, _load("twse_bwibbu_all.json"), _load("tpex_peratio.json")
+    )
+    with Session(eng) as s:
+        # 2330 在上市 BWIBBU、3081 在上櫃 peratio；其餘 fixtures 代號未 seed，應被過濾。
+        _seed_companies(s, ["2330", "3081"])
+        jobs_daily.fetch_per(s)
+        s.commit()
+
+    with Session(eng) as s:
+        # 兩來源 row Date 1150709 → 2026-07-09（row Date 優先於呼叫端 fallback）。
+        p2330 = s.get(models.PerDaily, ("2330", "2026-07-09"))
+        p3081 = s.get(models.PerDaily, ("3081", "2026-07-09"))
+        assert p2330 is not None
+        assert p3081 is not None
+        assert p2330.per == pytest.approx(32.47)
+        assert p2330.pbr == pytest.approx(10.63)
+        assert p2330.dividend_yield == pytest.approx(0.91)
+        assert p3081.per == pytest.approx(263.47)
+        assert p3081.pbr == pytest.approx(43.76)
+        assert p3081.dividend_yield == pytest.approx(0.20)
+        tickers = {p.ticker for p in s.query(models.PerDaily).all()}
+        assert tickers == {"2330", "3081"}  # 只有已收錄的兩檔
+
+
+def test_fetch_per_is_idempotent(monkeypatch, eng):
+    _patch_per_sources(
+        monkeypatch, _load("twse_bwibbu_all.json"), _load("tpex_peratio.json")
+    )
+    with Session(eng) as s:
+        _seed_companies(s, ["2330", "3081"])
+        jobs_daily.fetch_per(s)
+        s.commit()
+    with Session(eng) as s:
+        jobs_daily.fetch_per(s)  # 同日重跑 ticker+date PK 覆寫
+        s.commit()
+    with Session(eng) as s:
+        assert s.query(models.PerDaily).count() == 2
+
+
+def test_fetch_per_one_source_fails_other_persists(monkeypatch, eng):
+    # 上市失敗、上櫃成功：上櫃資料仍須 stage 且不 raise（比照 fetch_market_stats）。
+    def boom() -> list[dict]:
+        raise _common.SourceFetchError("本益比-上市", "連線失敗")
+
+    monkeypatch.setattr(twse_per, "fetch", boom)
+    monkeypatch.setattr(tpex_per, "fetch", lambda: _load("tpex_peratio.json"))
+
+    with Session(eng) as s:
+        _seed_companies(s, ["2330", "3081"])
+        jobs_daily.fetch_per(s)  # 單來源失敗不 raise
+        s.commit()
+
+    with Session(eng) as s:
+        assert s.query(models.PerDaily).filter_by(ticker="2330").count() == 0
+        assert s.query(models.PerDaily).filter_by(ticker="3081").count() == 1
+
+
+def test_fetch_per_both_fail_raises(monkeypatch, eng):
+    def boom() -> list[dict]:
+        raise _common.SourceFetchError("本益比", "連線失敗")
+
+    monkeypatch.setattr(twse_per, "fetch", boom)
+    monkeypatch.setattr(tpex_per, "fetch", boom)
+
+    with Session(eng) as s:
+        _seed_companies(s, ["2330", "3081"])
+        with pytest.raises(_common.SourceFetchError):
+            jobs_daily.fetch_per(s)
+
+
+# --------------------------------------------------------------------------- #
+# fetch_fundamentals — 上市 + 上櫃 月營收 into fundamentals（兩來源隔離）
+# --------------------------------------------------------------------------- #
+
+
+def _patch_fundamentals_sources(monkeypatch, listed_raw, otc_raw) -> None:
+    monkeypatch.setattr(twse_revenue, "fetch", lambda: listed_raw)
+    monkeypatch.setattr(tpex_revenue, "fetch", lambda: otc_raw)
+
+
+def test_fetch_fundamentals_upserts_both_markets(monkeypatch, eng):
+    _patch_fundamentals_sources(
+        monkeypatch, _load("revenue_listed.json"), _load("revenue_otc.json")
+    )
+    with Session(eng) as s:
+        # 2454 在上市營收、3081 在上櫃營收；其餘 fixtures 代號未 seed，應被過濾。
+        _seed_companies(s, ["2454", "3081"])
+        jobs_monthly.fetch_fundamentals(s)
+        s.commit()
+
+    with Session(eng) as s:
+        # 資料年月 11506 → ISO "2026-06"。
+        f2454 = s.get(models.Fundamental, ("2454", "2026-06"))
+        f3081 = s.get(models.Fundamental, ("3081", "2026-06"))
+        assert f2454 is not None
+        assert f3081 is not None
+        assert f2454.revenue == 58_011_756  # 單位：千元
+        assert f2454.yoy == pytest.approx(2.796444693846599)
+        assert f3081.revenue == 420_507
+        tickers = {f.ticker for f in s.query(models.Fundamental).all()}
+        assert tickers == {"2454", "3081"}  # 只有已收錄的兩檔
+
+
+def test_fetch_fundamentals_pk_overwrite_on_rerun(monkeypatch, eng):
+    # (ticker, month) PK 覆寫：晚申報修正值重跑不重複列。
+    _patch_fundamentals_sources(monkeypatch, _load("revenue_listed.json"), [])
+    with Session(eng) as s:
+        _seed_companies(s, ["2454"])
+        jobs_monthly.fetch_fundamentals(s)
+        s.commit()
+    with Session(eng) as s:
+        jobs_monthly.fetch_fundamentals(s)
+        s.commit()
+    with Session(eng) as s:
+        assert s.query(models.Fundamental).filter_by(ticker="2454").count() == 1
+
+
+def test_fetch_fundamentals_one_source_fails_other_persists(monkeypatch, eng):
+    def boom() -> list[dict]:
+        raise _common.SourceFetchError("月營收-上市", "連線失敗")
+
+    monkeypatch.setattr(twse_revenue, "fetch", boom)
+    monkeypatch.setattr(tpex_revenue, "fetch", lambda: _load("revenue_otc.json"))
+
+    with Session(eng) as s:
+        _seed_companies(s, ["2454", "3081"])
+        jobs_monthly.fetch_fundamentals(s)  # 單來源失敗不 raise
+        s.commit()
+
+    with Session(eng) as s:
+        assert s.query(models.Fundamental).filter_by(ticker="2454").count() == 0
+        assert s.query(models.Fundamental).filter_by(ticker="3081").count() == 1
+
+
+def test_fetch_fundamentals_both_fail_raises(monkeypatch, eng):
+    def boom() -> list[dict]:
+        raise _common.SourceFetchError("月營收", "連線失敗")
+
+    monkeypatch.setattr(twse_revenue, "fetch", boom)
+    monkeypatch.setattr(tpex_revenue, "fetch", boom)
+
+    with Session(eng) as s:
+        with pytest.raises(_common.SourceFetchError):
+            jobs_monthly.fetch_fundamentals(s)
+
+
+# --------------------------------------------------------------------------- #
+# fetch_tdcc — 集保股權分散 into major_holders（單來源 job）
+# --------------------------------------------------------------------------- #
+
+
+def _tdcc_csv() -> str:
+    return (FIXTURES_DIR / "tdcc_holders.csv").read_text(encoding="utf-8-sig")
+
+
+def test_fetch_tdcc_upserts_major_holders(monkeypatch, eng):
+    monkeypatch.setattr(tdcc_holders, "fetch", _tdcc_csv)
+    with Session(eng) as s:
+        # parse 以 wanted=收錄公司 過濾；只 seed 兩檔，其餘 csv 代號不入庫。
+        _seed_companies(s, ["2330", "3081"])
+        jobs_monthly.fetch_tdcc(s)
+        s.commit()
+
+    with Session(eng) as s:
+        h2330 = s.get(models.MajorHolder, ("2330", "2026-07-03"))
+        assert h2330 is not None
+        # 2330 級距 12–15 占比合計 = 87.81；holder_count = Σ 級距 1–15 人數。
+        assert h2330.ratio_400up == pytest.approx(87.81)
+        assert h2330.holder_count == 2_898_020
+        tickers = {h.ticker for h in s.query(models.MajorHolder).all()}
+        assert tickers == {"2330", "3081"}
+
+
+def test_fetch_tdcc_is_idempotent(monkeypatch, eng):
+    monkeypatch.setattr(tdcc_holders, "fetch", _tdcc_csv)
+    with Session(eng) as s:
+        _seed_companies(s, ["2330", "3081"])
+        jobs_monthly.fetch_tdcc(s)
+        s.commit()
+    with Session(eng) as s:
+        jobs_monthly.fetch_tdcc(s)  # 同週重跑 ticker+week PK 覆寫
+        s.commit()
+    with Session(eng) as s:
+        assert s.query(models.MajorHolder).count() == 2
+
+
+def test_fetch_tdcc_source_error_propagates(monkeypatch, eng):
+    # 單來源 job：SourceFetchError 不吞，往上拋給 runner。
+    def boom() -> str:
+        raise _common.SourceFetchError("集保股權分散", "連線失敗")
+
+    monkeypatch.setattr(tdcc_holders, "fetch", boom)
+    with Session(eng) as s:
+        _seed_companies(s, ["2330"])
+        with pytest.raises(_common.SourceFetchError):
+            jobs_monthly.fetch_tdcc(s)
+
+
+# --------------------------------------------------------------------------- #
+# backfill_per — 每檔月本益比歷史 into per_daily
+# --------------------------------------------------------------------------- #
+
+
+def test_backfill_per_writes_history_and_otc_noop(monkeypatch, eng):
+    hist = _load("twse_bwibbu_history.json")  # 2330, 21 交易日 (2026-06)
+    nodata = _load("twse_bwibbu_history_nodata.json")
+    # 上市端點對 2330 有資料、對上櫃 3081 回無資料（上櫃無個股月檔端點）→ 3081 no-op。
+    monkeypatch.setattr(
+        twse_per_history,
+        "fetch",
+        lambda ticker, year, month: hist if ticker == "2330" else nodata,
+    )
+
+    with Session(eng) as s:
+        _seed_companies(s, ["2330", "3081"])
+        written = jobs_backfill.backfill_per(s, months=3)
+        s.commit()
+
+    with Session(eng) as s:
+        assert s.query(models.PerDaily).filter_by(ticker="2330").count() == 21
+        assert s.query(models.PerDaily).filter_by(ticker="3081").count() == 0  # OTC no-op
+        assert written == 21
+        p = s.get(models.PerDaily, ("2330", "2026-06-01"))
+        assert p is not None
+        assert p.per == pytest.approx(31.66)
+        assert p.pbr == pytest.approx(10.37)
+        assert p.dividend_yield == pytest.approx(0.93)
+
+
+def test_backfill_per_does_not_overwrite_existing_row(monkeypatch, eng):
+    hist = _load("twse_bwibbu_history.json")
+    nodata = _load("twse_bwibbu_history_nodata.json")
+    monkeypatch.setattr(
+        twse_per_history,
+        "fetch",
+        lambda ticker, year, month: hist if ticker == "2330" else nodata,
+    )
+    with Session(eng) as s:
+        _seed_companies(s, ["2330"])
+        # 既有列（如 fetch_per 當日已寫）不可被 backfill 覆蓋。
+        s.add(
+            models.PerDaily(
+                ticker="2330", date="2026-06-01", per=999.0, pbr=1.0, dividend_yield=5.0
+            )
+        )
+        s.flush()
+        jobs_backfill.backfill_per(s, months=3)
+        s.commit()
+
+    with Session(eng) as s:
+        p = s.get(models.PerDaily, ("2330", "2026-06-01"))
+        assert p.per == 999.0  # 未被覆蓋
+        assert s.query(models.PerDaily).filter_by(ticker="2330").count() == 21
+
+
+def test_backfill_per_skips_failing_ticker(monkeypatch, eng):
+    hist = _load("twse_bwibbu_history.json")
+    nodata = _load("twse_bwibbu_history_nodata.json")
+
+    def flaky(ticker: str, year: int, month: int) -> dict:
+        if ticker == "9999":
+            raise _common.SourceFetchError("本益比歷史-上市", "連線失敗")
+        return hist if ticker == "2330" else nodata
+
+    monkeypatch.setattr(twse_per_history, "fetch", flaky)
+
+    with Session(eng) as s:
+        _seed_companies(s, ["9999", "2330"])
+        written = jobs_backfill.backfill_per(s, months=3)  # 不因 9999 中止
+        s.commit()
+
+    with Session(eng) as s:
+        assert s.query(models.PerDaily).filter_by(ticker="9999").count() == 0
+        assert s.query(models.PerDaily).filter_by(ticker="2330").count() == 21
+        assert written == 21
+
+
+def test_backfill_per_all_fail_logs_error(monkeypatch, eng):
+    def boom(ticker: str, year: int, month: int) -> dict:
+        raise _common.SourceFetchError("本益比歷史-上市", "連線失敗")
+
+    monkeypatch.setattr(twse_per_history, "fetch", boom)
+
+    from loguru import logger
+
+    messages: list[str] = []
+    sink_id = logger.add(lambda m: messages.append(m), level="ERROR")
+    try:
+        with Session(eng) as s:
+            _seed_companies(s, ["2330", "3081"])
+            written = jobs_backfill.backfill_per(s, months=3)
+            s.commit()
+    finally:
+        logger.remove(sink_id)
+
+    assert written == 0
+    assert any("全部" in msg and "失敗" in msg for msg in messages)

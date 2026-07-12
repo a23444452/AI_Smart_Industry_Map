@@ -24,8 +24,15 @@ from sqlalchemy.orm import Session
 
 from app.db import models
 from app.db.base import utcnow
-from app.pipeline.jobs import _TAIPEI  # 單一定義來源，避免時區常數雙重維護
-from app.pipeline.sources import mops, twse_bfi82u, twse_margin, yahoo_indices
+from app.pipeline.jobs import _TAIPEI, _known_tickers  # 單一定義來源，避免雙重維護
+from app.pipeline.sources import (
+    mops,
+    tpex_per,
+    twse_bfi82u,
+    twse_margin,
+    twse_per,
+    yahoo_indices,
+)
 from app.pipeline.sources._common import SourceFetchError
 
 # 「合計」列不入庫：它是各身份別的衍生總和，前端可自行加總，存了只會與明細重複。
@@ -265,3 +272,79 @@ def fetch_mops(session: Session) -> None:
         session.add(models.MopsAnnouncement(**row))
         inserted += 1
     logger.info("fetch_mops: 新增 {} 則重大訊息（解析 {} 則）", inserted, len(parsed))
+
+
+# --------------------------------------------------------------------------- #
+# fetch_per — 本益比/淨值比/殖利率（上市 + 上櫃）→ per_daily
+# --------------------------------------------------------------------------- #
+
+
+def _upsert_per_daily(session: Session, rows: list[dict], known: set[str]) -> int:
+    """Upsert neutral PER dicts into ``per_daily`` (ticker+date PK 覆寫).
+
+    Drops tickers not in ``known`` (feed is whole-market, we only track 收錄公司).
+    Overwrite is safe because the daily ``twse_per``/``tpex_per`` snapshot and the
+    ``twse_per_history`` backfill emit the **same** columns (per/pbr/dividend_yield)
+    — there is no field one carries that the other nulls out (unlike quotes'
+    change_pct), so ``backfill_per`` shares this helper. Returns rows written.
+    """
+    written = 0
+    for row in rows:
+        ticker = row["ticker"]
+        if ticker not in known:
+            continue
+        date = row["date"]
+        rec = session.get(models.PerDaily, (ticker, date))
+        if rec is None:
+            rec = models.PerDaily(ticker=ticker, date=date)
+            session.add(rec)
+        rec.per = row["per"]
+        rec.pbr = row["pbr"]
+        rec.dividend_yield = row["dividend_yield"]
+        written += 1
+    return written
+
+
+def fetch_per(session: Session) -> None:
+    """Fetch 上市 (BWIBBU_ALL) + 上櫃 (peratio_analysis) 當日全市場 PER snapshot.
+
+    Mirrors :func:`fetch_market_stats`'s two-source isolation: each feed is
+    fetched + upserted under an **independent** try/except so one failing source
+    neither aborts the other nor discards its already-staged rows — a single
+    failure logs a warning and the run still succeeds on the source that worked;
+    only when **both** raise ``SourceFetchError`` is the first re-raised so the
+    runner records the run as failed.
+
+    Both feeds carry a per-row ``Date``; the Taipei trading day is passed as the
+    parse fallback for a row missing/blank Date. Rows are filtered to 收錄公司 and
+    upserted into ``per_daily`` (see :func:`_upsert_per_daily`).
+
+    Contract: stages changes only; the runner commits/rolls back.
+    """
+    date = _taipei_today_iso()
+    known = _known_tickers(session)
+    listed_error: SourceFetchError | None = None
+    otc_error: SourceFetchError | None = None
+    listed_rows = otc_rows = 0
+
+    try:
+        listed = twse_per.parse(twse_per.fetch(), date)
+    except SourceFetchError as exc:
+        listed_error = exc
+        logger.warning("fetch_per: 上市 BWIBBU 略過 — {}", exc)
+    else:
+        listed_rows = _upsert_per_daily(session, listed, known)
+
+    try:
+        otc = tpex_per.parse(tpex_per.fetch(), date)
+    except SourceFetchError as exc:
+        otc_error = exc
+        logger.warning("fetch_per: 上櫃 peratio 略過 — {}", exc)
+    else:
+        otc_rows = _upsert_per_daily(session, otc, known)
+
+    if listed_error is not None and otc_error is not None:
+        # 兩來源皆 SourceFetchError 才 raise（讓 runner 記 failed）；單一來源失敗則
+        # 另一來源已 stage 的資料照常提交（與 fetch_market_stats 同策略）。
+        raise listed_error
+    logger.info("fetch_per: per_daily 上市 {} 列、上櫃 {} 列（{}）", listed_rows, otc_rows, date)

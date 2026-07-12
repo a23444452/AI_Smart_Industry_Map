@@ -13,6 +13,7 @@ from app.pipeline.jobs import fetch_tw_quotes
 from app.pipeline.jobs_backfill import (
     backfill_institutional,
     backfill_market_stats,
+    backfill_per,
     backfill_quotes,
 )
 from app.pipeline.runner import run_job
@@ -53,6 +54,7 @@ def main() -> None:
             ("backfill_quotes", partial(backfill_quotes, days=35)),
             ("backfill_institutional", partial(backfill_institutional, days=14)),
             ("backfill_market_stats", partial(backfill_market_stats, days=30)),
+            ("backfill_per", partial(backfill_per, months=3)),
         )
         failed = False
         for name, fn in jobs:

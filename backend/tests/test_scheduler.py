@@ -158,3 +158,62 @@ def test_scheduler_registers_fetch_mops_daily_cron(monkeypatch):
         assert _field(trigger, "minute") == "10"
         assert _field(trigger, "day_of_week") == "*"
         assert str(trigger.timezone) == "Asia/Taipei"
+
+
+def test_scheduler_registers_fetch_per_cron(monkeypatch):
+    monkeypatch.setattr(settings, "scheduler_enabled", True)
+
+    app = create_app()
+    with TestClient(app):
+        scheduler = app.state.scheduler
+        job = scheduler.get_job("fetch_per")
+        assert job is not None
+        assert job.args[1] == "fetch_per"
+        assert job.misfire_grace_time == 3600
+        assert job.coalesce is True
+
+        trigger = job.trigger
+        assert isinstance(trigger, CronTrigger)
+        # 平日 15:00。
+        assert _field(trigger, "day_of_week") == "mon-fri"
+        assert _field(trigger, "hour") == "15"
+        assert _field(trigger, "minute") == "0"
+        assert str(trigger.timezone) == "Asia/Taipei"
+
+
+def test_scheduler_registers_fetch_fundamentals_daily_cron(monkeypatch):
+    monkeypatch.setattr(settings, "scheduler_enabled", True)
+
+    app = create_app()
+    with TestClient(app):
+        scheduler = app.state.scheduler
+        job = scheduler.get_job("fetch_fundamentals")
+        assert job is not None
+        assert job.args[1] == "fetch_fundamentals"
+
+        trigger = job.trigger
+        assert isinstance(trigger, CronTrigger)
+        # 每日 09:00（含週末）——月營收漸進快照輕量輪詢，day_of_week "*"。
+        assert _field(trigger, "hour") == "9"
+        assert _field(trigger, "minute") == "0"
+        assert _field(trigger, "day_of_week") == "*"
+        assert str(trigger.timezone) == "Asia/Taipei"
+
+
+def test_scheduler_registers_fetch_tdcc_weekly_cron(monkeypatch):
+    monkeypatch.setattr(settings, "scheduler_enabled", True)
+
+    app = create_app()
+    with TestClient(app):
+        scheduler = app.state.scheduler
+        job = scheduler.get_job("fetch_tdcc")
+        assert job is not None
+        assert job.args[1] == "fetch_tdcc"
+
+        trigger = job.trigger
+        assert isinstance(trigger, CronTrigger)
+        # 集保週更 → 週六 09:30。
+        assert _field(trigger, "day_of_week") == "sat"
+        assert _field(trigger, "hour") == "9"
+        assert _field(trigger, "minute") == "30"
+        assert str(trigger.timezone) == "Asia/Taipei"
