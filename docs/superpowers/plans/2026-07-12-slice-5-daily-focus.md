@@ -6,7 +6,7 @@
 
 **Architecture:** 延續方案 A。新增 4 張表（index_snapshots／market_flows／margin_balances／mops_announcements）與 4 條資料來源（Yahoo 指數、TWSE 三大法人金額統計、TWSE 資券、MOPS 重大訊息）；強勢股由 quotes_daily 即時計算。前端新首頁 DailyPage。
 
-**Tech Stack:** 既有棧（指數用 Yahoo v8 chart HTTP API 直打，**不加 yfinance 依賴**——與既有 httpx/_common 模式一致）
+**Tech Stack:** 既有棧＋`curl_cffi`（僅 Yahoo source——實測 Yahoo 對 httpx/curl 的 TLS 指紋回 429、瀏覽器可通，curl_cffi impersonate="chrome" 為 yfinance 社群標準解法；**不加 yfinance**）
 
 **Spec:** `docs/superpowers/specs/2026-07-11-ai-stock-map-clone-design.md` §3（四張表）、§4（fetch_indices/fetch_margin/fetch_mops）、§5（GET /api/daily）、§6（每日焦點頁）
 
