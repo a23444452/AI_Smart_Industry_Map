@@ -1,0 +1,36 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: cowos-advanced-packaging
+title: 先進封裝｜AI 先進封裝
+market_tab: tw
+description: >-
+  CoWoS 等 2.5D／3D 先進封裝把邏輯晶片、HBM 與中介層整合於同一封裝，
+  是 AI 加速器突破頻寬與整合密度瓶頸的關鍵。此環節已成台積電產能擴張的主戰場，牽動載板、
+  測試與設備的整條配套供應。先進封裝的價值量隨每顆 AI 晶片持續攀升，是半導體異質整合的最前沿。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "1717", name: 長興}
+  - {ticker: "2330", name: 台積電}
+  - {ticker: "3037", name: 欣興}
+  - {ticker: "3189", name: 景碩}
+  - {ticker: "3443", name: 創意}
+  - {ticker: "3661", name: 世芯-KY}
+  - {ticker: "3680", name: 家登}
+  - {ticker: "3711", name: 日月光投控}
+  - {ticker: "6239", name: 力成}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: AI 先進封裝
+        desc: 圍繞 CoWoS 等異質整合封裝的代工、載板與配套成員，服務 AI 晶片放量。
+        companies:
+          - {ticker: "1717", role: 利基, relevance: 高}
+          - {ticker: "2330", role: 龍頭, relevance: 高}
+          - {ticker: "3037", role: 龍頭, relevance: 高}
+          - {ticker: "3189", role: 龍頭, relevance: 高}
+          - {ticker: "3443", role: 龍頭, relevance: 高}
+          - {ticker: "3661", role: 龍頭, relevance: 高}
+          - {ticker: "3680", role: 利基, relevance: 高}
+          - {ticker: "3711", role: 龍頭, relevance: 高}
+          - {ticker: "6239", role: 利基, relevance: 高}

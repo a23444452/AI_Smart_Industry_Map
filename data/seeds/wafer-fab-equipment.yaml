@@ -1,0 +1,43 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: wafer-fab-equipment
+title: 半導體製造｜晶圓廠設備
+market_tab: tw
+description: >-
+  晶圓廠設備涵蓋製程設備、檢測量測、零組件與晶圓載具等，支撐晶圓廠的建置與維運。半導體資本支出擴張與在地設備國產化，
+  帶動台廠從次系統與零組件切入國際設備供應鏈。技術驗證門檻高，一旦導入即形成長期供應關係。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2338", name: 光罩}
+  - {ticker: "3289", name: 宜特}
+  - {ticker: "3413", name: 京鼎}
+  - {ticker: "3455", name: 由田}
+  - {ticker: "3551", name: 世禾}
+  - {ticker: "3583", name: 辛耘}
+  - {ticker: "3587", name: 閎康}
+  - {ticker: "3680", name: 家登}
+  - {ticker: "6532", name: 瑞耘}
+  - {ticker: "6658", name: 聯策}
+  - {ticker: "6830", name: 汎銓}
+  - {ticker: "6937", name: 天虹}
+  - {ticker: "8091", name: 翔名}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 晶圓廠設備
+        desc: 涵蓋製程設備、檢測量測與關鍵零組件，服務晶圓廠的建置與量產維運。
+        companies:
+          - {ticker: "2338", role: 新興, relevance: 高}
+          - {ticker: "3289", role: 新興, relevance: 高}
+          - {ticker: "3413", role: 利基, relevance: 高}
+          - {ticker: "3455", role: 新興, relevance: 高}
+          - {ticker: "3551", role: 新興, relevance: 高}
+          - {ticker: "3583", role: 利基, relevance: 高}
+          - {ticker: "3587", role: 新興, relevance: 高}
+          - {ticker: "3680", role: 利基, relevance: 高}
+          - {ticker: "6532", role: 新興, relevance: 高}
+          - {ticker: "6658", role: 新興, relevance: 高}
+          - {ticker: "6830", role: 新興, relevance: 高}
+          - {ticker: "6937", role: 新興, relevance: 高}
+          - {ticker: "8091", role: 新興, relevance: 高}

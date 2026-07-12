@@ -1,0 +1,36 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: glass-core-substrate
+title: 先進封裝｜玻璃基板
+market_tab: tw
+description: >-
+  玻璃基板被視為次世代先進封裝的中介材料，其平整度、尺寸穩定性與電氣特性優於傳統有機載板，
+  適合大面積異質整合與高密度互連。技術仍處於導入前期，鑽孔、鍍膜與設備業者提前卡位。若在 AI 封裝落地，
+  將重塑載板與封裝的材料格局。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "1802", name: 台玻}
+  - {ticker: "2330", name: 台積電}
+  - {ticker: "2467", name: 志聖}
+  - {ticker: "3037", name: 欣興}
+  - {ticker: "3615", name: 安可}
+  - {ticker: "3680", name: 家登}
+  - {ticker: "5234", name: 達興材料}
+  - {ticker: "6405", name: 悅城}
+  - {ticker: "8027", name: 鈦昇}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 玻璃基板
+        desc: 圍繞玻璃基板的材料、設備與加工成員，卡位次世代先進封裝中介材。
+        companies:
+          - {ticker: "1802", role: 利基, relevance: 高}
+          - {ticker: "2330", role: 龍頭, relevance: 高}
+          - {ticker: "2467", role: 利基, relevance: 高}
+          - {ticker: "3037", role: 龍頭, relevance: 高}
+          - {ticker: "3615", role: 新興, relevance: 高}
+          - {ticker: "3680", role: 利基, relevance: 高}
+          - {ticker: "5234", role: 利基, relevance: 高}
+          - {ticker: "6405", role: 新興, relevance: 高}
+          - {ticker: "8027", role: 新興, relevance: 高}

@@ -1,0 +1,40 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: sic-gan-power
+title: 半導體製造｜第三代半導體
+market_tab: tw
+description: >-
+  此題材聚焦第三代半導體的功率元件與製造，將 SiC／GaN 材料轉化為 MOSFET、
+  二極體等實際器件。電動車主逆變器、車載充電與資料中心電源是主要成長引擎，能效與散熱優勢是導入關鍵。
+  台灣業者在磊晶、代工與封裝各環節分工，逐步切入國際車用供應鏈。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2302", name: 麗正}
+  - {ticker: "2340", name: 台亞}
+  - {ticker: "2342", name: 茂矽}
+  - {ticker: "2434", name: 統懋}
+  - {ticker: "2481", name: 強茂}
+  - {ticker: "3105", name: 穩懋}
+  - {ticker: "3317", name: 尼克森}
+  - {ticker: "3707", name: 漢磊}
+  - {ticker: "5347", name: 世界}
+  - {ticker: "6770", name: 力積電}
+  - {ticker: "8255", name: 朋程}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 第三代半導體
+        desc: 從磊晶、晶圓製造到功率元件，涵蓋第三代半導體器件的製造成員。
+        companies:
+          - {ticker: "2302", role: 新興, relevance: 高}
+          - {ticker: "2340", role: 新興, relevance: 高}
+          - {ticker: "2342", role: 新興, relevance: 高}
+          - {ticker: "2434", role: 新興, relevance: 高}
+          - {ticker: "2481", role: 利基, relevance: 高}
+          - {ticker: "3105", role: 利基, relevance: 高}
+          - {ticker: "3317", role: 新興, relevance: 高}
+          - {ticker: "3707", role: 利基, relevance: 高}
+          - {ticker: "5347", role: 龍頭, relevance: 高}
+          - {ticker: "6770", role: 龍頭, relevance: 高}
+          - {ticker: "8255", role: 新興, relevance: 高}

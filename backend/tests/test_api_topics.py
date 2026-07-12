@@ -6,11 +6,14 @@ the engine on `app.state.engine`; these tests seed through that same engine
 what the test wrote.
 """
 
+from pathlib import Path
+
+import yaml
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.db import models
-from app.db.seed import load_seeds
+from app.db.seed import load_seed_doc
 
 
 def _engine(client):
@@ -18,8 +21,15 @@ def _engine(client):
 
 
 def _seed_real(client) -> None:
+    # 只載入 silicon-photonics：本檔的 change_pct_avg／rank 斷言綁定該 seed，
+    # 隔離於 live 目錄之外，避免後續新增題材 seed 影響 rank 與計數。
+    doc = yaml.safe_load(
+        (Path(settings.seeds_dir) / "silicon-photonics.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
     with Session(_engine(client)) as s:
-        load_seeds(settings.seeds_dir, s)
+        load_seed_doc(doc, s)
         s.commit()
 
 

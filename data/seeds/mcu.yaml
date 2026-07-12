@@ -1,0 +1,34 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: mcu
+title: IC 設計｜MCU 嵌入式 IC
+market_tab: tw
+description: >-
+  微控制器（MCU）將處理、記憶與周邊整合於單一晶片，廣泛用於消費、車用、工控與物聯網裝置。
+  邊緣 AI 與車用電子化推升 MCU 的運算需求與內容價值。台廠聚焦利基與消費型 MCU，
+  並向車規與高階應用逐步升級。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2303", name: 聯電}
+  - {ticker: "2379", name: 瑞昱}
+  - {ticker: "2401", name: 凌陽}
+  - {ticker: "3014", name: 聯陽}
+  - {ticker: "4919", name: 新唐}
+  - {ticker: "5347", name: 世界}
+  - {ticker: "5471", name: 松翰}
+  - {ticker: "6202", name: 盛群}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: MCU 嵌入式 IC
+        desc: 涵蓋消費、車用與工控用微控制器成員，切入邊緣 AI 與車用電子化。
+        companies:
+          - {ticker: "2303", role: 龍頭, relevance: 高}
+          - {ticker: "2379", role: 龍頭, relevance: 高}
+          - {ticker: "2401", role: 新興, relevance: 高}
+          - {ticker: "3014", role: 新興, relevance: 高}
+          - {ticker: "4919", role: 利基, relevance: 高}
+          - {ticker: "5347", role: 龍頭, relevance: 高}
+          - {ticker: "5471", role: 新興, relevance: 高}
+          - {ticker: "6202", role: 新興, relevance: 高}

@@ -1,0 +1,23 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: leadframe
+title: 先進封裝｜導線架
+market_tab: tw
+description: >-
+  導線架是傳統打線封裝的金屬支撐與導電骨架，廣泛用於功率、車用與消費性晶片封裝。雖屬成熟環節，
+  車用電子與功率元件的規格升級仍帶來高階化契機。此題材成員多為專業導線架與引線廠，具穩定的封測配套需求。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2351", name: 順德}
+  - {ticker: "5285", name: 界霖}
+  - {ticker: "6548", name: "長科*"}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 導線架
+        desc: 提供打線封裝所需的金屬導線架，服務功率與車用等封裝需求。
+        companies:
+          - {ticker: "2351", role: 利基, relevance: 高}
+          - {ticker: "5285", role: 新興, relevance: 高}
+          - {ticker: "6548", role: 利基, relevance: 高}

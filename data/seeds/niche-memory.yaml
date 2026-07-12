@@ -1,0 +1,29 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: niche-memory
+title: 記憶體｜NOR Flash/利基記憶體
+market_tab: tw
+description: >-
+  利基型記憶體涵蓋 NOR Flash、利基 DRAM 與特殊應用記憶體，避開標準型記憶體的價格週期波動，
+  聚焦車用、工控與網通等長尾市場。產品生命週期長、客戶黏著度高，具穩定的利基定位。AI 邊緣裝置與車用電子帶來新的成長切點。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2337", name: 旺宏}
+  - {ticker: "2344", name: 華邦電}
+  - {ticker: "2408", name: 南亞科}
+  - {ticker: "3006", name: 晶豪科}
+  - {ticker: "5351", name: 鈺創}
+  - {ticker: "6770", name: 力積電}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: NOR Flash/利基記憶體
+        desc: 聚焦 NOR Flash 與利基 DRAM 等特殊記憶體，服務車用工控等長尾市場。
+        companies:
+          - {ticker: "2337", role: 利基, relevance: 高}
+          - {ticker: "2344", role: 龍頭, relevance: 高}
+          - {ticker: "2408", role: 龍頭, relevance: 高}
+          - {ticker: "3006", role: 利基, relevance: 高}
+          - {ticker: "5351", role: 利基, relevance: 高}
+          - {ticker: "6770", role: 龍頭, relevance: 高}

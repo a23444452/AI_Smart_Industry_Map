@@ -1,0 +1,38 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: asic-ip-design
+title: IC 設計｜客製 ASIC 與矽智財
+market_tab: tw
+description: >-
+  客製 ASIC 與矽智財（IP）業者協助雲端與系統客戶打造專用晶片，將特定演算法固化為高效能、
+  低功耗的硬體。AI 自研晶片浪潮推升 ASIC 設計服務與 IP 授權需求，設計服務廠深度綁定先進製程與封裝。
+  此環節是台灣切入 AI 晶片價值鏈的重要支點。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "3035", name: 智原}
+  - {ticker: "3443", name: 創意}
+  - {ticker: "3529", name: 力旺}
+  - {ticker: "3661", name: 世芯-KY}
+  - {ticker: "6423", name: 億而得-創}
+  - {ticker: "6462", name: 神盾}
+  - {ticker: "6533", name: 晶心科}
+  - {ticker: "6643", name: M31}
+  - {ticker: "6695", name: 芯鼎}
+  - {ticker: "8227", name: 巨有科技}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 客製 ASIC 與矽智財
+        desc: 涵蓋 ASIC 設計服務與矽智財授權成員，承接 AI 自研晶片的客製需求。
+        companies:
+          - {ticker: "3035", role: 利基, relevance: 高}
+          - {ticker: "3443", role: 龍頭, relevance: 高}
+          - {ticker: "3529", role: 利基, relevance: 高}
+          - {ticker: "3661", role: 龍頭, relevance: 高}
+          - {ticker: "6423", role: 新興, relevance: 高}
+          - {ticker: "6462", role: 新興, relevance: 高}
+          - {ticker: "6533", role: 新興, relevance: 高}
+          - {ticker: "6643", role: 新興, relevance: 高}
+          - {ticker: "6695", role: 新興, relevance: 高}
+          - {ticker: "8227", role: 新興, relevance: 高}

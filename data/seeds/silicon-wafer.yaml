@@ -1,0 +1,30 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: silicon-wafer
+title: 半導體製造｜矽晶圓
+market_tab: tw
+description: >-
+  矽晶圓是所有半導體元件的基礎襯底，晶圓代工與記憶體製造皆以其為起點，位居產業鏈最上游。
+  12 吋大尺寸晶圓需求隨先進製程與 AI 晶片放量而走強，長晶與拋光的良率與純度是核心競爭力。
+  全球供給集中於少數大廠，具高度寡占特性。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "3016", name: 嘉晶}
+  - {ticker: "3532", name: 台勝科}
+  - {ticker: "5483", name: 中美晶}
+  - {ticker: "6182", name: 合晶}
+  - {ticker: "6488", name: 環球晶}
+  - {ticker: "8028", name: 昇陽半導體}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 矽晶圓
+        desc: 提供半導體製造所需的矽晶圓襯底，從長晶、切片到拋光構成最上游供應。
+        companies:
+          - {ticker: "3016", role: 利基, relevance: 高}
+          - {ticker: "3532", role: 利基, relevance: 高}
+          - {ticker: "5483", role: 利基, relevance: 高}
+          - {ticker: "6182", role: 利基, relevance: 高}
+          - {ticker: "6488", role: 龍頭, relevance: 高}
+          - {ticker: "8028", role: 利基, relevance: 高}

@@ -1,0 +1,48 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: optical-sensors
+title: 光通訊｜光感測與元件
+market_tab: tw
+description: >-
+  光感測與光電元件涵蓋影像感測、光二極體、LED 與感測晶圓級封裝等，應用橫跨消費電子、
+  車用與工業感測。AI 裝置對環境感知與 3D 感測的需求，為此領域帶來新的成長動能。
+  台廠在感測封裝與化合物半導體元件具成本與整合優勢。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2340", name: 台亞}
+  - {ticker: "2393", name: 億光}
+  - {ticker: "2455", name: 全新}
+  - {ticker: "3059", name: 華晶科}
+  - {ticker: "3081", name: 聯亞}
+  - {ticker: "3227", name: 原相}
+  - {ticker: "3374", name: 精材}
+  - {ticker: "3714", name: 富采}
+  - {ticker: "6271", name: 同欣電}
+  - {ticker: "6462", name: 神盾}
+  - {ticker: "6732", name: 昇佳電子}
+  - {ticker: "6742", name: 澤米}
+  - {ticker: "6789", name: 采鈺}
+  - {ticker: "7772", name: 耀穎}
+  - {ticker: "8249", name: 菱光}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 光感測與元件
+        desc: 涵蓋影像與光電感測元件及其晶圓級封裝，服務消費、車用與工業感測。
+        companies:
+          - {ticker: "2340", role: 新興, relevance: 高}
+          - {ticker: "2393", role: 利基, relevance: 高}
+          - {ticker: "2455", role: 利基, relevance: 高}
+          - {ticker: "3059", role: 新興, relevance: 高}
+          - {ticker: "3081", role: 利基, relevance: 高}
+          - {ticker: "3227", role: 利基, relevance: 高}
+          - {ticker: "3374", role: 利基, relevance: 高}
+          - {ticker: "3714", role: 利基, relevance: 高}
+          - {ticker: "6271", role: 利基, relevance: 高}
+          - {ticker: "6462", role: 新興, relevance: 高}
+          - {ticker: "6732", role: 新興, relevance: 高}
+          - {ticker: "6742", role: 新興, relevance: 高}
+          - {ticker: "6789", role: 利基, relevance: 高}
+          - {ticker: "7772", role: 新興, relevance: 高}
+          - {ticker: "8249", role: 新興, relevance: 高}

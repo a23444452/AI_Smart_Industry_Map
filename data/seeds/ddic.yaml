@@ -1,0 +1,45 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: ddic
+title: IC 設計｜顯示驅動 IC
+market_tab: tw
+description: >-
+  顯示驅動 IC（DDIC）控制面板每個像素的顯示，是面板產業鏈的核心晶片。OLED 與車用顯示的滲透提升，
+  帶動觸控整合（TDDI）與高階驅動 IC 的規格升級。此環節與面板景氣連動，並依賴成熟製程代工與封測的在地配套。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2303", name: 聯電}
+  - {ticker: "2458", name: 義隆}
+  - {ticker: "3034", name: 聯詠}
+  - {ticker: "3141", name: 晶宏}
+  - {ticker: "3527", name: 聚積}
+  - {ticker: "3545", name: 敦泰}
+  - {ticker: "3592", name: 瑞鼎}
+  - {ticker: "4961", name: 天鈺}
+  - {ticker: "5347", name: 世界}
+  - {ticker: "6147", name: 頎邦}
+  - {ticker: "6770", name: 力積電}
+  - {ticker: "8016", name: 矽創}
+  - {ticker: "8150", name: 南茂}
+  - {ticker: "HIMX", name: Himax Technologies, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 顯示驅動 IC
+        desc: 涵蓋面板顯示驅動與觸控整合 IC，以及其代工與封測配套成員。
+        companies:
+          - {ticker: "2303", role: 龍頭, relevance: 高}
+          - {ticker: "2458", role: 利基, relevance: 高}
+          - {ticker: "3034", role: 龍頭, relevance: 高}
+          - {ticker: "3141", role: 新興, relevance: 高}
+          - {ticker: "3527", role: 新興, relevance: 高}
+          - {ticker: "3545", role: 新興, relevance: 高}
+          - {ticker: "3592", role: 新興, relevance: 高}
+          - {ticker: "4961", role: 新興, relevance: 高}
+          - {ticker: "5347", role: 龍頭, relevance: 高}
+          - {ticker: "6147", role: 利基, relevance: 高}
+          - {ticker: "6770", role: 龍頭, relevance: 高}
+          - {ticker: "8016", role: 利基, relevance: 高}
+          - {ticker: "8150", role: 利基, relevance: 高}
+          - {ticker: "HIMX", role: 新興, relevance: 高}

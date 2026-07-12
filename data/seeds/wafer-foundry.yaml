@@ -1,0 +1,28 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: wafer-foundry
+title: 半導體製造｜晶圓代工
+market_tab: tw
+description: >-
+  晶圓代工位居半導體產業鏈的製造核心，接受 IC 設計公司委託、將設計圖轉為實體晶片，
+  是台灣半導體最具全球分量的環節。先進製程持續向 3 奈米以下推進，AI 與高效能運算需求推升尖端產能的擴張動能。
+  技術壁壘與資本密集度極高，龍頭與二線廠在成熟與特殊製程上各有定位。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2303", name: 聯電}
+  - {ticker: "2330", name: 台積電}
+  - {ticker: "3707", name: 漢磊}
+  - {ticker: "5347", name: 世界}
+  - {ticker: "6770", name: 力積電}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 晶圓代工
+        desc: 涵蓋從尖端邏輯製程到成熟與特殊製程的晶圓代工廠，構成台灣半導體製造的骨幹。
+        companies:
+          - {ticker: "2303", role: 龍頭, relevance: 高}
+          - {ticker: "2330", role: 龍頭, relevance: 高}
+          - {ticker: "3707", role: 利基, relevance: 高}
+          - {ticker: "5347", role: 龍頭, relevance: 高}
+          - {ticker: "6770", role: 龍頭, relevance: 高}

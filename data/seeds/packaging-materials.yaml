@@ -1,0 +1,25 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: packaging-materials
+title: 先進封裝｜封裝膠料與焊錫
+market_tab: tw
+description: >-
+  封裝膠料、焊錫與相關耗材是封裝製程的必要投入，直接影響封裝的可靠度與散熱表現。先進封裝與車用電子的高規格需求，
+  推升高階材料的技術含量與單位價值。此環節具耗材屬性、出貨穩定，並隨封裝結構複雜化而受惠。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "1717", name: 長興}
+  - {ticker: "3305", name: 昇貿}
+  - {ticker: "3444", name: 利機}
+  - {ticker: "8070", name: "長華*"}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 封裝膠料與焊錫
+        desc: 供應封裝所需的膠料、焊錫與相關耗材，是封裝製程穩定量產的支撐。
+        companies:
+          - {ticker: "1717", role: 利基, relevance: 高}
+          - {ticker: "3305", role: 新興, relevance: 高}
+          - {ticker: "3444", role: 新興, relevance: 高}
+          - {ticker: "8070", role: 利基, relevance: 高}

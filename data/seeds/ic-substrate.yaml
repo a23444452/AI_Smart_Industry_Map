@@ -1,0 +1,38 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: ic-substrate
+title: 先進封裝｜IC 載板
+market_tab: tw
+description: >-
+  IC 載板是連接晶片與電路板的關鍵中介，先進封裝與高階運算晶片對其層數、線寬與翹曲控制提出更嚴苛要求。
+  ABF 載板在 AI 與伺服器需求帶動下維持結構性成長，供給擴張需時且資本密集。台廠在高階載板具全球領先地位，
+  是先進封裝不可或缺的配套。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "1721", name: 三晃}
+  - {ticker: "2383", name: 台光電}
+  - {ticker: "3037", name: 欣興}
+  - {ticker: "3189", name: 景碩}
+  - {ticker: "4722", name: 國精化}
+  - {ticker: "4958", name: 臻鼎-KY}
+  - {ticker: "6213", name: 聯茂}
+  - {ticker: "6271", name: 同欣電}
+  - {ticker: "8046", name: 南電}
+  - {ticker: "8358", name: 金居}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: IC 載板
+        desc: 提供承載晶片的高階 IC 載板與銅箔基材，是先進封裝的關鍵中介成員。
+        companies:
+          - {ticker: "1721", role: 新興, relevance: 高}
+          - {ticker: "2383", role: 龍頭, relevance: 高}
+          - {ticker: "3037", role: 龍頭, relevance: 高}
+          - {ticker: "3189", role: 龍頭, relevance: 高}
+          - {ticker: "4722", role: 新興, relevance: 高}
+          - {ticker: "4958", role: 龍頭, relevance: 高}
+          - {ticker: "6213", role: 利基, relevance: 高}
+          - {ticker: "6271", role: 利基, relevance: 高}
+          - {ticker: "8046", role: 龍頭, relevance: 高}
+          - {ticker: "8358", role: 利基, relevance: 高}

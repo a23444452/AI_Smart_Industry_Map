@@ -1,0 +1,53 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: analog-power-ic
+title: IC 設計｜類比與功率 IC
+market_tab: tw
+description: >-
+  類比與功率 IC 負責電源管理、訊號轉換與功率驅動，是所有電子系統的必要組成。AI 伺服器的高功耗與供電密度提升，
+  帶動高階電源管理晶片的價值量成長。產品品項分散、生命週期長，台廠在利基電源與驅動 IC 具穩定的市場定位。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2436", name: 偉詮電}
+  - {ticker: "3014", name: 聯陽}
+  - {ticker: "3227", name: 原相}
+  - {ticker: "3288", name: 點晶}
+  - {ticker: "3438", name: 類比科}
+  - {ticker: "4919", name: 新唐}
+  - {ticker: "5299", name: 杰力}
+  - {ticker: "5347", name: 世界}
+  - {ticker: "5425", name: 台半}
+  - {ticker: "6129", name: 普誠}
+  - {ticker: "6138", name: 茂達}
+  - {ticker: "6202", name: 盛群}
+  - {ticker: "6415", name: "矽力*-KY"}
+  - {ticker: "6679", name: 鈺太}
+  - {ticker: "6719", name: 力智}
+  - {ticker: "6799", name: 來頡}
+  - {ticker: "8081", name: 致新}
+  - {ticker: "8261", name: 富鼎}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 類比與功率 IC
+        desc: 涵蓋電源管理、功率驅動與類比訊號 IC，服務 AI 伺服器與各式電子系統。
+        companies:
+          - {ticker: "2436", role: 新興, relevance: 高}
+          - {ticker: "3014", role: 新興, relevance: 高}
+          - {ticker: "3227", role: 利基, relevance: 高}
+          - {ticker: "3288", role: 新興, relevance: 高}
+          - {ticker: "3438", role: 新興, relevance: 高}
+          - {ticker: "4919", role: 利基, relevance: 高}
+          - {ticker: "5299", role: 新興, relevance: 高}
+          - {ticker: "5347", role: 龍頭, relevance: 高}
+          - {ticker: "5425", role: 利基, relevance: 高}
+          - {ticker: "6129", role: 新興, relevance: 高}
+          - {ticker: "6138", role: 新興, relevance: 高}
+          - {ticker: "6202", role: 新興, relevance: 高}
+          - {ticker: "6415", role: 利基, relevance: 高}
+          - {ticker: "6679", role: 新興, relevance: 高}
+          - {ticker: "6719", role: 新興, relevance: 高}
+          - {ticker: "6799", role: 新興, relevance: 高}
+          - {ticker: "8081", role: 新興, relevance: 高}
+          - {ticker: "8261", role: 利基, relevance: 高}

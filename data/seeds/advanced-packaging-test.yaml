@@ -1,0 +1,46 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: advanced-packaging-test
+title: 先進封裝｜封測代工
+market_tab: tw
+description: >-
+  封測代工承接晶圓製造後的封裝與測試工序，將晶粒轉為可交付的成品晶片，位居產業鏈中後段。
+  先進封裝與高階測試需求提升，帶動封測廠從傳統打線邁向覆晶、扇出與系統級整合。台灣封測產能規模居全球前列，
+  與晶圓代工形成緊密的在地協作。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2329", name: 華泰}
+  - {ticker: "2369", name: 菱生}
+  - {ticker: "2441", name: 超豐}
+  - {ticker: "3265", name: 台星科}
+  - {ticker: "3374", name: 精材}
+  - {ticker: "3711", name: 日月光投控}
+  - {ticker: "6147", name: 頎邦}
+  - {ticker: "6239", name: 力成}
+  - {ticker: "6257", name: 矽格}
+  - {ticker: "6271", name: 同欣電}
+  - {ticker: "6451", name: 訊芯-KY}
+  - {ticker: "8110", name: 華東}
+  - {ticker: "8131", name: 福懋科}
+  - {ticker: "8150", name: 南茂}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 封測代工
+        desc: 提供晶圓後段封裝與測試代工，涵蓋傳統打線到先進封裝的量產成員。
+        companies:
+          - {ticker: "2329", role: 利基, relevance: 高}
+          - {ticker: "2369", role: 新興, relevance: 高}
+          - {ticker: "2441", role: 利基, relevance: 高}
+          - {ticker: "3265", role: 新興, relevance: 高}
+          - {ticker: "3374", role: 利基, relevance: 高}
+          - {ticker: "3711", role: 龍頭, relevance: 高}
+          - {ticker: "6147", role: 利基, relevance: 高}
+          - {ticker: "6239", role: 利基, relevance: 高}
+          - {ticker: "6257", role: 利基, relevance: 高}
+          - {ticker: "6271", role: 利基, relevance: 高}
+          - {ticker: "6451", role: 利基, relevance: 高}
+          - {ticker: "8110", role: 新興, relevance: 高}
+          - {ticker: "8131", role: 利基, relevance: 高}
+          - {ticker: "8150", role: 利基, relevance: 高}

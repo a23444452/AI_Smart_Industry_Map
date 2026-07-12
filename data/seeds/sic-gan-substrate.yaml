@@ -1,0 +1,28 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: sic-gan-substrate
+title: 半導體製造｜第三代半導體材料
+market_tab: tw
+description: >-
+  第三代半導體以碳化矽（SiC）與氮化鎵（GaN）為代表，寬能隙特性使其在高壓、高頻與高溫環境下表現遠優於傳統矽。
+  基板與磊晶是整個第三代供應鏈的技術門檻所在，電動車、快充與工業電源帶動長期需求。台廠多從矽晶圓延伸切入，
+  逐步建立長晶與磊晶能力。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "3016", name: 嘉晶}
+  - {ticker: "3707", name: 漢磊}
+  - {ticker: "5483", name: 中美晶}
+  - {ticker: "6182", name: 合晶}
+  - {ticker: "6488", name: 環球晶}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 第三代半導體材料
+        desc: 聚焦碳化矽與氮化鎵的基板長晶與磊晶，是第三代半導體元件的材料源頭。
+        companies:
+          - {ticker: "3016", role: 利基, relevance: 高}
+          - {ticker: "3707", role: 利基, relevance: 高}
+          - {ticker: "5483", role: 利基, relevance: 高}
+          - {ticker: "6182", role: 利基, relevance: 高}
+          - {ticker: "6488", role: 龍頭, relevance: 高}

@@ -1,0 +1,44 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: semi-process-materials
+title: 半導體製造｜前段製程材料
+market_tab: tw
+description: >-
+  前段製程材料涵蓋光阻、特用化學品、電子級氣體、研磨液與濺鍍靶材等耗材，是晶圓製造每一道工序不可或缺的投入。
+  隨製程微縮與晶圓產能擴張，材料的純度與在地供應韌性愈受重視。國產替代與客戶認證週期長，
+  具高黏著度與穩定的出海口。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "1560", name: 中砂}
+  - {ticker: "1711", name: 永光}
+  - {ticker: "1727", name: 中華化}
+  - {ticker: "1773", name: 勝一}
+  - {ticker: "1785", name: 光洋科}
+  - {ticker: "3010", name: 華立}
+  - {ticker: "3663", name: 鑫科}
+  - {ticker: "4749", name: 新應材}
+  - {ticker: "4755", name: 三福化}
+  - {ticker: "4768", name: 晶呈科技}
+  - {ticker: "4772", name: 台特化}
+  - {ticker: "5234", name: 達興材料}
+  - {ticker: "5434", name: 崇越}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 前段製程材料
+        desc: 供應晶圓前段製程所需的化學品、氣體與耗材，是製造放量的隱形受惠者。
+        companies:
+          - {ticker: "1560", role: 利基, relevance: 高}
+          - {ticker: "1711", role: 新興, relevance: 高}
+          - {ticker: "1727", role: 新興, relevance: 高}
+          - {ticker: "1773", role: 利基, relevance: 高}
+          - {ticker: "1785", role: 利基, relevance: 高}
+          - {ticker: "3010", role: 利基, relevance: 高}
+          - {ticker: "3663", role: 新興, relevance: 高}
+          - {ticker: "4749", role: 利基, relevance: 高}
+          - {ticker: "4755", role: 新興, relevance: 高}
+          - {ticker: "4768", role: 新興, relevance: 高}
+          - {ticker: "4772", role: 利基, relevance: 高}
+          - {ticker: "5234", role: 利基, relevance: 高}
+          - {ticker: "5434", role: 利基, relevance: 高}

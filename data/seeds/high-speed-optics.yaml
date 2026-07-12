@@ -1,0 +1,56 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: high-speed-optics
+title: 光通訊｜高速光模組
+market_tab: tw
+description: >-
+  高速光模組將電訊號轉為光訊號，是資料中心與 AI 叢集內部互連的關鍵元件。800G／1.6T 世代加速導入，
+  帶動光收發模組、雷射晶粒與光學元件的整條供應鏈需求。台廠在磊晶、模組組裝與被動元件各環節分工，
+  直接受惠 AI 網路建置。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2345", name: 智邦}
+  - {ticker: "2455", name: 全新}
+  - {ticker: "3081", name: 聯亞}
+  - {ticker: "3163", name: 波若威}
+  - {ticker: "3234", name: 光環}
+  - {ticker: "3265", name: 台星科}
+  - {ticker: "3363", name: 上詮}
+  - {ticker: "3380", name: 明泰}
+  - {ticker: "3450", name: 聯鈞}
+  - {ticker: "4908", name: 前鼎}
+  - {ticker: "4971", name: IET-KY}
+  - {ticker: "4977", name: 眾達-KY}
+  - {ticker: "4979", name: 華星光}
+  - {ticker: "4991", name: 環宇-KY}
+  - {ticker: "6257", name: 矽格}
+  - {ticker: "6442", name: 光聖}
+  - {ticker: "6451", name: 訊芯-KY}
+  - {ticker: "6588", name: 東典光電}
+  - {ticker: "6715", name: 嘉基}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 高速光模組
+        desc: 涵蓋光收發模組、雷射晶粒與光學元件，服務資料中心高速互連需求。
+        companies:
+          - {ticker: "2345", role: 龍頭, relevance: 高}
+          - {ticker: "2455", role: 利基, relevance: 高}
+          - {ticker: "3081", role: 利基, relevance: 高}
+          - {ticker: "3163", role: 利基, relevance: 高}
+          - {ticker: "3234", role: 新興, relevance: 高}
+          - {ticker: "3265", role: 新興, relevance: 高}
+          - {ticker: "3363", role: 利基, relevance: 高}
+          - {ticker: "3380", role: 新興, relevance: 高}
+          - {ticker: "3450", role: 利基, relevance: 高}
+          - {ticker: "4908", role: 新興, relevance: 高}
+          - {ticker: "4971", role: 新興, relevance: 高}
+          - {ticker: "4977", role: 新興, relevance: 高}
+          - {ticker: "4979", role: 利基, relevance: 高}
+          - {ticker: "4991", role: 利基, relevance: 高}
+          - {ticker: "6257", role: 利基, relevance: 高}
+          - {ticker: "6442", role: 利基, relevance: 高}
+          - {ticker: "6451", role: 利基, relevance: 高}
+          - {ticker: "6588", role: 新興, relevance: 高}
+          - {ticker: "6715", role: 新興, relevance: 高}

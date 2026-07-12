@@ -11,6 +11,21 @@ from app.db.seed import load_seeds
 SEEDS_DIR = Path(__file__).resolve().parents[2] / "data" / "seeds"
 
 
+def _sp_only_dir(tmp_path) -> str:
+    """把 silicon-photonics seed 隔離到獨立目錄。
+
+    這些 count-based 斷言綁定在單一 seed 的已知資料上；直接讀 live 目錄會隨
+    題材目錄成長（23+ seeds）而失準。隔離後計數不受後續新增 seed 影響。
+    """
+    d = tmp_path / "sp-only-seeds"
+    d.mkdir()
+    (d / "silicon-photonics.yaml").write_text(
+        (SEEDS_DIR / "silicon-photonics.yaml").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    return str(d)
+
+
 def _make_session(tmp_path) -> Session:
     eng = make_engine(f"{tmp_path}/t.db")
     Base.metadata.create_all(eng)
@@ -27,7 +42,7 @@ def _counts(s: Session) -> tuple[int, int, int]:
 
 def test_load_seeds_populates_expected_counts(tmp_path):
     with _make_session(tmp_path) as s:
-        load_seeds(str(SEEDS_DIR), s)
+        load_seeds(_sp_only_dir(tmp_path), s)
         s.commit()
         topics, companies, topic_companies = _counts(s)
     # 1 題材、17 檔公司；topic_companies = 上游 9 + 中游 (6+1+4)=11 = 20 筆
@@ -37,12 +52,13 @@ def test_load_seeds_populates_expected_counts(tmp_path):
 
 
 def test_load_seeds_is_idempotent(tmp_path):
+    sp_dir = _sp_only_dir(tmp_path)
     with _make_session(tmp_path) as s:
-        load_seeds(str(SEEDS_DIR), s)
+        load_seeds(sp_dir, s)
         s.commit()
         first = _counts(s)
         # 再跑一次不得產生重複列
-        load_seeds(str(SEEDS_DIR), s)
+        load_seeds(sp_dir, s)
         s.commit()
         assert _counts(s) == first
         assert first == (1, 17, 20)
@@ -50,7 +66,7 @@ def test_load_seeds_is_idempotent(tmp_path):
 
 def test_load_seeds_updates_changed_title(tmp_path, monkeypatch):
     with _make_session(tmp_path) as s:
-        load_seeds(str(SEEDS_DIR), s)
+        load_seeds(_sp_only_dir(tmp_path), s)
         s.commit()
         assert s.get(models.Topic, "silicon-photonics").title == "光通訊｜矽光子與 CPO"
 
@@ -101,7 +117,7 @@ def test_load_seeds_is_upsert_only_no_deletion(tmp_path):
     刪除 DB 後重跑 seed。
     """
     with _make_session(tmp_path) as s:
-        load_seeds(str(SEEDS_DIR), s)
+        load_seeds(_sp_only_dir(tmp_path), s)
         s.commit()
         assert s.get(models.Company, "3289") is not None
 
@@ -239,4 +255,4 @@ def test_load_seeds_returns_imported_file_count(tmp_path):
     empty.mkdir()
     with _make_session(tmp_path) as s:
         assert load_seeds(str(empty), s) == 0
-        assert load_seeds(str(SEEDS_DIR), s) == 1
+        assert load_seeds(_sp_only_dir(tmp_path), s) == 1

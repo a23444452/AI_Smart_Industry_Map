@@ -1,0 +1,48 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: hbm
+title: 記憶體｜HBM 高頻寬記憶體
+market_tab: tw
+description: >-
+  HBM 以 3D 堆疊與矽穿孔（TSV）技術提供遠超傳統 DRAM 的頻寬，是 AI 加速器不可或缺的記憶體。
+  雖然堆疊本體由國際大廠主導，台廠深度參與其測試、探針、封裝與散熱等配套環節。AI 算力擴張直接拉動 HBM 用量，
+  相關驗證與測試需求同步放大。
+verified_at: "2026-07-12"
+
+companies:
+  - {ticker: "2330", name: 台積電}
+  - {ticker: "2449", name: 京元電子}
+  - {ticker: "3443", name: 創意}
+  - {ticker: "3583", name: 辛耘}
+  - {ticker: "3653", name: 健策}
+  - {ticker: "3661", name: 世芯-KY}
+  - {ticker: "3711", name: 日月光投控}
+  - {ticker: "6187", name: 萬潤}
+  - {ticker: "6223", name: 旺矽}
+  - {ticker: "6239", name: 力成}
+  - {ticker: "6510", name: 精測}
+  - {ticker: "6515", name: 穎崴}
+  - {ticker: "6531", name: "愛普*"}
+  - {ticker: "6770", name: 力積電}
+  - {ticker: "8112", name: 至上}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: HBM 高頻寬記憶體
+        desc: 涵蓋 HBM 的測試、探針、封裝與散熱等配套成員，受惠 AI 記憶體放量。
+        companies:
+          - {ticker: "2330", role: 龍頭, relevance: 高}
+          - {ticker: "2449", role: 龍頭, relevance: 高}
+          - {ticker: "3443", role: 龍頭, relevance: 高}
+          - {ticker: "3583", role: 利基, relevance: 高}
+          - {ticker: "3653", role: 龍頭, relevance: 高}
+          - {ticker: "3661", role: 龍頭, relevance: 高}
+          - {ticker: "3711", role: 龍頭, relevance: 高}
+          - {ticker: "6187", role: 利基, relevance: 高}
+          - {ticker: "6223", role: 龍頭, relevance: 高}
+          - {ticker: "6239", role: 利基, relevance: 高}
+          - {ticker: "6510", role: 利基, relevance: 高}
+          - {ticker: "6515", role: 利基, relevance: 高}
+          - {ticker: "6531", role: 利基, relevance: 高}
+          - {ticker: "6770", role: 龍頭, relevance: 高}
+          - {ticker: "8112", role: 利基, relevance: 高}
