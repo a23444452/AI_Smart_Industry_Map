@@ -48,8 +48,10 @@ _CONFLICT_BODY = {
 _ACTIVE_STATUSES = ("pending", "running")
 
 
-# 靜態斷言：Literal 與 MODES 不同步時提早在載入期炸出，避免驗證行為與常數漂移。
-assert set(AnalysisMode.__args__) == set(MODES), "AnalysisMode 與 MODES 不一致"
+# 常數一致性守衛：Literal 與 MODES 不同步時提早在載入期炸出，避免驗證行為與常數
+# 漂移。用顯式 raise 而非 assert——assert 在 `python -O` 最佳化模式會被剝除。
+if set(AnalysisMode.__args__) != set(MODES):  # pragma: no cover - 載入期守衛
+    raise RuntimeError("AnalysisMode Literal 與 services.analysis.MODES 不一致")
 
 
 # ── POST /api/ai/analyze ─────────────────────────────────────────────────────
