@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import type { MoverItem, Movers } from "../../api/daily";
 import { formatPct, pctColorClass } from "../../lib/format";
 
@@ -16,10 +17,15 @@ type Period = (typeof TABS)[number]["value"];
 
 function Row({ item, rank }: { item: MoverItem; rank: number }) {
   return (
-    <tr className="border-t border-border-line">
+    <tr className="border-t border-border-line transition-colors hover:bg-surface-2">
       <td className="py-2 pr-2 text-right text-xs text-text-dim">{rank}</td>
-      <td className="py-2 pr-2 text-left tabular-nums text-text-main">
-        {item.ticker}
+      <td className="py-2 pr-2 text-left tabular-nums">
+        <Link
+          to={`/c/${item.ticker}`}
+          className="text-accent transition-colors hover:underline"
+        >
+          {item.ticker}
+        </Link>
       </td>
       <td className="py-2 pr-2 text-left text-text-dim">{item.name}</td>
       <td className="py-2 pr-2 text-right tabular-nums text-text-main">
@@ -42,7 +48,7 @@ export function MoversRanking({ movers }: MoversRankingProps) {
   return (
     <div className="rounded-xl border border-border-line bg-surface p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-medium text-text-main">漲幅排行</h2>
+        <h2 className="text-sm font-medium text-text-main">強勢股排行</h2>
         <div className="flex gap-1">
           {TABS.map((tab) => (
             <button

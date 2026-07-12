@@ -29,3 +29,5 @@ export const UP_COLORS = ["#f99aa8", "#f6465d", "#cf2942", "#a01d30"] as const;
 export const DOWN_COLORS = ["#86e3c0", "#2ebd85", "#1f9268", "#14664a"] as const;
 /** 持平（change_pct === 0）灰塊 */
 export const FLAT_COLOR = "#3a4358";
+/** 圖表系列用藍（PER 河流分位帶／集保大戶持股折線）；中性資訊藍，與紅漲綠跌不衝突。 */
+export const SERIES_BLUE = "#5b8def";

@@ -6,6 +6,8 @@ import { DailyPage } from "./pages/DailyPage";
 import { TopicsPage } from "./pages/TopicsPage";
 import { TopicDetailPage } from "./pages/TopicDetailPage";
 import { TopicMapPage } from "./pages/TopicMapPage";
+import { CompaniesPage } from "./pages/CompaniesPage";
+import { CompanyPage } from "./pages/CompanyPage";
 
 // 全域 React Query 客戶端：30 秒內視為新鮮、切回視窗不自動重抓。
 // retry：4xx 為明確的客戶端錯誤（如 404）不重試、立即進錯誤態；其餘（5xx／網路）重試 1 次。
@@ -40,6 +42,8 @@ function App() {
             <Route path="/topics" element={<TopicsPage />} />
             <Route path="/topic/:slug" element={<TopicDetailPage />} />
             <Route path="/topic/:slug/map" element={<TopicMapPage />} />
+            <Route path="/companies" element={<CompaniesPage />} />
+            <Route path="/c/:ticker" element={<CompanyPage />} />
           </Routes>
         </main>
       </BrowserRouter>

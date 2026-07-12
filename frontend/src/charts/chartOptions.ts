@@ -6,7 +6,7 @@
  * 後端各欄多為 nullable，故轉換時皆容忍 null（折線以 connectNulls:false 斷線）。
  */
 import type { EChartsCoreOption } from "echarts/core";
-import { UP_COLORS, DOWN_COLORS } from "./theme";
+import { UP_COLORS, DOWN_COLORS, FLAT_COLOR, CHART_TEXT, SERIES_BLUE } from "./theme";
 import {
   AXIS_LINE_STYLE,
   AXIS_LABEL_STYLE,
@@ -49,7 +49,11 @@ export interface HoldersItem {
 /** K 線圖預設顯示的最近筆數（dataZoom 視窗）。 */
 export const KLINE_RECENT = 60;
 
-/** close ≥ open 視為上漲（紅）；含平盤，與 ECharts candlestick 陽線判定一致。 */
+/**
+ * close ≥ open 視為上漲（紅），用於成交量 bar 的逐筆著色。
+ * 含平盤（doji，close===open）在此歸為上漲——這是成交量著色的簡化選擇；
+ * K 棒本體的陰陽由 ECharts candlestick 自行判定，其對 doji 的著色未必與此一致。
+ */
 function isUp(open: number | null, close: number | null): boolean {
   return open !== null && close !== null && close >= open;
 }
@@ -162,9 +166,6 @@ const RIVER_BANDS = [
   { key: "band_p90", name: "P90" },
 ] as const;
 
-/** close 折線用醒目色（主文字色，浮於半透明藍帶之上）。 */
-const CANDLE_LINE = "#e6ebf5";
-
 /**
  * PER 河流圖：close 折線 + 五條分位帶（P10/25/50/75/90）。
  *
@@ -181,9 +182,9 @@ export function toPerRiverOption(items: PerRiverItem[]): EChartsCoreOption {
     data: items.map((i) => i[b.key]),
     connectNulls: false,
     showSymbol: false,
-    lineStyle: { width: 1, opacity: 0.5, color: "#5b8def" },
+    lineStyle: { width: 1, opacity: 0.5, color: SERIES_BLUE },
     // 疊層填色：中位帶 opacity 最高，向兩端遞減，重疊出漸層。
-    areaStyle: { color: "#5b8def", opacity: 0.06 + 0.05 * (2 - Math.abs(2 - idx)) },
+    areaStyle: { color: SERIES_BLUE, opacity: 0.06 + 0.05 * (2 - Math.abs(2 - idx)) },
   }));
 
   return {
@@ -210,8 +211,8 @@ export function toPerRiverOption(items: PerRiverItem[]): EChartsCoreOption {
         data: items.map((i) => i.close),
         connectNulls: false,
         showSymbol: false,
-        lineStyle: { width: 2, color: CANDLE_LINE },
-        itemStyle: { color: CANDLE_LINE },
+        lineStyle: { width: 2, color: CHART_TEXT },
+        itemStyle: { color: CHART_TEXT },
       },
     ],
   };
@@ -226,7 +227,7 @@ const FLOW_SERIES = [
 
 /** 買賣超正紅負綠；0 或 null 以中性灰。 */
 function flowColor(v: number | null): string {
-  if (v === null || v === 0) return "#3a4358";
+  if (v === null || v === 0) return FLAT_COLOR;
   return v > 0 ? UP_COLORS[1] : DOWN_COLORS[1];
 }
 
@@ -301,9 +302,9 @@ export function toHoldersOption(items: HoldersItem[]): EChartsCoreOption {
         data: items.map((i) => i.ratio_400up),
         showSymbol: false,
         smooth: true,
-        lineStyle: { width: 2, color: "#5b8def" },
-        itemStyle: { color: "#5b8def" },
-        areaStyle: { color: "#5b8def", opacity: 0.18 },
+        lineStyle: { width: 2, color: SERIES_BLUE },
+        itemStyle: { color: SERIES_BLUE },
+        areaStyle: { color: SERIES_BLUE, opacity: 0.18 },
       },
     ],
   };

@@ -5,7 +5,7 @@ const NAV_ITEMS = [
   { label: "每日焦點", to: "/", enabled: true },
   { label: "題材總覽", to: "/topics", enabled: true },
   { label: "產業地圖", to: "/map", enabled: false },
-  { label: "公司資料庫", to: "/companies", enabled: false },
+  { label: "公司資料庫", to: "/companies", enabled: true },
   { label: "AI 分析", to: "/ai", enabled: false },
 ] as const;
 

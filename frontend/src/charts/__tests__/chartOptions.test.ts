@@ -10,7 +10,7 @@ import {
   type InstitutionalItem,
   type HoldersItem,
 } from "../chartOptions";
-import { UP_COLORS, DOWN_COLORS } from "../theme";
+import { UP_COLORS, DOWN_COLORS, FLAT_COLOR } from "../theme";
 
 // ── helpers ────────────────────────────────────────────────────────────────
 function kline(overrides: Partial<KlineItem> = {}): KlineItem {
@@ -173,8 +173,8 @@ describe("toInstitutionalOption", () => {
     const [foreign, trust, dealer] = series(opt);
     expect(foreign.data[0].itemStyle.color).toBe(UP_COLORS[1]); // 正 → 紅
     expect(trust.data[0].itemStyle.color).toBe(DOWN_COLORS[1]); // 負 → 綠
-    expect(dealer.data[0].itemStyle.color).toBe("#3a4358"); // 0 → 中性
-    expect(foreign.data[1].itemStyle.color).toBe("#3a4358"); // null → 中性
+    expect(dealer.data[0].itemStyle.color).toBe(FLAT_COLOR); // 0 → 中性
+    expect(foreign.data[1].itemStyle.color).toBe(FLAT_COLOR); // null → 中性
   });
 
   it("y 軸為 value 型（以零為基準軸）", () => {
