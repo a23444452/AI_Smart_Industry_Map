@@ -1,0 +1,50 @@
+[
+  {
+    "Date": "1150709",
+    "Code": "1101",
+    "Name": "台泥",
+    "PEratio": "",
+    "DividendYield": "3.52",
+    "PBratio": "0.72"
+  },
+  {
+    "Date": "1150709",
+    "Code": "1102",
+    "Name": "亞泥",
+    "PEratio": "11.98",
+    "DividendYield": "6.44",
+    "PBratio": "0.71"
+  },
+  {
+    "Date": "1150709",
+    "Code": "1103",
+    "Name": "嘉泥",
+    "PEratio": "16.75",
+    "DividendYield": "3.88",
+    "PBratio": "0.49"
+  },
+  {
+    "Date": "1150709",
+    "Code": "1104",
+    "Name": "環泥",
+    "PEratio": "10.59",
+    "DividendYield": "6.83",
+    "PBratio": "0.74"
+  },
+  {
+    "Date": "1150709",
+    "Code": "1108",
+    "Name": "幸福",
+    "PEratio": "6.76",
+    "DividendYield": "7.33",
+    "PBratio": "1.02"
+  },
+  {
+    "Date": "1150709",
+    "Code": "2330",
+    "Name": "台積電",
+    "PEratio": "32.47",
+    "DividendYield": "0.91",
+    "PBratio": "10.63"
+  }
+]

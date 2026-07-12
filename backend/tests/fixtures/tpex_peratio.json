@@ -1,0 +1,56 @@
+[
+  {
+    "Date": "1150709",
+    "SecuritiesCompanyCode": "1240",
+    "CompanyName": "茂生農經",
+    "PriceEarningRatio": "12.38",
+    "DividendPerShare": "3.50000000",
+    "YieldRatio": "6.06",
+    "PriceBookRatio": "1.64"
+  },
+  {
+    "Date": "1150709",
+    "SecuritiesCompanyCode": "1259",
+    "CompanyName": "安心",
+    "PriceEarningRatio": "26.29",
+    "DividendPerShare": "1.20000000",
+    "YieldRatio": "2.04",
+    "PriceBookRatio": "0.74"
+  },
+  {
+    "Date": "1150709",
+    "SecuritiesCompanyCode": "1264",
+    "CompanyName": "德麥",
+    "PriceEarningRatio": "13.02",
+    "DividendPerShare": "15.00000000",
+    "YieldRatio": "5.55",
+    "PriceBookRatio": "2.99"
+  },
+  {
+    "Date": "1150709",
+    "SecuritiesCompanyCode": "1268",
+    "CompanyName": "漢來美食",
+    "PriceEarningRatio": "14.27",
+    "DividendPerShare": "8.00000000",
+    "YieldRatio": "4.83",
+    "PriceBookRatio": "2.74"
+  },
+  {
+    "Date": "1150709",
+    "SecuritiesCompanyCode": "1294",
+    "CompanyName": "漢田生技",
+    "PriceEarningRatio": "12.07",
+    "DividendPerShare": "5.00000000",
+    "YieldRatio": "8.47",
+    "PriceBookRatio": "2.05"
+  },
+  {
+    "Date": "1150709",
+    "SecuritiesCompanyCode": "3081",
+    "CompanyName": "聯亞",
+    "PriceEarningRatio": "263.47",
+    "DividendPerShare": "4.00000000",
+    "YieldRatio": "0.20",
+    "PriceBookRatio": "43.76"
+  }
+]

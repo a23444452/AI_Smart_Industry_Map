@@ -439,6 +439,64 @@ def _record_revenue() -> None:
         _write(f"{name}.json", _select(rows, want))
 
 
+# 本益比/殖利率/股價淨值比 (PER/yield/PBR). Two current-day whole-market snapshots
+# (bare list[dict], no date parameter) + one per-stock month history (table shape).
+#   上市 TWSE:  exchangeReport/BWIBBU_ALL — keys Date/Code/Name/PEratio/
+#              DividendYield/PBratio; Date is ROC packed "1150709".
+#   上櫃 TPEx:  openapi/v1/tpex_mainboard_peratio_analysis — keys Date/
+#              SecuritiesCompanyCode/CompanyName/PriceEarningRatio/
+#              DividendPerShare/YieldRatio/PriceBookRatio.
+# 上櫃個股歷史: 遍尋不著逐檔月檔端點 — peQryDate/PERatio 皆為「某日全市場」快照
+#   (code 參數被忽略)，非「某檔跨月」時間序。依計畫放棄，上櫃河流圖改以日更累積。
+# 上市個股月檔 (河流圖 backfill): rwd/zh/afterTrading/BWIBBU?date=YYYYMM01&stockNo=
+#   — {stat, fields:['日期','殖利率(%)','股利年度','本益比','股價淨值比','財報年/季'],
+#   data:[row,...]}; row 日期 是中文 ROC "115年06月01日"。2026-06 為結算月；
+#   2027-01 未來月回 {stat:"查詢日期大於今日…", total:0} (nodata fixture)。
+PER_LISTED_URL = "https://openapi.twse.com.tw/v1/exchangeReport/BWIBBU_ALL"
+PER_OTC_URL = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_peratio_analysis"
+PER_HISTORY_URL = (
+    "https://www.twse.com.tw/rwd/zh/afterTrading/BWIBBU"
+    "?date={date}&stockNo={ticker}&response=json"
+)
+PER_HISTORY_TICKER = "2330"  # 台積電 (上市)
+
+
+def _record_per() -> None:
+    print(f"GET {PER_LISTED_URL}")
+    listed = _fetch(PER_LISTED_URL)
+    print(f"  count={len(listed)}; keys={list(listed[0]) if listed else '<empty>'}")
+    _write("twse_bwibbu_all.json", _select(listed, "2330"))
+
+    print(f"GET {PER_OTC_URL}")
+    otc = _fetch(PER_OTC_URL)
+    print(f"  count={len(otc)}; keys={list(otc[0]) if otc else '<empty>'}")
+    _write("tpex_peratio.json", _select(otc, "3081"))
+
+    y, m = HIST_YM
+    hist_url = PER_HISTORY_URL.format(date=f"{y}{m}01", ticker=PER_HISTORY_TICKER)
+    print(f"GET {hist_url}")
+    hist = _fetch(hist_url)
+    rows = hist.get("data") or []
+    print(f"  stat={hist.get('stat')} rows={len(rows)} fields={hist.get('fields')}")
+    _write(
+        "twse_bwibbu_history.json",
+        {
+            "stat": hist["stat"],
+            "date": hist.get("date"),
+            "title": hist.get("title"),
+            "fields": hist["fields"],
+            "data": rows,  # ~21 rows, small enough to keep whole
+        },
+    )
+
+    fy, fm = HIST_FUTURE_YM
+    nd_url = PER_HISTORY_URL.format(date=f"{fy}{fm}01", ticker=PER_HISTORY_TICKER)
+    print(f"GET {nd_url}")
+    nodata = _fetch(nd_url)
+    print(f"  no-data stat={nodata.get('stat')} keys={sorted(nodata)}")
+    _write("twse_bwibbu_history_nodata.json", nodata)
+
+
 def main() -> None:
     FIXTURES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -469,6 +527,7 @@ def main() -> None:
     _record_yahoo()
     _record_mops()
     _record_revenue()
+    _record_per()
 
 
 if __name__ == "__main__":

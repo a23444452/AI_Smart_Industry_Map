@@ -188,6 +188,31 @@ def roc_slash_to_iso(raw: object) -> str | None:
         return None
 
 
+def roc_cn_to_iso(raw: object) -> str | None:
+    """Convert a Chinese Minguo (ROC) date like '115年06月01日' to ISO '2026-06-01'.
+
+    The per-stock *BWIBBU* (PER/yield/PBR) month history renders each row's date
+    with 年/月/日 separators rather than the slash form the STOCK_DAY history uses,
+    so ``roc_slash_to_iso`` can't parse it. Tolerates non-padded parts
+    ('115年6月1日'); returns None for blank or malformed input.
+    """
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text:
+        return None
+    for sep in ("年", "月", "日"):
+        text = text.replace(sep, "/")
+    parts = [p for p in text.split("/") if p != ""]
+    if len(parts) != 3 or not all(p.isdigit() for p in parts):
+        return None
+    year, month, day = (int(p) for p in parts)
+    try:
+        return date(year + 1911, month, day).isoformat()
+    except ValueError:
+        return None
+
+
 def to_number(raw: object) -> float | None:
     """Parse an exchange numeric string to float; blanks/'--' → None.
 

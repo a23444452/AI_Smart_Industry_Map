@@ -17,11 +17,14 @@ from app.pipeline.sources import (
     tpex,
     tpex_history,
     tpex_institutional,
+    tpex_per,
     tpex_revenue,
     twse,
     twse_bfi82u,
     twse_history,
     twse_margin,
+    twse_per,
+    twse_per_history,
     twse_revenue,
     twse_t86,
     yahoo_indices,
@@ -1079,3 +1082,200 @@ def test_revenue_fetch_otc_url(monkeypatch):
     tpex_revenue.fetch()
     assert captured["url"] == tpex_revenue.OTC_URL
     assert "上櫃" in captured["source"]
+
+
+# --- 本益比/殖利率/股價淨值比 (PER, BWIBBU_ALL + peratio_analysis) -----------
+
+PER_KEYS = {"ticker", "date", "per", "pbr", "dividend_yield"}
+
+# The whole-market snapshots carry no session date the caller can rely on being
+# present, so parse() takes the Taipei trading date the job passes in; it is used
+# only as a fallback when a row lacks its own parseable Date column.
+CALLER_DATE = "2026-07-09"
+
+
+@pytest.fixture
+def bwibbu_all_fixture() -> list[dict]:
+    return json.loads(
+        (FIXTURES_DIR / "twse_bwibbu_all.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def tpex_peratio_fixture() -> list[dict]:
+    return json.loads(
+        (FIXTURES_DIR / "tpex_peratio.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def bwibbu_history_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "twse_bwibbu_history.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def bwibbu_history_nodata_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "twse_bwibbu_history_nodata.json").read_text(encoding="utf-8")
+    )
+
+
+def test_parse_twse_per(bwibbu_all_fixture):
+    rows = twse_per.parse(bwibbu_all_fixture, CALLER_DATE)
+    assert len(rows) == len(bwibbu_all_fixture)
+    r = next(x for x in rows if x["ticker"] == "2330")
+    assert set(r) == PER_KEYS
+    assert r["date"] == "2026-07-09"  # row Date "1150709" -> ISO
+    assert r["per"] == pytest.approx(32.47)
+    assert r["pbr"] == pytest.approx(10.63)
+    assert r["dividend_yield"] == pytest.approx(0.91)
+
+
+def test_parse_twse_per_blank_ratio_is_none(bwibbu_all_fixture):
+    # 1101 (台泥) has an empty PEratio in the real feed -> None (not a crash).
+    rows = twse_per.parse(bwibbu_all_fixture, CALLER_DATE)
+    r = next(x for x in rows if x["ticker"] == "1101")
+    assert r["per"] is None
+    assert r["dividend_yield"] == pytest.approx(3.52)
+
+
+def test_parse_tpex_per_shares_parser(tpex_peratio_fixture):
+    # 上櫃 feed uses English keys (PriceEarningRatio/YieldRatio/PriceBookRatio);
+    # tpex_per reuses twse_per.parse via candidate keys.
+    rows = tpex_per.parse(tpex_peratio_fixture, CALLER_DATE)
+    assert len(rows) == len(tpex_peratio_fixture)
+    r = next(x for x in rows if x["ticker"] == "3081")
+    assert set(r) == PER_KEYS
+    assert r["date"] == "2026-07-09"
+    assert r["per"] == pytest.approx(263.47)
+    assert r["pbr"] == pytest.approx(43.76)
+    assert r["dividend_yield"] == pytest.approx(0.20)
+
+
+def test_per_caller_date_fallback_when_no_date_column():
+    # A row without a Date column falls back to the caller-supplied trading date.
+    rows = twse_per.parse(
+        [{"Code": "2330", "PEratio": "30", "PBratio": "10", "DividendYield": "1.5"}],
+        CALLER_DATE,
+    )
+    assert rows[0]["date"] == CALLER_DATE
+    assert rows[0]["per"] == pytest.approx(30.0)
+
+
+def test_per_tolerates_dash_and_blank():
+    rows = twse_per.parse(
+        [
+            {
+                "Date": "1150709",
+                "Code": "9999",
+                "PEratio": "-",
+                "PBratio": "",
+                "DividendYield": "N/A",
+            }
+        ],
+        CALLER_DATE,
+    )
+    assert rows[0] == {
+        "ticker": "9999",
+        "date": "2026-07-09",
+        "per": None,
+        "pbr": None,
+        "dividend_yield": None,
+    }
+
+
+def test_per_missing_ticker_column_raises():
+    with pytest.raises(SourceFetchError):
+        twse_per.parse([{"Date": "1150709", "PEratio": "30"}], CALLER_DATE)
+
+
+def test_per_empty_response_returns_empty():
+    assert twse_per.parse([], CALLER_DATE) == []
+    assert tpex_per.parse([], CALLER_DATE) == []
+
+
+def test_per_fetch_listed_url(monkeypatch):
+    captured = {}
+
+    def fake_get_json(url, *, source):
+        captured.update(url=url, source=source)
+        return []
+
+    monkeypatch.setattr(_common, "get_json", fake_get_json)
+    twse_per.fetch()
+    assert captured["url"] == twse_per.LISTED_URL
+    assert "上市" in captured["source"]
+
+
+def test_per_fetch_otc_url(monkeypatch):
+    captured = {}
+
+    def fake_get_json(url, *, source):
+        captured.update(url=url, source=source)
+        return []
+
+    monkeypatch.setattr(_common, "get_json", fake_get_json)
+    tpex_per.fetch()
+    assert captured["url"] == tpex_per.OTC_URL
+    assert "上櫃" in captured["source"]
+
+
+def test_parse_twse_per_history(bwibbu_history_fixture):
+    rows = twse_per_history.parse(bwibbu_history_fixture, "2330")
+    assert len(rows) == len(bwibbu_history_fixture["data"])
+    r0 = rows[0]
+    assert set(r0) == PER_KEYS
+    assert r0["ticker"] == "2330"
+    assert r0["date"] == "2026-06-01"  # "115年06月01日" -> ISO
+    assert r0["per"] == pytest.approx(31.66)
+    assert r0["pbr"] == pytest.approx(10.37)
+    assert r0["dividend_yield"] == pytest.approx(0.93)
+    # dates are monotonically increasing ISO strings across the month
+    assert rows[-1]["date"] > rows[0]["date"]
+
+
+def test_twse_per_history_nodata_returns_empty(bwibbu_history_nodata_fixture):
+    assert twse_per_history.parse(bwibbu_history_nodata_fixture, "2330") == []
+
+
+def test_twse_per_history_missing_column_raises():
+    # Drift guard: an expected header disappearing must not silently empty-parse.
+    raw = {
+        "stat": "OK",
+        "fields": ["日期", "股利年度", "本益比", "財報年/季"],  # 殖利率/股價淨值比 gone
+        "data": [["115年06月01日", 114, "31.66", "115/1"]],
+    }
+    with pytest.raises(SourceFetchError):
+        twse_per_history.parse(raw, "2330")
+
+
+def test_twse_per_history_fetch_rate_limited(monkeypatch):
+    captured = {}
+
+    def fake_get_json_dict(url, *, source):
+        captured.update(url=url, source=source)
+        return {"stat": "OK", "fields": [], "data": []}
+
+    slept = {}
+    monkeypatch.setattr(_common, "get_json_dict", fake_get_json_dict)
+    monkeypatch.setattr(twse_per_history.time, "sleep", lambda s: slept.update(s=s))
+    twse_per_history.fetch("2330", 2026, 6)
+    assert "date=20260601" in captured["url"]
+    assert "stockNo=2330" in captured["url"]
+    assert slept["s"] > 0  # politeness pacing applied
+
+
+@pytest.mark.parametrize(
+    "raw,expected",
+    [
+        ("115年06月01日", "2026-06-01"),
+        ("115年6月1日", "2026-06-01"),
+        ("", None),
+        ("garbage", None),
+        (None, None),
+    ],
+)
+def test_roc_cn_to_iso(raw, expected):
+    assert _common.roc_cn_to_iso(raw) == expected
