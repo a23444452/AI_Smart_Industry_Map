@@ -139,6 +139,24 @@ def iso_to_yyyymmdd(iso: str) -> str:
     return date.fromisoformat(iso).strftime("%Y%m%d")
 
 
+def yyyymmdd_to_iso(raw: object) -> str | None:
+    """Convert a packed AD date like '20260703' to ISO '2026-07-03'.
+
+    The TDCC 集保 CSV renders 資料日期 as an 8-digit ``YYYYMMDD`` (AD, not ROC —
+    unlike the OpenAPI feeds' packed 民國 form), so ``roc_to_iso`` must not be
+    used on it. Returns None for blank or malformed input.
+    """
+    if raw is None:
+        return None
+    text = str(raw).strip()
+    if not text.isdigit() or len(text) != 8:
+        return None
+    try:
+        return date(int(text[:4]), int(text[4:6]), int(text[6:8])).isoformat()
+    except ValueError:
+        return None
+
+
 def iso_to_roc_slash(iso: str) -> str:
     """'2026-07-09' -> '115/07/09' (the TPEx ``dailyTrade`` date parameter format)."""
     d = date.fromisoformat(iso)

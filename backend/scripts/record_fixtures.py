@@ -497,6 +497,64 @@ def _record_per() -> None:
     _write("twse_bwibbu_history_nodata.json", nodata)
 
 
+# 集保戶股權分散表 (TDCC, id=1-5). A single streamed CSV of the latest weekly
+# 集保 shareholding distribution — one row per (證券代號, 持股分級), ~68k rows /
+# a few MB, UTF-8 **with BOM**. Recording the whole file would bloat the repo, so
+# this recorder streams it and keeps only: the header + every 級距 row (17 levels)
+# for the 17 seeded silicon-photonics tickers + 3 noise tickers (2317/0050/6505)
+# as drift-representative rows. 證券代號 is space-padded to 6 chars ('2330  '), so
+# tickers are matched on the stripped value.
+TDCC_URL = "https://opendata.tdcc.com.tw/getOD.ashx?id=1-5"
+TDCC_WANTED = {
+    "2330", "3443", "3081", "3450", "4979", "2426", "6442", "3163", "2489",
+    "3711", "4977", "6789", "3363", "6223", "6515", "3289", "6451",
+}
+TDCC_NOISE = {"2317", "0050", "6505"}
+# TDCC serves the CSV to a browser UA; a bare/library UA can draw a block.
+TDCC_UA = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+)
+
+
+def _record_tdcc() -> None:
+    print(f"GET {TDCC_URL} (streaming)")
+    raw = bytearray()
+    with httpx.Client(
+        timeout=120.0, follow_redirects=True, verify=_ssl_context()
+    ) as client:
+        with client.stream("GET", TDCC_URL, headers={"User-Agent": TDCC_UA}) as resp:
+            resp.raise_for_status()
+            for chunk in resp.iter_bytes():
+                raw.extend(chunk)
+    lines = raw.decode("utf-8-sig").splitlines()
+    header = lines[0]
+    wanted: dict[str, list[str]] = {}
+    noise: dict[str, list[str]] = {}
+    for line in lines[1:]:
+        if not line.strip():
+            continue
+        ticker = line.split(",")[1].strip()
+        if ticker in TDCC_WANTED:
+            wanted.setdefault(ticker, []).append(line)
+        elif ticker in TDCC_NOISE:
+            noise.setdefault(ticker, []).append(line)
+    print(
+        f"  total lines={len(lines)}; wanted found={len(wanted)}/{len(TDCC_WANTED)}; "
+        f"missing={sorted(TDCC_WANTED - set(wanted))}; noise={sorted(noise)}"
+    )
+    out = [header]
+    for ticker in sorted(wanted):
+        out += wanted[ticker]
+    for ticker in sorted(noise):
+        out += noise[ticker]
+    # Preserve the live shape: leading BOM + CRLF line endings.
+    payload = "﻿" + "\r\n".join(out) + "\r\n"
+    path = FIXTURES_DIR / "tdcc_holders.csv"
+    path.write_bytes(payload.encode("utf-8"))
+    print(f"  wrote {len(out)} lines -> tdcc_holders.csv ({path.stat().st_size} bytes)")
+
+
 def main() -> None:
     FIXTURES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -528,6 +586,7 @@ def main() -> None:
     _record_mops()
     _record_revenue()
     _record_per()
+    _record_tdcc()
 
 
 if __name__ == "__main__":

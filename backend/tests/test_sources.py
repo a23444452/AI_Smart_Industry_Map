@@ -14,6 +14,7 @@ import pytest
 from app.pipeline.sources import (
     _common,
     mops,
+    tdcc_holders,
     tpex,
     tpex_history,
     tpex_institutional,
@@ -1164,6 +1165,20 @@ def test_per_caller_date_fallback_when_no_date_column():
     assert rows[0]["per"] == pytest.approx(30.0)
 
 
+def test_per_blank_or_bad_date_falls_back_to_caller():
+    # M1: Date column PRESENT but blank / unparseable -> caller trading date, not
+    # a crash and not a None date (distinct from the missing-column case above).
+    rows = twse_per.parse(
+        [
+            {"Date": "", "Code": "2330", "PEratio": "30"},
+            {"Date": "not-a-date", "Code": "2454", "PEratio": "20"},
+        ],
+        CALLER_DATE,
+    )
+    assert rows[0]["date"] == CALLER_DATE
+    assert rows[1]["date"] == CALLER_DATE
+
+
 def test_per_tolerates_dash_and_blank():
     rows = twse_per.parse(
         [
@@ -1279,3 +1294,212 @@ def test_twse_per_history_fetch_rate_limited(monkeypatch):
 )
 def test_roc_cn_to_iso(raw, expected):
     assert _common.roc_cn_to_iso(raw) == expected
+
+
+@pytest.mark.parametrize(
+    "raw,expected",
+    [
+        ("20260703", "2026-07-03"),
+        ("20261231", "2026-12-31"),
+        ("2026070", None),  # 7 digits
+        ("2026-07-03", None),  # not bare digits
+        ("20261331", None),  # month 13
+        ("", None),
+        (None, None),
+    ],
+)
+def test_yyyymmdd_to_iso(raw, expected):
+    assert _common.yyyymmdd_to_iso(raw) == expected
+
+
+# --- 集保股權分散 (TDCC, id=1-5, streamed CSV) -------------------------------
+# Fixture = the real recorded header + all 17 級距 rows for the 17 seeded tickers
+# + 3 noise tickers (2317/0050/6505) as drift-representative rows. read_text with
+# utf-8-sig strips the BOM the live feed carries (as fetch() does).
+
+TDCC_KEYS = {"ticker", "week", "ratio_400up", "holder_count"}
+TDCC_WANTED = {
+    "2330", "3443", "3081", "3450", "4979", "2426", "6442", "3163", "2489",
+    "3711", "4977", "6789", "3363", "6223", "6515", "3289", "6451",
+}
+
+
+@pytest.fixture
+def tdcc_fixture() -> str:
+    return (FIXTURES_DIR / "tdcc_holders.csv").read_text(encoding="utf-8-sig")
+
+
+def test_parse_tdcc_shape(tdcc_fixture):
+    rows = tdcc_holders.parse(tdcc_fixture, TDCC_WANTED)
+    # One aggregated row per wanted ticker (single-week snapshot); noise excluded.
+    assert len(rows) == len(TDCC_WANTED)
+    assert {r["ticker"] for r in rows} == TDCC_WANTED
+    for r in rows:
+        assert set(r) == TDCC_KEYS
+        assert r["week"] == "2026-07-03"
+        assert isinstance(r["ratio_400up"], float)
+        assert isinstance(r["holder_count"], int)
+
+
+def test_tdcc_ratio_400up_matches_manual(tdcc_fixture):
+    # 2330 級距 12–15 占比: 1.05 + 0.94 + 0.73 + 85.09 = 87.81.
+    rows = tdcc_holders.parse(tdcc_fixture, {"2330"})
+    assert len(rows) == 1
+    r = rows[0]
+    assert r["ratio_400up"] == pytest.approx(87.81)
+    # holder_count = Σ 人數 級距 1–15 = 合計(級17)人數 when 差異數調整=0.
+    assert r["holder_count"] == 2898020
+
+
+def test_tdcc_level_ratios_sum_to_about_100(tdcc_fixture):
+    # 驗算: a security's 15 真實級距 占比合計 ≈ 100 (±0.5, per-level 2dp rounding).
+    # ratio_400up is a subset of this whole, so the invariant anchors it.
+    import csv
+    import io
+
+    reader = csv.reader(io.StringIO(tdcc_fixture))
+    next(reader)
+    total = 0.0
+    for parts in reader:
+        if parts[1].strip() == "2330" and parts[2].strip() in {str(i) for i in range(1, 16)}:
+            total += float(parts[5])
+    assert total == pytest.approx(100.0, abs=0.5)
+
+
+def test_tdcc_excludes_adjustment_and_total_levels():
+    # 級距 16 (差異數調整) and 17 (合計) must never enter holder_count/ratio —
+    # counting 17 would double the holders, counting its 100% would blow ratio.
+    csv_text = (
+        "資料日期,證券代號,持股分級,人數,股數,占集保庫存數比例%\n"
+        "20260703,9999,1,10,100,40.00\n"
+        "20260703,9999,15,5,900,60.00\n"
+        "20260703,9999,16,0,0,0.00\n"  # 差異數調整
+        "20260703,9999,17,15,1000,100.00\n"  # 合計
+    )
+    rows = tdcc_holders.parse(csv_text, {"9999"})
+    assert rows[0]["holder_count"] == 15  # 10 + 5, not 30
+    assert rows[0]["ratio_400up"] == pytest.approx(60.00)  # 級距 15 only
+
+
+def test_tdcc_strips_space_padded_ticker(tdcc_fixture):
+    # 證券代號 is space-padded to 6 chars in the feed ('2330  '); wanted matching
+    # and the emitted ticker must both be stripped.
+    rows = tdcc_holders.parse(tdcc_fixture, {"0050"})  # noise ETF row present
+    assert len(rows) == 1
+    assert rows[0]["ticker"] == "0050"
+
+
+def test_tdcc_wanted_filter_excludes_others(tdcc_fixture):
+    rows = tdcc_holders.parse(tdcc_fixture, {"2330"})
+    assert [r["ticker"] for r in rows] == ["2330"]
+
+
+def test_tdcc_empty_wanted_returns_empty(tdcc_fixture):
+    assert tdcc_holders.parse(tdcc_fixture, set()) == []
+
+
+def test_tdcc_holder_count_none_when_all_blank():
+    csv_text = (
+        "資料日期,證券代號,持股分級,人數,股數,占集保庫存數比例%\n"
+        "20260703,8888,1,,, \n"
+        "20260703,8888,12,,,50.00\n"
+    )
+    rows = tdcc_holders.parse(csv_text, {"8888"})
+    assert rows[0]["holder_count"] is None
+    assert rows[0]["ratio_400up"] == pytest.approx(50.00)
+
+
+def test_tdcc_bad_header_raises():
+    # Missing 持股分級 + 占集保庫存數比例% -> structural drift, not empty parse.
+    with pytest.raises(SourceFetchError):
+        tdcc_holders.parse(
+            "資料日期,證券代號,人數\n20260703,2330,5\n", {"2330"}
+        )
+
+
+def test_tdcc_empty_input_raises():
+    with pytest.raises(SourceFetchError):
+        tdcc_holders.parse("", {"2330"})
+
+
+class _FakeStreamResponse:
+    def __init__(self, *, status_code=200, chunks=()):
+        self.status_code = status_code
+        self._chunks = chunks
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def iter_bytes(self):
+        yield from self._chunks
+
+
+class _FakeStreamClient:
+    def __init__(self, response):
+        self._response = response
+        self.calls = []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def stream(self, method, url, headers=None):
+        self.calls.append((method, url, headers))
+        return self._response
+
+
+def test_tdcc_fetch_streams_and_strips_bom(monkeypatch):
+    body = (
+        "﻿資料日期,證券代號,持股分級,人數,股數,占集保庫存數比例%\r\n"
+        "20260703,2330  ,15,1481,22066084295,85.09\r\n"
+    ).encode("utf-8")
+    response = _FakeStreamResponse(chunks=[body[:20], body[20:]])  # split mid-stream
+    client = _FakeStreamClient(response)
+    captured = {}
+
+    def fake_client(**kwargs):
+        captured["kwargs"] = kwargs
+        return client
+
+    monkeypatch.setattr(tdcc_holders.httpx, "Client", fake_client)
+    text = tdcc_holders.fetch()
+    assert text.startswith("資料日期")  # BOM removed by utf-8-sig
+    method, url, headers = client.calls[0]
+    assert method == "GET" and url == tdcc_holders.STREAM_URL
+    assert "Mozilla" in headers["User-Agent"]  # browser UA
+    # end-to-end: parse the streamed text back out
+    rows = tdcc_holders.parse(text, {"2330"})
+    assert rows[0]["ratio_400up"] == pytest.approx(85.09)
+
+
+def test_tdcc_fetch_wraps_non_200(monkeypatch):
+    response = _FakeStreamResponse(status_code=503, chunks=[])
+    monkeypatch.setattr(
+        tdcc_holders.httpx, "Client", lambda **kw: _FakeStreamClient(response)
+    )
+    with pytest.raises(SourceFetchError) as excinfo:
+        tdcc_holders.fetch()
+    assert excinfo.value.status_code == 503
+    assert "集保" in str(excinfo.value)
+
+
+def test_tdcc_fetch_wraps_connection_error(monkeypatch):
+    class _Boom:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def stream(self, *a, **kw):
+            raise httpx.ConnectError("dns fail")
+
+    monkeypatch.setattr(tdcc_holders.httpx, "Client", lambda **kw: _Boom())
+    with pytest.raises(SourceFetchError) as excinfo:
+        tdcc_holders.fetch()
+    assert "集保" in str(excinfo.value)
