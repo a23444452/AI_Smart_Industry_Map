@@ -33,7 +33,7 @@ export function CompaniesPage() {
   // topics_facets 恆為全部 topics（後端保證不隨篩選變動）；沿用前次資料避免下拉閃爍。
   const facets = data?.topics_facets ?? [];
   const total = data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(total / (data?.page_size ?? PAGE_SIZE)));
 
   function onTopicChange(e: React.ChangeEvent<HTMLSelectElement>) {
     setTopic(e.target.value);
