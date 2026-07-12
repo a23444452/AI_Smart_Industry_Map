@@ -78,6 +78,25 @@ TPEX_HISTORY_URL = (
     "?code={ticker}&date={date}&response=json"
 )
 
+# Market-wide statistics (每日焦點市場統計) — date-parameterised (AD YYYYMMDD).
+# BFI82U (三大法人買賣金額) returns a flat table {stat, date, fields, data:[row]}
+# in **元**. MI_MARGN?selectType=MS (信用交易統計) returns a multi-table shape
+# {stat, date, tables:[{fields, data}, {}]} — the credit-stats table is
+# tables[0]; tables[1] comes back empty. Both return a bare {stat: "很抱歉…"}
+# (no data/tables key) on a non-trading day. 2026-07-09 is the settled trading
+# day; 2026-07-12 (Sunday) is the holiday fixture.
+MARKET_DATE_YMD = "20260709"
+MARKET_HOLIDAY_YMD = "20260712"
+
+BFI82U_URL = (
+    "https://www.twse.com.tw/rwd/zh/fund/BFI82U"
+    "?dayDate={date}&type=day&response=json"
+)
+MARGIN_URL = (
+    "https://www.twse.com.tw/rwd/zh/marginTrading/MI_MARGN"
+    "?date={date}&selectType=MS&response=json"
+)
+
 
 def _ticker_of(row: dict) -> str:
     """Best-effort extraction of the ticker code from a raw row."""
@@ -293,6 +312,46 @@ def _record_tpex_history() -> None:
     )
 
 
+def _record_bfi82u() -> None:
+    url = BFI82U_URL.format(date=MARKET_DATE_YMD)
+    print(f"GET {url}")
+    raw = _fetch(url)
+    rows = raw.get("data") or []
+    print(f"  stat={raw.get('stat')} rows={len(rows)} fields={raw.get('fields')}")
+    _write(
+        "twse_bfi82u.json",
+        {
+            "stat": raw["stat"],
+            "date": raw.get("date"),
+            "title": raw.get("title"),
+            "fields": raw["fields"],
+            "data": rows,  # 6 rows, small enough to keep whole
+        },
+    )
+
+    holiday_url = BFI82U_URL.format(date=MARKET_HOLIDAY_YMD)
+    print(f"GET {holiday_url}")
+    holiday = _fetch(holiday_url)
+    print(f"  holiday stat={holiday.get('stat')} keys={sorted(holiday)}")
+    _write("twse_bfi82u_holiday.json", holiday)
+
+
+def _record_margin() -> None:
+    url = MARGIN_URL.format(date=MARKET_DATE_YMD)
+    print(f"GET {url}")
+    raw = _fetch(url)
+    tables = raw.get("tables") or []
+    rows = tables[0].get("data") or [] if tables else []
+    print(f"  stat={raw.get('stat')} tables={len(tables)} rows={len(rows)}")
+    _write("twse_margin.json", raw)  # keep the real multi-table shape verbatim
+
+    holiday_url = MARGIN_URL.format(date=MARKET_HOLIDAY_YMD)
+    print(f"GET {holiday_url}")
+    holiday = _fetch(holiday_url)
+    print(f"  holiday stat={holiday.get('stat')} keys={sorted(holiday)}")
+    _write("twse_margin_holiday.json", holiday)
+
+
 def _fetch_yahoo(symbol: str):
     """GET one Yahoo chart response via curl_cffi Chrome impersonation.
 
@@ -360,6 +419,8 @@ def main() -> None:
     _record_tpex_insti()
     _record_twse_history()
     _record_tpex_history()
+    _record_bfi82u()
+    _record_margin()
     _record_yahoo()
 
 

@@ -99,7 +99,9 @@ class IndexSnapshot(TimestampMixin, Base):
 
 class MarketFlow(TimestampMixin, Base):
     __tablename__ = "market_flows"
-    # 全市場三大法人買賣金額：date＋unit（foreign|trust|dealer）複合 PK。
+    # 全市場三大法人買賣金額：date＋unit 複合 PK。unit 為 BFI82U 實錄的身份別
+    # 名稱（原名保留），如「自營商(自行買賣)」「自營商(避險)」「投信」
+    # 「外資及陸資(不含外資自營商)」「外資自營商」「合計」。
 
     date: Mapped[str] = mapped_column(String, primary_key=True)  # ISO YYYY-MM-DD
     unit: Mapped[str] = mapped_column(String, primary_key=True)

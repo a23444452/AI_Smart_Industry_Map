@@ -16,7 +16,9 @@ from app.pipeline.sources import (
     tpex_history,
     tpex_institutional,
     twse,
+    twse_bfi82u,
     twse_history,
+    twse_margin,
     twse_t86,
     yahoo_indices,
 )
@@ -661,3 +663,165 @@ def test_yahoo_fetch_wraps_connection_error(monkeypatch):
     with pytest.raises(SourceFetchError) as excinfo:
         yahoo_indices.fetch("^TWII")
     assert "Yahoo" in str(excinfo.value)
+
+
+def test_yahoo_fetch_wraps_non_dict_json(monkeypatch):
+    # 200 whose JSON is a list, not the expected {chart: ...} dict (M2).
+    monkeypatch.setattr(
+        yahoo_indices.cffi_requests,
+        "get",
+        lambda url, **kw: _FakeCffiResponse(payload=[1, 2, 3]),
+    )
+    monkeypatch.setattr(yahoo_indices.time, "sleep", lambda _s: None)
+    with pytest.raises(SourceFetchError) as excinfo:
+        yahoo_indices.fetch("^TWII")
+    assert excinfo.value.status_code == 200
+    assert "Yahoo" in str(excinfo.value)
+
+
+# --- 市場統計 (三大法人買賣金額 BFI82U + 信用交易 MI_MARGN) -------------------
+
+MARKET_FLOW_KEYS = {"unit", "buy", "sell", "net", "date"}
+MARGIN_KEYS = {"item", "buy", "sell", "prev_balance", "today_balance", "date"}
+
+
+@pytest.fixture
+def bfi82u_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "twse_bfi82u.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def bfi82u_holiday_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "twse_bfi82u_holiday.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def margin_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "twse_margin.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def margin_holiday_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "twse_margin_holiday.json").read_text(encoding="utf-8")
+    )
+
+
+def test_parse_bfi82u(bfi82u_fixture):
+    rows = twse_bfi82u.parse(bfi82u_fixture, "2026-07-09")
+    assert len(rows) == 6  # 5 身份別 + 合計
+    for r in rows:
+        assert set(r) == MARKET_FLOW_KEYS
+        assert r["date"] == "2026-07-09"
+    # 身份別 names kept verbatim (original labels, not rewritten).
+    r = next(x for x in rows if x["unit"] == "外資及陸資(不含外資自營商)")
+    assert r["buy"] == 367_858_937_128  # amounts in 元, commas parsed
+    assert r["sell"] == 415_111_753_557
+    assert r["net"] == -47_252_816_429
+
+
+def test_bfi82u_buy_minus_sell_equals_net(bfi82u_fixture):
+    # 驗算 buy − sell == net on the 自營商(自行買賣) row (in 元).
+    rows = twse_bfi82u.parse(bfi82u_fixture, "2026-07-09")
+    r = next(x for x in rows if x["unit"] == "自營商(自行買賣)")
+    assert r["buy"] == 9_494_954_521
+    assert r["sell"] == 11_531_142_442
+    assert r["buy"] - r["sell"] == r["net"] == -2_036_187_921
+
+
+def test_bfi82u_holiday_returns_empty(bfi82u_holiday_fixture):
+    # Non-trading day: stat != "OK" (bare {stat, hints}) -> [] (no raise).
+    assert twse_bfi82u.parse(bfi82u_holiday_fixture, "2026-07-12") == []
+
+
+def test_bfi82u_field_drift_raises(bfi82u_fixture):
+    # A dropped/renamed amount column is structural drift -> raise, never [].
+    drifted = {
+        **bfi82u_fixture,
+        "fields": ["單位名稱", "改名買進", *bfi82u_fixture["fields"][2:]],
+    }
+    with pytest.raises(SourceFetchError) as excinfo:
+        twse_bfi82u.parse(drifted, "2026-07-09")
+    assert "TWSE-BFI82U" in str(excinfo.value)
+
+
+def test_bfi82u_fetch_builds_yyyymmdd_url(monkeypatch):
+    captured = {}
+
+    def fake_get_json_dict(url, *, source):
+        captured["url"] = url
+        captured["source"] = source
+        return {"stat": "OK", "fields": [], "data": []}
+
+    monkeypatch.setattr(_common, "get_json_dict", fake_get_json_dict)
+    twse_bfi82u.fetch("2026-07-09")
+    assert "dayDate=20260709" in captured["url"]
+    assert captured["source"] == "TWSE-BFI82U"
+
+
+def test_parse_margin(margin_fixture):
+    rows = twse_margin.parse(margin_fixture, "2026-07-09")
+    assert len(rows) == 3  # 融資(交易單位) / 融券(交易單位) / 融資金額(仟元)
+    for r in rows:
+        assert set(r) == MARGIN_KEYS
+        assert r["date"] == "2026-07-09"
+    # item labels kept verbatim; raw 張/仟元 values kept as-is (no conversion).
+    r = next(x for x in rows if x["item"] == "融資金額(仟元)")
+    assert r["buy"] == 31_178_841
+    assert r["sell"] == 24_806_032
+    assert r["prev_balance"] == 613_815_722
+    assert r["today_balance"] == 619_648_244
+
+
+def test_margin_parses_credit_stats_table(margin_fixture):
+    # MS is a multi-table response: tables[0] is 信用交易統計, tables[1] is {}.
+    # Verify we picked the right (non-empty) table.
+    rows = twse_margin.parse(margin_fixture, "2026-07-09")
+    r = next(x for x in rows if x["item"] == "融資(交易單位)")
+    assert r["buy"] == 372_813  # 張 (lots), kept as-is
+    assert r["today_balance"] == 9_614_955
+
+
+def test_margin_holiday_returns_empty(margin_holiday_fixture):
+    # Non-trading day: bare {stat} with no tables key -> [] (no raise).
+    assert twse_margin.parse(margin_holiday_fixture, "2026-07-12") == []
+
+
+def test_margin_empty_tables_returns_empty(margin_fixture):
+    # stat OK but tables[0] has no data rows -> [] (holiday semantics, no raise).
+    table = margin_fixture["tables"][0]
+    empty = {**margin_fixture, "tables": [{**table, "data": []}, {}]}
+    assert twse_margin.parse(empty, "2026-07-09") == []
+
+
+def test_margin_field_drift_raises(margin_fixture):
+    # A dropped/renamed column in the credit table is drift -> raise, never [].
+    table = margin_fixture["tables"][0]
+    drifted = {
+        **margin_fixture,
+        "tables": [{**table, "fields": ["項目", "改名買進", *table["fields"][2:]]}, {}],
+    }
+    with pytest.raises(SourceFetchError) as excinfo:
+        twse_margin.parse(drifted, "2026-07-09")
+    assert "TWSE-Margin" in str(excinfo.value)
+
+
+def test_margin_fetch_builds_yyyymmdd_url(monkeypatch):
+    captured = {}
+
+    def fake_get_json_dict(url, *, source):
+        captured["url"] = url
+        captured["source"] = source
+        return {"stat": "OK", "tables": [{"fields": [], "data": []}]}
+
+    monkeypatch.setattr(_common, "get_json_dict", fake_get_json_dict)
+    twse_margin.fetch("2026-07-09")
+    assert "date=20260709" in captured["url"]
+    assert "selectType=MS" in captured["url"]
+    assert captured["source"] == "TWSE-Margin"
