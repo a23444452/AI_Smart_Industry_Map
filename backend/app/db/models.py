@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import ForeignKeyConstraint
+from sqlalchemy import BigInteger, ForeignKeyConstraint, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import JSON, Boolean, Float, Integer, String, Text
 
@@ -83,3 +83,56 @@ class PipelineRun(TimestampMixin, Base):
     finished_at: Mapped[datetime | None] = mapped_column(nullable=True)
     status: Mapped[str] = mapped_column(String)  # success | failed | running
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+
+class IndexSnapshot(TimestampMixin, Base):
+    __tablename__ = "index_snapshots"
+    # 跑馬燈指數現值：以 symbol 為 PK，upsert 覆寫策略（只留現值，不留歷史）。
+
+    symbol: Mapped[str] = mapped_column(String, primary_key=True)  # 如 "^TWII"
+    name: Mapped[str] = mapped_column(String)
+    price: Mapped[float] = mapped_column(Float)
+    change: Mapped[float | None] = mapped_column(Float, nullable=True)
+    change_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    fetched_at: Mapped[datetime | None] = mapped_column(nullable=True)
+
+
+class MarketFlow(TimestampMixin, Base):
+    __tablename__ = "market_flows"
+    # 全市場三大法人買賣金額：date＋unit（foreign|trust|dealer）複合 PK。
+
+    date: Mapped[str] = mapped_column(String, primary_key=True)  # ISO YYYY-MM-DD
+    unit: Mapped[str] = mapped_column(String, primary_key=True)
+    # 單位：元；來源缺欄時容忍 NULL。金額可達千億級，故用 BigInteger。
+    buy: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    sell: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    net: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+
+
+class MarginBalance(TimestampMixin, Base):
+    __tablename__ = "margin_balances"
+    # 全市場信用交易餘額：date＋item（融資|融券）複合 PK。
+
+    date: Mapped[str] = mapped_column(String, primary_key=True)  # ISO YYYY-MM-DD
+    item: Mapped[str] = mapped_column(String, primary_key=True)
+    # 單位：元／張，依 item 而定；來源缺欄時容忍 NULL。
+    buy: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    sell: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    prev_balance: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    today_balance: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+
+
+class MopsAnnouncement(TimestampMixin, Base):
+    __tablename__ = "mops_announcements"
+    __table_args__ = (
+        UniqueConstraint("ticker", "title", "published_at"),
+    )
+    # 公開資訊觀測站重大訊息。category 慣例（僅約定，不建 enum）：
+    # 澄清回應 / 自結 / 財務數據 / 公司治理 / 重大事件。
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    ticker: Mapped[str] = mapped_column(String)
+    name: Mapped[str] = mapped_column(String)
+    category: Mapped[str] = mapped_column(String)
+    title: Mapped[str] = mapped_column(Text)
+    published_at: Mapped[datetime] = mapped_column()

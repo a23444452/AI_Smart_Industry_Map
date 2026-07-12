@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 
 import pytest
 from sqlalchemy import inspect, text
@@ -26,6 +27,10 @@ def test_create_all_and_wal(tmp_path):
         "quotes_daily",
         "pipeline_runs",
         "institutional_flows",
+        "index_snapshots",
+        "market_flows",
+        "margin_balances",
+        "mops_announcements",
     } <= names
     with eng.connect() as c:
         assert c.execute(text("PRAGMA journal_mode")).scalar() == "wal"
@@ -69,6 +74,171 @@ def test_institutional_flow_roundtrip(tmp_path):
         assert row.foreign_net == 1200000
         assert row.trust_net == -50000
         assert row.dealer_net is None
+
+
+def test_index_snapshot_roundtrip(tmp_path):
+    eng = _make_db(tmp_path)
+    fetched = datetime(2026, 7, 11, 13, 30, 0)
+    with Session(eng) as s:
+        s.add(
+            models.IndexSnapshot(
+                symbol="^TWII",
+                name="加權指數",
+                price=23150.5,
+                change=105.3,
+                change_pct=0.46,
+                fetched_at=fetched,
+            )
+        )
+        s.commit()
+        row = s.get(models.IndexSnapshot, "^TWII")
+        assert row.name == "加權指數"
+        assert row.price == 23150.5
+        assert row.change == 105.3
+        assert row.change_pct == 0.46
+        assert row.fetched_at == fetched
+
+
+def test_index_snapshot_overwrite_current_value(tmp_path):
+    # 跑馬燈只留現值：同一 symbol 以 merge 覆寫，不累積歷史。
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        s.add(
+            models.IndexSnapshot(
+                symbol="^TWII", name="加權指數", price=23000.0
+            )
+        )
+        s.commit()
+    with Session(eng) as s:
+        s.merge(
+            models.IndexSnapshot(
+                symbol="^TWII", name="加權指數", price=23200.0
+            )
+        )
+        s.commit()
+    with Session(eng) as s:
+        assert s.query(models.IndexSnapshot).count() == 1
+        assert s.get(models.IndexSnapshot, "^TWII").price == 23200.0
+
+
+def test_index_snapshot_nullable_change(tmp_path):
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        s.add(
+            models.IndexSnapshot(symbol="^DJI", name="道瓊", price=39000.0)
+        )
+        s.commit()
+        row = s.get(models.IndexSnapshot, "^DJI")
+        assert row.change is None
+        assert row.change_pct is None
+
+
+def test_market_flow_roundtrip(tmp_path):
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        s.add(
+            models.MarketFlow(
+                date="2026-07-11",
+                unit="foreign",
+                buy=120_000_000_000,
+                sell=100_000_000_000,
+                net=20_000_000_000,
+            )
+        )
+        s.commit()
+        row = s.get(models.MarketFlow, ("2026-07-11", "foreign"))
+        assert row.buy == 120_000_000_000
+        assert row.sell == 100_000_000_000
+        assert row.net == 20_000_000_000
+
+
+def test_market_flow_composite_pk_and_nullable(tmp_path):
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        s.add(models.MarketFlow(date="2026-07-11", unit="foreign", net=1))
+        s.add(models.MarketFlow(date="2026-07-11", unit="trust", buy=None))
+        s.commit()
+        assert s.query(models.MarketFlow).count() == 2
+        assert s.get(models.MarketFlow, ("2026-07-11", "trust")).buy is None
+
+
+def test_margin_balance_roundtrip(tmp_path):
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        s.add(
+            models.MarginBalance(
+                date="2026-07-11",
+                item="融資",
+                buy=50000,
+                sell=48000,
+                prev_balance=6_500_000,
+                today_balance=6_502_000,
+            )
+        )
+        s.commit()
+        row = s.get(models.MarginBalance, ("2026-07-11", "融資"))
+        assert row.buy == 50000
+        assert row.prev_balance == 6_500_000
+        assert row.today_balance == 6_502_000
+
+
+def test_margin_balance_composite_pk_and_nullable(tmp_path):
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        s.add(models.MarginBalance(date="2026-07-11", item="融資"))
+        s.add(models.MarginBalance(date="2026-07-11", item="融券"))
+        s.commit()
+        assert s.query(models.MarginBalance).count() == 2
+        row = s.get(models.MarginBalance, ("2026-07-11", "融資"))
+        assert row.buy is None
+        assert row.today_balance is None
+
+
+def test_mops_announcement_roundtrip(tmp_path):
+    eng = _make_db(tmp_path)
+    published = datetime(2026, 7, 11, 8, 5, 0)
+    with Session(eng) as s:
+        ann = models.MopsAnnouncement(
+            ticker="2330",
+            name="台積電",
+            category="財務數據",
+            title="本公司公告第二季合併營收",
+            published_at=published,
+        )
+        s.add(ann)
+        s.commit()
+        got = s.get(models.MopsAnnouncement, ann.id)
+        assert got.id is not None
+        assert got.ticker == "2330"
+        assert got.category == "財務數據"
+        assert got.title == "本公司公告第二季合併營收"
+        assert got.published_at == published
+
+
+def test_mops_announcement_unique_constraint(tmp_path):
+    eng = _make_db(tmp_path)
+    published = datetime(2026, 7, 11, 8, 5, 0)
+    with Session(eng) as s:
+        s.add(
+            models.MopsAnnouncement(
+                ticker="2330",
+                name="台積電",
+                category="重大事件",
+                title="重訊說明",
+                published_at=published,
+            )
+        )
+        s.add(
+            models.MopsAnnouncement(
+                ticker="2330",
+                name="台積電",
+                category="重大事件",
+                title="重訊說明",
+                published_at=published,
+            )
+        )
+        with pytest.raises(IntegrityError):
+            s.commit()
 
 
 def test_orphan_topic_company_rejected(tmp_path):

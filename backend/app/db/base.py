@@ -8,17 +8,21 @@ class Base(DeclarativeBase):
     pass
 
 
-def _utcnow() -> datetime:
+def utcnow() -> datetime:
     # 本專案 datetime 一律儲存 naive UTC：SQLite 不保留 tzinfo，讀回的值
     # 必為 naive；統一寫入 naive UTC 可避免 aware 與 naive 相減的 TypeError。
     return datetime.now(UTC).replace(tzinfo=None)
 
 
+# 相容別名：既有模組（runner.py、meta.py 等）以舊名 ``_utcnow`` import，保留不動。
+_utcnow = utcnow
+
+
 class TimestampMixin:
     """Adds created_at/updated_at columns, maintained by the app layer."""
 
-    created_at: Mapped[datetime] = mapped_column(default=_utcnow)
-    updated_at: Mapped[datetime] = mapped_column(default=_utcnow, onupdate=_utcnow)
+    created_at: Mapped[datetime] = mapped_column(default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(default=utcnow, onupdate=utcnow)
 
 
 def make_engine(path: str) -> Engine:

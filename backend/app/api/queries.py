@@ -17,7 +17,7 @@ from datetime import timedelta
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db.base import _utcnow
+from app.db.base import utcnow
 from app.db.models import InstitutionalFlow, QuoteDaily
 
 # 查詢時間下界（日曆日）：避免無界掃描。60 日曆日覆蓋 21 個交易日＋假期餘裕；
@@ -28,7 +28,7 @@ FLOWS_LOOKBACK_DAYS = 21
 
 def cutoff_date(lookback_days: int) -> str:
     """今日（UTC）往回 ``lookback_days`` 日曆日的 ISO 日期字串（date 欄為 ISO 字串，可直接字串比較）。"""
-    return (_utcnow().date() - timedelta(days=lookback_days)).isoformat()
+    return (utcnow().date() - timedelta(days=lookback_days)).isoformat()
 
 
 def quotes_by_ticker(session: Session, tickers: list[str]) -> dict[str, list]:
