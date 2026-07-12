@@ -19,6 +19,8 @@ belongs at the presentation layer).
 
 from __future__ import annotations
 
+import time
+
 from app.pipeline.sources import _common
 
 URL_TEMPLATE = (
@@ -26,6 +28,13 @@ URL_TEMPLATE = (
     "?date={date}&selectType=MS&response=json"
 )
 _SOURCE = "TWSE-Margin"
+
+# Politeness rate-limit between requests (seconds). Deliberately applied inside
+# fetch() rather than by the backfill caller: the only cost is one spurious
+# 0.4s sleep before the first request — negligible against a 30-day walk — and
+# it keeps every call site throttled by construction instead of by convention.
+# 無此限流時 TWSE rwd 端點對連續請求回 HTTP 307，backfill 會逐日被跳過。
+_RATE_LIMIT_SECONDS = 0.4
 
 # Real field labels (現金(券)償還 is not carried into the neutral output).
 _ITEM = "項目"
@@ -37,6 +46,7 @@ _TODAY = "今日餘額"
 
 def fetch(date: str) -> dict:
     """GET the raw MI_MARGN (MS) response for an ISO ``date`` (e.g. '2026-07-09')."""
+    time.sleep(_RATE_LIMIT_SECONDS)  # politeness pacing — see constant above
     url = URL_TEMPLATE.format(date=_common.iso_to_yyyymmdd(date))
     return _common.get_json_dict(url, source=_SOURCE)
 

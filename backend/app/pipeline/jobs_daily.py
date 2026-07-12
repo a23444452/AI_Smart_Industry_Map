@@ -17,7 +17,6 @@ walk persist byte-identically.
 from __future__ import annotations
 
 from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from loguru import logger
 from sqlalchemy import select
@@ -25,10 +24,9 @@ from sqlalchemy.orm import Session
 
 from app.db import models
 from app.db.base import utcnow
+from app.pipeline.jobs import _TAIPEI  # 單一定義來源，避免時區常數雙重維護
 from app.pipeline.sources import mops, twse_bfi82u, twse_margin, yahoo_indices
 from app.pipeline.sources._common import SourceFetchError
-
-_TAIPEI = ZoneInfo("Asia/Taipei")
 
 # 「合計」列不入庫：它是各身份別的衍生總和，前端可自行加總，存了只會與明細重複。
 _TOTAL_UNIT = "合計"

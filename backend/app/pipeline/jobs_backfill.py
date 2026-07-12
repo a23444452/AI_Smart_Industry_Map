@@ -188,6 +188,9 @@ def backfill_market_stats(session: Session, days: int = 30) -> int:
         day: date = today - timedelta(days=offset)
         date_iso = day.isoformat()
         try:
+            # 兩來源共用一個 try：單日原子（任一來源失敗即整天跳過、不留半天資料），
+            # 與 daily job fetch_market_stats 的「兩來源各自隔離」刻意不同——backfill
+            # 走 30 日，缺一天可重跑補齊；daily 只有當天一次機會，能撈多少是多少。
             flows = twse_bfi82u.parse(twse_bfi82u.fetch(date_iso), date_iso)
             margins = twse_margin.parse(twse_margin.fetch(date_iso), date_iso)
         except Exception as exc:  # noqa: BLE001 - one day must not abort the batch
