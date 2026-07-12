@@ -4,6 +4,7 @@ Fixtures under tests/fixtures/ are real API responses recorded once via
 scripts/record_fixtures.py (first 5 rows + a known ticker).
 """
 
+import datetime
 import json
 from pathlib import Path
 
@@ -12,6 +13,7 @@ import pytest
 
 from app.pipeline.sources import (
     _common,
+    mops,
     tpex,
     tpex_history,
     tpex_institutional,
@@ -825,3 +827,116 @@ def test_margin_fetch_builds_yyyymmdd_url(monkeypatch):
     assert "date=20260709" in captured["url"]
     assert "selectType=MS" in captured["url"]
     assert captured["source"] == "TWSE-Margin"
+
+
+# --- MOPS 重大訊息 (公開資訊觀測站) -----------------------------------------
+
+MOPS_KEYS = {"ticker", "name", "title", "published_at", "category"}
+
+
+@pytest.fixture
+def mops_listed_fixture() -> list[dict]:
+    return json.loads(
+        (FIXTURES_DIR / "mops_listed.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def mops_otc_fixture() -> list[dict]:
+    return json.loads((FIXTURES_DIR / "mops_otc.json").read_text(encoding="utf-8"))
+
+
+def test_parse_mops_listed(mops_listed_fixture):
+    rows = mops.parse(mops_listed_fixture)
+    assert rows and all(set(r) == MOPS_KEYS for r in rows)
+    r = rows[0]
+    assert r["ticker"] == "1721" and r["name"] == "三晃"
+    assert isinstance(r["published_at"], datetime.datetime)
+
+
+def test_parse_mops_otc_english_keys(mops_otc_fixture):
+    # OTC feed labels ticker/name as SecuritiesCompanyCode/CompanyName —
+    # parse resolves them via candidate keys just like the 上市 中文 keys.
+    rows = mops.parse(mops_otc_fixture)
+    assert len(rows) == len(mops_otc_fixture)
+    assert rows[0]["ticker"] == "4530" and rows[0]["name"] == "宏易"
+
+
+def test_mops_published_at_taipei_to_naive_utc():
+    # ROC 1150711 19:00:00 (Taipei) -> naive UTC 2026-07-11 11:00:00 (-8h).
+    row = {"公司代號": "2330", "公司名稱": "台積電", "主旨 ": "測試",
+           "發言日期": "1150711", "發言時間": "190000"}
+    r = mops.parse([row])[0]
+    assert r["published_at"] == datetime.datetime(2026, 7, 11, 11, 0, 0)
+    assert r["published_at"].tzinfo is None
+
+
+def test_mops_parses_packed_time_with_stripped_zero(mops_listed_fixture):
+    # Feed packs 發言時間 as "70003" (07:00:03), leading zero stripped.
+    # 07:00:03 Taipei -> previous-day 23:00:03 UTC.
+    r = mops.parse(mops_listed_fixture)[0]
+    assert r["published_at"] == datetime.datetime(2026, 7, 10, 23, 0, 3)
+
+
+def test_mops_skips_rows_missing_date_or_time():
+    rows = mops.parse(
+        [
+            {"公司代號": "1", "主旨 ": "無時間", "發言日期": "1150711", "發言時間": ""},
+            {"公司代號": "2", "主旨 ": "無日期", "發言日期": "", "發言時間": "190000"},
+            {"公司代號": "3", "主旨 ": "好", "發言日期": "1150711", "發言時間": "190000"},
+        ]
+    )
+    assert [r["ticker"] for r in rows] == ["3"]
+
+
+@pytest.mark.parametrize(
+    "title,expected",
+    [
+        ("澄清媒體報導本公司相關事宜", "澄清回應"),
+        ("公告本公司自結損益", "自結"),
+        ("公告本公司財務報告更正", "財務數據"),
+        ("公告本公司第二季財報", "財務數據"),
+        ("公告董事會決議召開股東會", "公司治理"),
+        ("代子公司公告取得不動產", "重大事件"),
+        # Priority conflict: 澄清 wins over 財報 (specific rule first).
+        ("澄清媒體報導財報疑慮", "澄清回應"),
+    ],
+)
+def test_mops_classify(title, expected):
+    assert mops.classify(title) == expected
+
+
+def test_mops_missing_ticker_column_raises():
+    with pytest.raises(SourceFetchError) as excinfo:
+        mops.parse([{"主旨 ": "x", "發言日期": "1150711", "發言時間": "190000"}])
+    assert "MOPS" in str(excinfo.value)
+
+
+def test_mops_empty_response_returns_empty():
+    assert mops.parse([]) == []
+
+
+def test_mops_fetch_listed_url(monkeypatch):
+    captured = {}
+
+    def fake_get_json(url, *, source):
+        captured.update(url=url, source=source)
+        return []
+
+    monkeypatch.setattr(_common, "get_json", fake_get_json)
+    mops.fetch_listed()
+    assert captured["url"] == mops.LISTED_URL
+    assert "上市" in captured["source"]
+
+
+def test_mops_fetch_otc_url(monkeypatch):
+    captured = {}
+
+    def fake_get_json(url, *, source):
+        captured.update(url=url, source=source)
+        return []
+
+    monkeypatch.setattr(_common, "get_json", fake_get_json)
+    mops.fetch_otc()
+    assert captured["url"] == mops.OTC_URL
+    assert "上櫃" in captured["source"]

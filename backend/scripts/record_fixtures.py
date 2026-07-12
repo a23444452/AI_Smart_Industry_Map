@@ -37,6 +37,17 @@ YAHOO_RATE_LIMIT_SECONDS = 0.5
 TWSE_URL = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
 TPEX_URL = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes"
 
+# MOPS 重大訊息 (公開資訊觀測站, t187ap04). Both markets serve a bare list[dict]
+# of *today's* announcements — no date parameter. The two feeds disagree on
+# field names, so parse() resolves each value across candidate keys:
+#   listed (TWSE): 公司代號 / 公司名稱 / "主旨 " (trailing space) / 發言日期 / 發言時間
+#   OTC   (TPEx):  SecuritiesCompanyCode / CompanyName / 主旨 / 發言日期 / 發言時間
+# 發言時間 is packed HHMMSS with the leading zero stripped ("70003" = 07:00:03).
+# Counts vary by day (only same-day filings appear); we record the first 5 rows
+# of each and print the full same-day count for traceability.
+MOPS_LISTED_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap04_L"
+MOPS_OTC_URL = "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap04_O"
+
 # Institutional (三大法人) — date-parameterised, table-shaped responses.
 # T86 returns a dict {stat, date, fields, data:[row,...]}; TPEx dailyTrade
 # returns {stat, tables:[{fields, date, data:[row,...]}]}. Both list rows as
@@ -394,6 +405,14 @@ def _record_yahoo() -> None:
     _write("yahoo_error.json", err_raw)
 
 
+def _record_mops() -> None:
+    for name, url in (("mops_listed", MOPS_LISTED_URL), ("mops_otc", MOPS_OTC_URL)):
+        print(f"GET {url}")
+        rows = _fetch(url)
+        print(f"  same-day count={len(rows)}; keys={list(rows[0]) if rows else '<empty>'}")
+        _write(f"{name}.json", rows[:5])
+
+
 def main() -> None:
     FIXTURES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -422,6 +441,7 @@ def main() -> None:
     _record_bfi82u()
     _record_margin()
     _record_yahoo()
+    _record_mops()
 
 
 if __name__ == "__main__":
