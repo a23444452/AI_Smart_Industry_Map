@@ -10,9 +10,10 @@ from app.llm.anthropic_ import AnthropicProvider
 from app.llm.factory import get_provider, provider_label
 from app.llm.mock import MockProvider
 from app.llm.openai_compat import OpenAICompatProvider
-from app.llm.provider import LLMError, LLMProvider
+from app.llm.provider import ASPECTS, LLMError, LLMProvider
 
 __all__ = [
+    "ASPECTS",
     "AnthropicProvider",
     "LLMError",
     "LLMProvider",

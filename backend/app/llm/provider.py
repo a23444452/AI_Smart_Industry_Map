@@ -8,6 +8,10 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
+# 五面向鍵名——三個 provider 的輸出契約與 service 層的解析契約共用的單一來源。
+# 順序即 mock provider 取用 seed byte 的順序，亦是等權平均 total 的計分順序。
+ASPECTS: tuple[str, ...] = ("題材面", "基本面", "技術面", "籌碼面", "新聞面")
+
 
 class LLMError(Exception):
     """LLM 呼叫失敗。

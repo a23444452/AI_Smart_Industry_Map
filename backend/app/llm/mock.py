@@ -18,9 +18,11 @@ from __future__ import annotations
 import hashlib
 import json
 
-# 計畫 Task 1（AiAnalysis 註解）明定的五面向鍵名——與原站的分析框架一致。
-# 此順序即 seed byte 的取用順序。
-_ASPECTS = ("題材面", "基本面", "技術面", "籌碼面", "新聞面")
+from app.llm.provider import ASPECTS
+
+# 五面向鍵名的單一來源在 provider.py（三 provider 與 service 層共用）。此順序即
+# seed byte 的取用順序；保留舊名以最小化本檔差異。
+_ASPECTS = ASPECTS
 
 # 分數落點 60-95（含），共 36 個可能值。
 _SCORE_MIN = 60
