@@ -1,0 +1,98 @@
+{
+  "chart": {
+    "result": [
+      {
+        "meta": {
+          "currency": "TWD",
+          "symbol": "^TWII",
+          "exchangeName": "TAI",
+          "fullExchangeName": "Taiwan",
+          "instrumentType": "INDEX",
+          "firstTradeDate": 867805200,
+          "regularMarketTime": 1783575195,
+          "hasPrePostMarketData": false,
+          "gmtoffset": 28800,
+          "timezone": "CST",
+          "exchangeTimezoneName": "Asia/Taipei",
+          "regularMarketPrice": 45354.61,
+          "fiftyTwoWeekHigh": 48218.87,
+          "fiftyTwoWeekLow": 22525.66,
+          "regularMarketDayHigh": 46064.06,
+          "regularMarketDayLow": 45352.41,
+          "regularMarketVolume": 0,
+          "longName": "TWSE Capitalization Weighted Stock Index",
+          "shortName": "TSEC CAPITALIZATION WEIGHTED ST",
+          "chartPreviousClose": 45734.41,
+          "priceHint": 2,
+          "currentTradingPeriod": {
+            "pre": {
+              "timezone": "CST",
+              "start": 1783645200,
+              "end": 1783645200,
+              "gmtoffset": 28800
+            },
+            "regular": {
+              "timezone": "CST",
+              "start": 1783645200,
+              "end": 1783661400,
+              "gmtoffset": 28800
+            },
+            "post": {
+              "timezone": "CST",
+              "start": 1783661400,
+              "end": 1783661400,
+              "gmtoffset": 28800
+            }
+          },
+          "dataGranularity": "1d",
+          "range": "1d",
+          "validRanges": [
+            "1d",
+            "5d",
+            "1mo",
+            "3mo",
+            "6mo",
+            "1y",
+            "2y",
+            "5y",
+            "10y",
+            "ytd",
+            "max"
+          ]
+        },
+        "timestamp": [
+          1783575195
+        ],
+        "indicators": {
+          "quote": [
+            {
+              "high": [
+                46064.05859375
+              ],
+              "open": [
+                45805.62109375
+              ],
+              "close": [
+                45354.609375
+              ],
+              "low": [
+                45352.41015625
+              ],
+              "volume": [
+                0
+              ]
+            }
+          ],
+          "adjclose": [
+            {
+              "adjclose": [
+                45354.609375
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "error": null
+  }
+}

@@ -87,7 +87,7 @@ def get_json(url: str, *, source: str) -> list[dict]:
     return data
 
 
-def get_json_dict(url: str, *, source: str) -> dict:
+def get_json_dict(url: str, *, source: str, headers: dict | None = None) -> dict:
     """GET a table-shaped endpoint and return the decoded JSON object.
 
     The TWSE ``rwd`` (T86) and TPEx ``dailyTrade`` endpoints wrap their rows in
@@ -95,15 +95,22 @@ def get_json_dict(url: str, *, source: str) -> dict:
     bare array that OpenAPI serves, so ``get_json`` (list-only) cannot be used.
     Same friendly-error contract: raises SourceFetchError on any non-200,
     connection/timeout failure, unparseable body, or a 200 that is not a dict.
+
+    ``headers`` overlays the default ``{User-Agent: aism/1.0, Accept: json}``
+    request headers (its keys win), for endpoints that require different
+    headers than the exchanges do. Existing call sites omit ``headers`` and
+    keep the original behaviour unchanged. (Yahoo turned out to need TLS
+    impersonation, not just a header — see yahoo_indices — but the hook stays:
+    header-picky endpoints shouldn't have to fork this helper.)
     """
+    request_headers = {"User-Agent": _USER_AGENT, "Accept": "application/json"}
+    if headers:
+        request_headers.update(headers)
     try:
         with httpx.Client(
             timeout=TIMEOUT_SECONDS, follow_redirects=True, verify=_ssl_context()
         ) as client:
-            resp = client.get(
-                url,
-                headers={"User-Agent": _USER_AGENT, "Accept": "application/json"},
-            )
+            resp = client.get(url, headers=request_headers)
     except httpx.HTTPError as exc:
         raise SourceFetchError(
             source, f"{source} 資料來源連線失敗，請稍後再試"

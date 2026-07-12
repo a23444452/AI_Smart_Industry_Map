@@ -13,11 +13,26 @@ from __future__ import annotations
 
 import json
 import ssl
+import time
 from pathlib import Path
 
 import httpx
 
 FIXTURES_DIR = Path(__file__).resolve().parent.parent / "tests" / "fixtures"
+
+# --- Yahoo Finance 指數 (v8 chart) ------------------------------------------
+# The public chart endpoint returns a nested object
+# {chart:{result:[{meta:{...}, timestamp, indicators}], error}} — one meta block
+# per symbol with regularMarketPrice / chartPreviousClose. Yahoo fingerprints
+# the TLS handshake and 429s non-browser clients — httpx/curl are blocked even
+# with a browser User-Agent header — so this recorder uses curl_cffi with
+# impersonate="chrome" (the yfinance community's standard workaround). We sleep
+# 0.5s between requests to stay polite, record ^TWII + NVDA as the happy-path
+# fixtures, and an INVALID_XYZ symbol whose response carries a non-null
+# chart.error.
+YAHOO_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=1d&range=1d"
+YAHOO_SYMBOLS = ["^TWII", "^SOX", "^GSPC", "TSM", "NVDA", "^N225", "^VIX"]
+YAHOO_RATE_LIMIT_SECONDS = 0.5
 
 TWSE_URL = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
 TPEX_URL = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes"
@@ -278,6 +293,48 @@ def _record_tpex_history() -> None:
     )
 
 
+def _fetch_yahoo(symbol: str):
+    """GET one Yahoo chart response via curl_cffi Chrome impersonation.
+
+    Returns the curl_cffi Response (not .json()) so the caller can record the
+    error symbol's body even when the status is non-200.
+    """
+    from curl_cffi import requests as cffi_requests
+
+    url = YAHOO_URL.format(symbol=symbol)
+    return cffi_requests.get(url, impersonate="chrome", timeout=30)
+
+
+def _record_yahoo() -> None:
+    """Probe all 7 index symbols; store ^TWII + NVDA + an error-symbol fixture."""
+    for i, symbol in enumerate(YAHOO_SYMBOLS):
+        if i:
+            time.sleep(YAHOO_RATE_LIMIT_SECONDS)
+        print(f"GET {YAHOO_URL.format(symbol=symbol)}")
+        resp = _fetch_yahoo(symbol)
+        resp.raise_for_status()
+        raw = resp.json()
+        meta = (raw.get("chart", {}).get("result") or [{}])[0].get("meta", {})
+        print(
+            f"  price={meta.get('regularMarketPrice')} "
+            f"prevClose={meta.get('chartPreviousClose')} "
+            f"currency={meta.get('currency')} name={meta.get('shortName')}"
+        )
+        if symbol == "^TWII":
+            _write("yahoo_twii.json", raw)
+        elif symbol == "NVDA":
+            _write("yahoo_nvda.json", raw)
+
+    time.sleep(YAHOO_RATE_LIMIT_SECONDS)
+    err_symbol = "INVALID_XYZ"
+    print(f"GET {YAHOO_URL.format(symbol=err_symbol)}")
+    err_resp = _fetch_yahoo(err_symbol)
+    print(f"  status={err_resp.status_code}")
+    err_raw = err_resp.json()
+    print(f"  chart.error={err_raw.get('chart', {}).get('error')}")
+    _write("yahoo_error.json", err_raw)
+
+
 def main() -> None:
     FIXTURES_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -303,6 +360,7 @@ def main() -> None:
     _record_tpex_insti()
     _record_twse_history()
     _record_tpex_history()
+    _record_yahoo()
 
 
 if __name__ == "__main__":

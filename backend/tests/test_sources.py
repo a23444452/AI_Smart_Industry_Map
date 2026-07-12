@@ -18,6 +18,7 @@ from app.pipeline.sources import (
     twse,
     twse_history,
     twse_t86,
+    yahoo_indices,
 )
 from app.pipeline.sources._common import SourceFetchError
 
@@ -478,3 +479,185 @@ def test_tpex_history_fetch_builds_url(monkeypatch):
     assert "date=2026/06/01" in captured["url"] or "date=2026%2F06%2F01" in captured["url"]
     assert "code=3081" in captured["url"]
     assert captured["source"] == "TPEx-History"
+
+
+# --- Yahoo 指數 (v8 chart, 每日焦點指數列) -----------------------------------
+
+YAHOO_KEYS = {"symbol", "name", "price", "change", "change_pct"}
+
+
+@pytest.fixture
+def yahoo_twii_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "yahoo_twii.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def yahoo_nvda_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "yahoo_nvda.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def yahoo_error_fixture() -> dict:
+    return json.loads(
+        (FIXTURES_DIR / "yahoo_error.json").read_text(encoding="utf-8")
+    )
+
+
+def test_yahoo_symbols_constant():
+    # 7 tracked symbols with the Chinese display names (not Yahoo's English).
+    assert yahoo_indices.SYMBOLS == {
+        "^TWII": "加權指數",
+        "^SOX": "費城半導體",
+        "^GSPC": "S&P 500",
+        "TSM": "台積電 ADR",
+        "NVDA": "輝達 NVDA",
+        "^N225": "日經 225",
+        "^VIX": "VIX 恐慌",
+    }
+
+
+def test_parse_yahoo_twii(yahoo_twii_fixture):
+    # Recorded 2026-07-11: price=45354.61, chartPreviousClose=45734.41.
+    r = yahoo_indices.parse(yahoo_twii_fixture, "^TWII")
+    assert set(r) == YAHOO_KEYS
+    assert r["symbol"] == "^TWII"
+    assert r["name"] == "加權指數"  # from SYMBOLS, not Yahoo's English shortName
+    assert r["price"] == 45354.61
+    assert r["change"] == pytest.approx(-379.8)
+    assert r["change_pct"] == pytest.approx(-0.83)
+
+
+def test_parse_yahoo_nvda_change_pct_matches_manual(yahoo_nvda_fixture):
+    # Manual: 210.96 - 202.78 = 8.18; 8.18 / 202.78 * 100 = 4.0339... -> 4.03.
+    r = yahoo_indices.parse(yahoo_nvda_fixture, "NVDA")
+    assert r["price"] == 210.96
+    assert r["change"] == pytest.approx(round(210.96 - 202.78, 2))
+    assert r["change_pct"] == pytest.approx(round((210.96 - 202.78) / 202.78 * 100, 2))
+
+
+def test_parse_yahoo_error_raises(yahoo_error_fixture):
+    # Recorded INVALID_XYZ response: chart.error={'code':'Not Found', ...}.
+    with pytest.raises(SourceFetchError) as excinfo:
+        yahoo_indices.parse(yahoo_error_fixture, "INVALID_XYZ")
+    assert "Yahoo" in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    "raw",
+    [
+        {"chart": {"result": [], "error": None}},  # empty result list
+        {"chart": {"result": None, "error": None}},  # null result
+        {"chart": {}},  # missing both
+        {},  # no chart at all
+    ],
+)
+def test_parse_yahoo_empty_result_raises(raw):
+    with pytest.raises(SourceFetchError):
+        yahoo_indices.parse(raw, "^TWII")
+
+
+def _yahoo_raw(price, prev):
+    meta = {}
+    if price is not None:
+        meta["regularMarketPrice"] = price
+    if prev is not None:
+        meta["chartPreviousClose"] = prev
+    return {"chart": {"result": [{"meta": meta}], "error": None}}
+
+
+def test_parse_yahoo_zero_or_missing_prev_close():
+    # prev == 0 (division guard) or missing -> change & change_pct both None.
+    for raw in (_yahoo_raw(100.0, 0), _yahoo_raw(100.0, None)):
+        r = yahoo_indices.parse(raw, "^TWII")
+        assert r["price"] == 100.0
+        assert r["change"] is None
+        assert r["change_pct"] is None
+
+
+def test_parse_yahoo_missing_price():
+    r = yahoo_indices.parse(_yahoo_raw(None, 200.0), "NVDA")
+    assert r["price"] is None
+    assert r["change"] is None
+    assert r["change_pct"] is None
+
+
+class _FakeCffiResponse:
+    def __init__(self, status_code=200, payload=None, text=""):
+        self.status_code = status_code
+        self._payload = payload
+        self.text = text
+
+    def json(self):
+        if self._payload is None:
+            raise ValueError("not json")
+        return self._payload
+
+
+def test_yahoo_fetch_uses_chrome_impersonation(monkeypatch, yahoo_twii_fixture):
+    captured = {}
+
+    def fake_get(url, **kwargs):
+        captured["url"] = url
+        captured["kwargs"] = kwargs
+        return _FakeCffiResponse(payload=yahoo_twii_fixture)
+
+    monkeypatch.setattr(yahoo_indices.cffi_requests, "get", fake_get)
+    monkeypatch.setattr(yahoo_indices.time, "sleep", lambda _s: None)  # 不真睡
+    raw = yahoo_indices.fetch("^TWII")
+    assert raw == yahoo_twii_fixture
+    assert "/v8/finance/chart/^TWII" in captured["url"]
+    assert "interval=1d" in captured["url"] and "range=1d" in captured["url"]
+    assert captured["kwargs"]["impersonate"] == "chrome"
+
+
+def test_yahoo_fetch_sleeps_rate_limit(monkeypatch, yahoo_twii_fixture):
+    slept = []
+    monkeypatch.setattr(
+        yahoo_indices.cffi_requests,
+        "get",
+        lambda url, **kw: _FakeCffiResponse(payload=yahoo_twii_fixture),
+    )
+    monkeypatch.setattr(yahoo_indices.time, "sleep", slept.append)
+    yahoo_indices.fetch("NVDA")
+    assert slept == [yahoo_indices._RATE_LIMIT_SECONDS] and slept == [0.5]
+
+
+def test_yahoo_fetch_wraps_non_200(monkeypatch):
+    # e.g. the TLS-fingerprint 429 or the 404 an unknown symbol returns.
+    monkeypatch.setattr(
+        yahoo_indices.cffi_requests,
+        "get",
+        lambda url, **kw: _FakeCffiResponse(status_code=429, text="Too Many Requests"),
+    )
+    monkeypatch.setattr(yahoo_indices.time, "sleep", lambda _s: None)
+    with pytest.raises(SourceFetchError) as excinfo:
+        yahoo_indices.fetch("^TWII")
+    assert excinfo.value.status_code == 429
+    assert "Yahoo" in str(excinfo.value)
+
+
+def test_yahoo_fetch_wraps_invalid_json(monkeypatch):
+    monkeypatch.setattr(
+        yahoo_indices.cffi_requests,
+        "get",
+        lambda url, **kw: _FakeCffiResponse(payload=None, text="<html>block</html>"),
+    )
+    monkeypatch.setattr(yahoo_indices.time, "sleep", lambda _s: None)
+    with pytest.raises(SourceFetchError) as excinfo:
+        yahoo_indices.fetch("^TWII")
+    assert excinfo.value.status_code == 200
+
+
+def test_yahoo_fetch_wraps_connection_error(monkeypatch):
+    def boom(url, **kw):
+        raise yahoo_indices.cffi_requests.exceptions.RequestException("dns fail")
+
+    monkeypatch.setattr(yahoo_indices.cffi_requests, "get", boom)
+    monkeypatch.setattr(yahoo_indices.time, "sleep", lambda _s: None)
+    with pytest.raises(SourceFetchError) as excinfo:
+        yahoo_indices.fetch("^TWII")
+    assert "Yahoo" in str(excinfo.value)

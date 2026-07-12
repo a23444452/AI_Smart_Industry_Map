@@ -1,0 +1,98 @@
+{
+  "chart": {
+    "result": [
+      {
+        "meta": {
+          "currency": "USD",
+          "symbol": "NVDA",
+          "exchangeName": "NMS",
+          "fullExchangeName": "NasdaqGS",
+          "instrumentType": "EQUITY",
+          "firstTradeDate": 917015400,
+          "regularMarketTime": 1783713600,
+          "hasPrePostMarketData": true,
+          "gmtoffset": -14400,
+          "timezone": "EDT",
+          "exchangeTimezoneName": "America/New_York",
+          "regularMarketPrice": 210.96,
+          "fiftyTwoWeekHigh": 236.54,
+          "fiftyTwoWeekLow": 162.02,
+          "regularMarketDayHigh": 211.0,
+          "regularMarketDayLow": 201.92,
+          "regularMarketVolume": 147203662,
+          "longName": "NVIDIA Corporation",
+          "shortName": "NVIDIA Corporation",
+          "chartPreviousClose": 202.78,
+          "priceHint": 2,
+          "currentTradingPeriod": {
+            "pre": {
+              "timezone": "EDT",
+              "end": 1783690200,
+              "start": 1783670400,
+              "gmtoffset": -14400
+            },
+            "regular": {
+              "timezone": "EDT",
+              "end": 1783713600,
+              "start": 1783690200,
+              "gmtoffset": -14400
+            },
+            "post": {
+              "timezone": "EDT",
+              "end": 1783728000,
+              "start": 1783713600,
+              "gmtoffset": -14400
+            }
+          },
+          "dataGranularity": "1d",
+          "range": "1d",
+          "validRanges": [
+            "1d",
+            "5d",
+            "1mo",
+            "3mo",
+            "6mo",
+            "1y",
+            "2y",
+            "5y",
+            "10y",
+            "ytd",
+            "max"
+          ]
+        },
+        "timestamp": [
+          1783690200
+        ],
+        "indicators": {
+          "quote": [
+            {
+              "low": [
+                201.9199981689453
+              ],
+              "open": [
+                202.0
+              ],
+              "volume": [
+                148124000
+              ],
+              "close": [
+                210.9600067138672
+              ],
+              "high": [
+                211.0
+              ]
+            }
+          ],
+          "adjclose": [
+            {
+              "adjclose": [
+                210.9600067138672
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "error": null
+  }
+}
