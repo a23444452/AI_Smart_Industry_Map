@@ -51,7 +51,9 @@ def main() -> None:
         # partial 包住 days 參數以符合 run_job 的 fn(session) 契約。任一 job
         # failed → 印狀態後以 exit 1 收場（CI/Make 可據此判斷）。
         jobs = (
-            ("backfill_quotes", partial(backfill_quotes, days=35)),
+            # days 目標設高於 6 個月的交易日數（約 120），使 _collect_ticker_history
+            # 不會提早 break，而是走滿 _MAX_MONTHS=6 個月上限——K 線圖需 ≥100 交易日。
+            ("backfill_quotes", partial(backfill_quotes, days=130)),
             ("backfill_institutional", partial(backfill_institutional, days=14)),
             ("backfill_market_stats", partial(backfill_market_stats, days=30)),
             ("backfill_per", partial(backfill_per, months=3)),
