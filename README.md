@@ -44,7 +44,7 @@ make backfill              # 回填歷史行情、三大法人與市場統計
 make dev                   # 同時啟動後端(:8000) 與前端(:5173)
 ```
 
-啟動後開啟 <http://localhost:5173/> 檢視每日焦點，<http://localhost:5173/topics> 檢視題材總覽，<http://localhost:5173/companies> 檢視公司資料庫。
+啟動後開啟 <http://localhost:5173/> 檢視每日焦點，<http://localhost:5173/topics> 檢視題材總覽，<http://localhost:5173/companies> 檢視公司資料庫，<http://localhost:5173/ai> 檢視 AI 分析與評分榜。
 
 ## 指令表（`make help`）
 
@@ -73,6 +73,25 @@ make dev                   # 同時啟動後端(:8000) 與前端(:5173)
 | GET | `/api/companies/{ticker}` | 個股詳情：報價、估值（PER／PBR／殖利率）、題材、籌碼徽章、最新月營收、集保大戶持股比 |
 | GET | `/api/companies/{ticker}/charts/{kind}` | 個股圖表資料（`kind` ∈ `kline`／`per_river`／`institutional`／`holders`），回傳 `items` 陣列 |
 | GET | `/api/meta/pipeline-status` | 各 pipeline job 最近執行狀態 |
+| POST | `/api/ai/analyze` | 觸發個股 AI 分析：body `{ticker, mode}`（mode ∈ 近期觀察／中期展望／全面檢視）。建 pending 列＋背景執行，回 202 `{analysis_id}`；ticker 不存在→404，同 ticker+mode 分析進行中→409 |
+| GET | `/api/ai/analyses/{id}` | 查單筆分析：status（pending／running／done／failed）、五面向 scores／reasons、summary、total、model；不存在→404 |
+| GET | `/api/ai/leaderboard?sort=strong&mode=` | AI 評分榜：每個股取最新一筆 done，依 total 降冪（`strong`，預設）／升冪（`weak`），可選 `mode` 篩選，top 50 |
+
+## LLM 設定（AI 分析）
+
+AI 分析支援三種 provider，經 `AISM_LLM_PROVIDER` 環境變數切換（見 [`.env.example`](.env.example) 的註解）。
+
+**預設為 `mock`——零設定即可跑**：不呼叫任何外部 API、不需 API key，回傳確定性的假分數（依 prompt 內容 hash 派生），reasons 與 summary 皆標明「模擬分析」字樣，供端到端展示與測試。
+
+切換至真實 LLM **無需改動任何程式碼**，只需調整 `.env`：
+
+| provider | 必要環境變數 |
+|----------|--------------|
+| `mock`（預設） | 無 |
+| `anthropic` | `AISM_LLM_PROVIDER=anthropic`、`AISM_LLM_API_KEY=<你的 key>`、`AISM_LLM_MODEL`（如 `claude-sonnet-5`） |
+| `openai_compat` | `AISM_LLM_PROVIDER=openai_compat`、`AISM_LLM_BASE_URL=<相容端點>`、`AISM_LLM_API_KEY=<你的 key>`、`AISM_LLM_MODEL=<模型名>` |
+
+改完 `.env` 後重啟後端即生效。缺少必要變數時 factory 會在啟動期以清楚訊息 raise；API key 絕不落入 log 或錯誤訊息。
 
 ## 目錄結構
 
@@ -80,19 +99,21 @@ make dev                   # 同時啟動後端(:8000) 與前端(:5173)
 AI_Smart_Industry_Map/
 ├── backend/                # FastAPI 後端
 │   ├── app/
-│   │   ├── api/            # topics、daily、meta 路由
+│   │   ├── api/            # topics、daily、meta、ai 路由
+│   │   ├── llm/            # LLM provider 層（anthropic／openai_compat／mock）
+│   │   ├── services/       # analysis（脈絡組裝＋prompt＋run_analysis）
 │   │   ├── core/           # 設定（pydantic-settings）
 │   │   ├── db/             # SQLAlchemy models、session、seed
 │   │   ├── pipeline/       # runner、jobs、scheduler
 │   │   │   └── sources/    # TWSE / TPEx / Yahoo / MOPS client
 │   │   └── main.py         # app factory
-│   └── tests/              # pytest（326 tests）
+│   └── tests/              # pytest（404 tests）
 ├── frontend/               # React + Vite 前端
 │   └── src/
 │       ├── api/            # API client
 │       ├── components/     # layout、daily、topics、map 元件
-│       ├── pages/          # DailyPage、TopicsPage、TopicDetailPage、TopicMapPage、CompaniesPage、CompanyPage
-│       └── __tests__/      # vitest（127 tests）
+│       ├── pages/          # DailyPage、TopicsPage、TopicDetailPage、TopicMapPage、CompaniesPage、CompanyPage、AiPage
+│       └── __tests__/      # vitest（153 tests）
 ├── data/seeds/             # 題材種子資料（YAML）
 ├── docs/superpowers/       # 設計 spec 與實作計畫
 ├── .env.example            # 環境變數範本
@@ -108,7 +129,7 @@ AI_Smart_Industry_Map/
 
 ## 開發狀態
 
-切片 1-6 已完成，後端 326 tests、前端 127 tests 全數通過。已實作功能：
+切片 1-7 已完成，後端 404 tests、前端 153 tests 全數通過。已實作功能：
 
 切片 1＋2（foundation）：
 
@@ -153,6 +174,14 @@ AI_Smart_Industry_Map/
 - 基本面資料管線：月營收（fetch_fundamentals 每日 09:00）、當日本益比／殖利率（fetch_per 平日 15:00）、集保股權分散（fetch_tdcc 週六 09:30）
 - `make backfill` 擴充：歷史行情回填至近 6 個月（每檔 ≥100 交易日）、本益比歷史回填（近 3 個月）
 
+切片 7（AI 分析）：
+
+- AI 分析頁（`/ai`）：觸發個股分析（ticker＋三種分析模式）、五面向評分條、AI 評分排行榜（強勢／弱勢切換＋模式篩選）
+- 三端點 API：`POST /api/ai/analyze`（202 非同步＋409 防重複）、`GET /api/ai/analyses/{id}`（輪詢狀態）、`GET /api/ai/leaderboard`
+- LLM provider 抽象層（`app/llm/`）：Anthropic Messages API／OpenAI 相容端點／Mock placeholder，經 `AISM_LLM_PROVIDER` 切換，換 provider 零程式碼改動
+- 分析 service（`app/services/analysis.py`）：個股脈絡組裝（行情／法人／大戶／營收／估值／題材／公告）、五面向 prompt（題材/基本/技術/籌碼/新聞）、`run_analysis` 背景執行＋失敗重試 1 次
+- 預設 mock provider：零設定即可端到端展示，回應標明「模擬分析」；NavBar 六項全數啟用
+
 設計文件：
 
 - 設計 spec：[`docs/superpowers/specs/2026-07-11-ai-stock-map-clone-design.md`](docs/superpowers/specs/2026-07-11-ai-stock-map-clone-design.md)
@@ -161,3 +190,4 @@ AI_Smart_Industry_Map/
 - 實作計畫（切片 4）：[`docs/superpowers/plans/2026-07-12-slice-4-industry-map.md`](docs/superpowers/plans/2026-07-12-slice-4-industry-map.md)
 - 實作計畫（切片 5）：[`docs/superpowers/plans/2026-07-12-slice-5-daily-focus.md`](docs/superpowers/plans/2026-07-12-slice-5-daily-focus.md)
 - 實作計畫（切片 6）：[`docs/superpowers/plans/2026-07-12-slice-6-company-pages.md`](docs/superpowers/plans/2026-07-12-slice-6-company-pages.md)
+- 實作計畫（切片 7）：[`docs/superpowers/plans/2026-07-12-slice-7-ai-analysis.md`](docs/superpowers/plans/2026-07-12-slice-7-ai-analysis.md)
