@@ -60,6 +60,22 @@ function buildOption(items: TreemapInput[]): EChartsCoreOption {
 }
 
 export function Treemap({ items, className = "h-80" }: TreemapProps) {
+  // 無資料 → 佔位（不 init chart）：避免對空 data 的 echarts.init 與空白畫布。
+  // 早退在任何 hook 之前——本元件不呼叫 hook，實際圖表邏輯下放至 TreemapCanvas，
+  // 空↔非空切換時由 React 掛載／卸載子元件處理，hook 順序恆一致。
+  if (!items.length) {
+    return (
+      <div
+        className={`flex w-full items-center justify-center rounded-xl border border-border-line bg-surface text-sm text-text-dim ${className}`}
+      >
+        暫無資料
+      </div>
+    );
+  }
+  return <TreemapCanvas items={items} className={className} />;
+}
+
+function TreemapCanvas({ items, className }: Required<TreemapProps>) {
   // init/dispose/ResizeObserver/setOption 邏輯集中於 chartsCore.useEChart。
   const containerRef = useEChart(() => buildOption(items), [items]);
   return <div ref={containerRef} className={`w-full ${className}`} />;
