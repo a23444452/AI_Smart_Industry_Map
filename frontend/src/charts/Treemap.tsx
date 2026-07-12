@@ -1,13 +1,7 @@
-import { useEffect, useRef } from "react";
-import * as echarts from "echarts/core";
-import { TreemapChart } from "echarts/charts";
-import { TooltipComponent } from "echarts/components";
-import { CanvasRenderer } from "echarts/renderers";
-import type { EChartsType } from "echarts/core";
+import type { EChartsCoreOption } from "echarts/core";
+import { useEChart } from "./chartsCore";
 import { toTreemapData, type TreemapInput } from "./toTreemapData";
 import { CHART_BG, CHART_SURFACE, CHART_BORDER, CHART_TEXT } from "./theme";
-
-echarts.use([TreemapChart, TooltipComponent, CanvasRenderer]);
 
 interface TreemapProps {
   items: TreemapInput[];
@@ -19,7 +13,7 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-function buildOption(items: TreemapInput[]): echarts.EChartsCoreOption {
+function buildOption(items: TreemapInput[]): EChartsCoreOption {
   const data = toTreemapData(items);
   return {
     tooltip: {
@@ -66,35 +60,8 @@ function buildOption(items: TreemapInput[]): echarts.EChartsCoreOption {
 }
 
 export function Treemap({ items, className = "h-80" }: TreemapProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const chartRef = useRef<EChartsType | null>(null);
-
-  // init 一次 + dispose cleanup + ResizeObserver
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const chart = echarts.init(el, undefined, { renderer: "canvas" });
-    chartRef.current = chart;
-
-    const observer = new ResizeObserver(() => {
-      chart.resize();
-    });
-    observer.observe(el);
-
-    return () => {
-      observer.disconnect();
-      chart.dispose();
-      chartRef.current = null;
-    };
-  }, []);
-
-  // items 變更時更新 option
-  useEffect(() => {
-    const chart = chartRef.current;
-    if (!chart) return;
-    chart.setOption(buildOption(items), { notMerge: true });
-  }, [items]);
-
+  // init/dispose/ResizeObserver/setOption 邏輯集中於 chartsCore.useEChart。
+  const containerRef = useEChart(() => buildOption(items), [items]);
   return <div ref={containerRef} className={`w-full ${className}`} />;
 }
 
