@@ -40,15 +40,10 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.queries import flows_by_ticker, quotes_by_ticker
+from app.api.queries import badges_for, flows_by_ticker, quotes_by_ticker
 from app.db.models import Company, Topic, TopicCompany
 
 router = APIRouter(tags=["topic-map"])
-
-# 徽章文字（固定輸出順序：期貨 → 外資 → 投信）。
-BADGE_FUTURES = "有股票期貨"
-BADGE_FOREIGN_BUY = "外資買超"
-BADGE_TRUST_BUY = "投信買超"
 
 _NOT_FOUND_BODY = {"error": {"code": "not_found", "message": "找不到此題材"}}
 
@@ -110,22 +105,6 @@ def _members_by_category(
     return grouped
 
 
-def _badges(has_futures: bool, latest_flow) -> list[str]:
-    """依徽章口徑組出徽章清單（順序：期貨 → 外資 → 投信）。
-
-    ``latest_flow`` 為該 ticker 依 date 降冪的第一筆（無 flows 時為 None）。
-    """
-    badges: list[str] = []
-    if has_futures:
-        badges.append(BADGE_FUTURES)
-    if latest_flow is not None:
-        if (latest_flow.foreign_net or 0) > 0:
-            badges.append(BADGE_FOREIGN_BUY)
-        if (latest_flow.trust_net or 0) > 0:
-            badges.append(BADGE_TRUST_BUY)
-    return badges
-
-
 def _company_card(member, quotes: dict, flows: dict) -> MapCompany:
     quote_rows = quotes.get(member.ticker)
     latest_quote = quote_rows[0] if quote_rows else None
@@ -144,7 +123,7 @@ def _company_card(member, quotes: dict, flows: dict) -> MapCompany:
         relevance=member.relevance,
         close=close,
         change_pct=change_pct,
-        badges=_badges(member.has_futures, latest_flow),
+        badges=badges_for(member.has_futures, latest_flow),
     )
 
 

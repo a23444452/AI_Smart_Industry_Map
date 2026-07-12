@@ -15,12 +15,16 @@ from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.api.queries import flows_by_ticker, period_change, quotes_by_ticker
+from app.api.queries import (
+    flows_by_ticker,
+    period_change,
+    quotes_by_ticker,
+    quotes_updated_at,
+)
 from app.api.serializers import to_utc_iso
 from app.db.models import (
     Company,
     InstitutionalFlow,
-    PipelineRun,
     QuoteDaily,
     Topic,
     TopicCompany,
@@ -36,8 +40,6 @@ CHIP_WINDOW_DAYS = 5
 # treemap 週／月報酬的交易日偏移（以該 ticker 實際存在的交易日排序計算）。
 WEEK_OFFSET = 5
 MONTH_OFFSET = 21
-# quotes_updated_at 綁定的行情 job 名稱（見 app.pipeline.scheduler）。
-QUOTES_JOB_NAME = "fetch_tw_quotes"
 
 _NOT_FOUND_BODY = {"error": {"code": "not_found", "message": "找不到此題材"}}
 
@@ -257,21 +259,6 @@ def _build_chip_signals(
     )
 
 
-def _quotes_updated_at(session: Session) -> str | None:
-    """最新一次 fetch_tw_quotes 成功 run 的 finished_at（帶 Z）；無紀錄 → None。"""
-    stmt = (
-        select(PipelineRun.finished_at)
-        .where(
-            PipelineRun.job_name == QUOTES_JOB_NAME,
-            PipelineRun.status == "success",
-        )
-        .order_by(PipelineRun.id.desc())
-        .limit(1)
-    )
-    row = session.execute(stmt).first()
-    return to_utc_iso(row[0]) if row is not None else None
-
-
 @router.get(
     "/topics/{slug}",
     response_model=TopicDetail,
@@ -313,5 +300,5 @@ def get_topic_detail(slug: str, request: Request):
             verified_at=topic.verified_at,
             treemap=_build_treemap(members, quotes),
             chip_signals=_build_chip_signals(members, flows),
-            quotes_updated_at=_quotes_updated_at(session),
+            quotes_updated_at=quotes_updated_at(session),
         )

@@ -9,8 +9,12 @@
 
 - ``GET /api/companies/{ticker}`` — 單檔詳情：最新報價（close/change_pct/volume）、
   change＝最新兩交易日 close 差（不足→null）、最新 per/pbr/dividend_yield、最新
-  月營收與集保大戶（缺→null）、所屬 topics（{slug,title}）、徽章（重用
-  ``topic_map._badges``，單一來源）、quotes_updated_at（重用 ``topics._quotes_updated_at``）。
+  月營收與集保大戶（缺→null）、所屬 topics（{slug,title}）、徽章與
+  quotes_updated_at（重用 ``queries.badges_for``／``queries.quotes_updated_at``，
+  與 topic_map／topics 單一來源）。
+
+「各表最新一筆」重用 ``queries.latest_rows``，帶時間下界（日／週頻 60 日曆日、
+月頻 12 個月）——與 queries.py 慣例一致，避免歷史累積後的無界掃描。
 
 - ``GET /api/companies/{ticker}/charts/{kind}`` — kind ∈ kline/per_river/
   institutional/holders（Literal，未知→422）；ticker 不存在→404，有 ticker 無
@@ -30,8 +34,15 @@ from pydantic import BaseModel
 from sqlalchemy import distinct, func, select
 from sqlalchemy.orm import Session
 
-from app.api.topic_map import _badges
-from app.api.topics import _quotes_updated_at
+from app.api.queries import (
+    FUNDAMENTALS_LOOKBACK_MONTHS,
+    QUOTES_LOOKBACK_DAYS,
+    badges_for,
+    cutoff_date,
+    cutoff_month,
+    latest_rows,
+    quotes_updated_at,
+)
 from app.db.models import (
     Company,
     Fundamental,
@@ -109,26 +120,6 @@ class CompanyListResponse(BaseModel):
     topics_facets: list[TopicFacet]
 
 
-def _latest_rows(session: Session, model, date_col, tickers: list[str]) -> dict:
-    """各 ticker 最新一列（依 ``date_col`` 取 MAX）；回傳 dict[ticker → ORM 物件]。
-
-    date 欄位均為 ISO 字串（YYYY-MM-DD 或 YYYY-MM），MAX 即字典序最新。以
-    (ticker, max_date) 自我 join；date 為複合 PK 一部分，故每 ticker 至多一列。
-    """
-    if not tickers:
-        return {}
-    latest = (
-        select(model.ticker.label("t"), func.max(date_col).label("d"))
-        .where(model.ticker.in_(tickers))
-        .group_by(model.ticker)
-        .subquery()
-    )
-    stmt = select(model).join(
-        latest, (model.ticker == latest.c.t) & (date_col == latest.c.d)
-    )
-    return {row.ticker: row for row in session.execute(stmt).scalars().all()}
-
-
 def _topics_by_ticker(session: Session, tickers: list[str]) -> dict[str, list[str]]:
     """各 ticker 所屬 topic slug（distinct、升冪）。"""
     if not tickers:
@@ -187,9 +178,16 @@ def list_companies(
         tickers = [c.ticker for c in companies]
 
         topics_map = _topics_by_ticker(session, tickers)
-        quotes = _latest_rows(session, QuoteDaily, QuoteDaily.date, tickers)
-        pers = _latest_rows(session, PerDaily, PerDaily.date, tickers)
-        funds = _latest_rows(session, Fundamental, Fundamental.month, tickers)
+        day_cutoff = cutoff_date(QUOTES_LOOKBACK_DAYS)
+        quotes = latest_rows(session, QuoteDaily, QuoteDaily.date, tickers, day_cutoff)
+        pers = latest_rows(session, PerDaily, PerDaily.date, tickers, day_cutoff)
+        funds = latest_rows(
+            session,
+            Fundamental,
+            Fundamental.month,
+            tickers,
+            cutoff_month(FUNDAMENTALS_LOOKBACK_MONTHS),
+        )
 
         items: list[CompanyListItem] = []
         for c in companies:
@@ -291,12 +289,20 @@ def get_company(ticker: str, request: Request):
         if len(two) == 2 and two[0].close is not None and two[1].close is not None:
             change = round(two[0].close - two[1].close, 2)
 
-        per_row = _latest_rows(session, PerDaily, PerDaily.date, [ticker]).get(ticker)
-        fund_row = _latest_rows(
-            session, Fundamental, Fundamental.month, [ticker]
+        # 週頻 TDCC 大戶資料同用 60 日曆日下界（覆蓋約 8 週，綽綽有餘）。
+        day_cutoff = cutoff_date(QUOTES_LOOKBACK_DAYS)
+        per_row = latest_rows(
+            session, PerDaily, PerDaily.date, [ticker], day_cutoff
         ).get(ticker)
-        hold_row = _latest_rows(
-            session, MajorHolder, MajorHolder.week, [ticker]
+        fund_row = latest_rows(
+            session,
+            Fundamental,
+            Fundamental.month,
+            [ticker],
+            cutoff_month(FUNDAMENTALS_LOOKBACK_MONTHS),
+        ).get(ticker)
+        hold_row = latest_rows(
+            session, MajorHolder, MajorHolder.week, [ticker], day_cutoff
         ).get(ticker)
 
         latest_flow = (
@@ -323,7 +329,7 @@ def get_company(ticker: str, request: Request):
             ),
             volume=latest_q.volume if latest_q else None,
             topics=_company_topics(session, ticker),
-            badges=_badges(company.has_futures, latest_flow),
+            badges=badges_for(company.has_futures, latest_flow),
             per=per_row.per if per_row else None,
             pbr=per_row.pbr if per_row else None,
             dividend_yield=per_row.dividend_yield if per_row else None,
@@ -339,7 +345,7 @@ def get_company(ticker: str, request: Request):
                 if hold_row
                 else None
             ),
-            quotes_updated_at=_quotes_updated_at(session),
+            quotes_updated_at=quotes_updated_at(session),
         )
 
 
