@@ -132,6 +132,96 @@ def test_load_seeds_is_upsert_only_no_deletion(tmp_path):
         assert _counts(s) == (1, 17, 20)
 
 
+def test_upsert_company_preserves_has_futures_when_key_absent(tmp_path):
+    """跨 seed 部分更新：A seed 設 has_futures=true，B seed 同公司省略該鍵→應保留 true。
+
+    這是防 clobber 的核心保證——silicon-photonics 為 2330 等設了 has_futures=true，
+    其他 seed 未帶此鍵時不得蓋回 false。
+    """
+    from app.db.seed import load_seed_doc
+
+    with _make_session(tmp_path) as s:
+        doc_a = {
+            "slug": "topic-a",
+            "title": "A",
+            "companies": [{"ticker": "2330", "name": "台積電", "has_futures": True}],
+            "chain": [
+                {
+                    "level": "成員總覽",
+                    "categories": [
+                        {"name": "cat", "companies": [{"ticker": "2330"}]}
+                    ],
+                }
+            ],
+        }
+        load_seed_doc(doc_a, s)
+        s.commit()
+        assert s.get(models.Company, "2330").has_futures is True
+
+        # B seed 同公司但省略 has_futures 鍵——不得覆寫既有 true。
+        doc_b = {
+            "slug": "topic-b",
+            "title": "B",
+            "companies": [{"ticker": "2330", "name": "台積電"}],
+            "chain": [
+                {
+                    "level": "成員總覽",
+                    "categories": [
+                        {"name": "cat", "companies": [{"ticker": "2330"}]}
+                    ],
+                }
+            ],
+        }
+        load_seed_doc(doc_b, s)
+        s.commit()
+        assert s.get(models.Company, "2330").has_futures is True
+
+
+def test_upsert_company_new_company_defaults_has_futures_false(tmp_path):
+    from app.db.seed import load_seed_doc
+
+    with _make_session(tmp_path) as s:
+        doc = {
+            "slug": "topic-a",
+            "title": "A",
+            "companies": [{"ticker": "9999", "name": "測試"}],
+            "chain": [],
+        }
+        load_seed_doc(doc, s)
+        s.commit()
+        assert s.get(models.Company, "9999").has_futures is False
+
+
+def test_upsert_company_preserves_name_when_key_absent(tmp_path):
+    from app.db.seed import load_seed_doc
+
+    with _make_session(tmp_path) as s:
+        load_seed_doc(
+            {
+                "slug": "a",
+                "title": "A",
+                "companies": [{"ticker": "2330", "name": "台積電"}],
+                "chain": [],
+            },
+            s,
+        )
+        s.commit()
+        # 後續 seed 省略 name（chain 內以 ticker 引用時常見）——保留既有 name。
+        load_seed_doc(
+            {
+                "slug": "b",
+                "title": "B",
+                "companies": [{"ticker": "2330", "has_futures": True}],
+                "chain": [],
+            },
+            s,
+        )
+        s.commit()
+        c = s.get(models.Company, "2330")
+        assert c.name == "台積電"
+        assert c.has_futures is True
+
+
 def test_load_seeds_bad_yaml_error_includes_filename(tmp_path):
     bad_dir = tmp_path / "seeds"
     bad_dir.mkdir()

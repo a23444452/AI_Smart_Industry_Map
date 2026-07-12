@@ -48,14 +48,34 @@ def _upsert_topic(s: Session, doc: dict) -> None:
 
 
 def _upsert_company(s: Session, entry: dict) -> None:
+    """部分更新（partial update）：只覆寫 entry 有提供的欄位，避免跨 seed 互相 clobber。
+
+    同一公司常出現在多個 seed，且各 seed 未必都帶齊欄位。若某 seed 省略 ``has_futures``／
+    ``name``，不得把另一 seed 已設好的值蓋掉——因此缺鍵時保留既有值。新公司則採預設
+    （``has_futures=False``），並要求首次出現時必須帶 ``name``。
+    """
     ticker = str(entry["ticker"])
     company = s.get(models.Company, ticker)
-    if company is None:
-        company = models.Company(ticker=ticker)
+    is_new = company is None
+    if is_new:
+        company = models.Company(ticker=ticker, has_futures=False)
         s.add(company)
-    company.name = entry["name"]
-    company.market = entry.get("market", "TW")
-    company.has_futures = bool(entry.get("has_futures", False))
+
+    # name：有值才更新（新公司必須有 name）。
+    if "name" in entry:
+        company.name = entry["name"]
+    elif is_new:
+        raise KeyError(f"新公司 {ticker} 缺少必要欄位 name")
+
+    # market：預設 TW；新公司缺鍵時套預設，既有公司缺鍵時保留原值。
+    if "market" in entry:
+        company.market = entry["market"]
+    elif is_new:
+        company.market = "TW"
+
+    # has_futures：缺鍵時不覆寫既有值（防跨 seed clobber）；新公司已預設 False。
+    if "has_futures" in entry:
+        company.has_futures = bool(entry["has_futures"])
 
 
 def _upsert_topic_company(
