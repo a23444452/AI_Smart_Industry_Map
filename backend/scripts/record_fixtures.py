@@ -48,6 +48,18 @@ TPEX_URL = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes
 MOPS_LISTED_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap04_L"
 MOPS_OTC_URL = "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap04_O"
 
+# 月營收 (t187ap05). Both markets serve a bare list[dict] of the *latest*
+# reported month (no date parameter). Unlike MOPS 重大訊息, both feeds use the
+# SAME 中文 field names — 資料年月 (ROC packed "11506" = 2026-06), 公司代號,
+# 營業收入-當月營收 (千元), 營業收入-去年同月增減(%) (YoY %). We record the first
+# 5 rows plus a known ticker per market. 2330 (台積電) does not file through this
+# monthly-revenue feed, so the 上市 fixture substitutes 2454 (聯發科, 半導體業);
+# the 上櫃 feed carries 3081 (聯亞).
+REVENUE_LISTED_URL = "https://openapi.twse.com.tw/v1/opendata/t187ap05_L"
+REVENUE_OTC_URL = "https://www.tpex.org.tw/openapi/v1/mopsfin_t187ap05_O"
+REVENUE_LISTED_TICKER = "2454"  # 2330 absent from this feed; use 聯發科 instead
+REVENUE_OTC_TICKER = "3081"  # 聯亞 (上櫃)
+
 # Institutional (三大法人) — date-parameterised, table-shaped responses.
 # T86 returns a dict {stat, date, fields, data:[row,...]}; TPEx dailyTrade
 # returns {stat, tables:[{fields, date, data:[row,...]}]}. Both list rows as
@@ -111,7 +123,7 @@ MARGIN_URL = (
 
 def _ticker_of(row: dict) -> str:
     """Best-effort extraction of the ticker code from a raw row."""
-    for key in ("Code", "SecuritiesCompanyCode", "code"):
+    for key in ("Code", "SecuritiesCompanyCode", "公司代號", "code"):
         if key in row:
             return str(row[key]).strip()
     return ""
@@ -411,6 +423,20 @@ def _record_mops() -> None:
         rows = _fetch(url)
         print(f"  same-day count={len(rows)}; keys={list(rows[0]) if rows else '<empty>'}")
         _write(f"{name}.json", rows[:5])
+
+
+def _record_revenue() -> None:
+    for name, url, want in (
+        ("revenue_listed", REVENUE_LISTED_URL, REVENUE_LISTED_TICKER),
+        ("revenue_otc", REVENUE_OTC_URL, REVENUE_OTC_TICKER),
+    ):
+        print(f"GET {url}")
+        rows = _fetch(url)
+        print(
+            f"  count={len(rows)}; 資料年月={rows[0].get('資料年月') if rows else '<empty>'}; "
+            f"keys={list(rows[0]) if rows else '<empty>'}"
+        )
+        _write(f"{name}.json", _select(rows, want))
 
 
 def main() -> None:

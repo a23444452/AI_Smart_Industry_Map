@@ -17,10 +17,12 @@ from app.pipeline.sources import (
     tpex,
     tpex_history,
     tpex_institutional,
+    tpex_revenue,
     twse,
     twse_bfi82u,
     twse_history,
     twse_margin,
+    twse_revenue,
     twse_t86,
     yahoo_indices,
 )
@@ -953,3 +955,127 @@ def test_mops_fetch_otc_url(monkeypatch):
 )
 def test_mops_parse_time_boundaries(raw, expected):
     assert mops._parse_time(raw) == expected
+
+
+# --- 月營收 (每月營業收入, t187ap05) ----------------------------------------
+
+REVENUE_KEYS = {"ticker", "month", "revenue", "yoy"}
+
+
+@pytest.fixture
+def revenue_listed_fixture() -> list[dict]:
+    return json.loads(
+        (FIXTURES_DIR / "revenue_listed.json").read_text(encoding="utf-8")
+    )
+
+
+@pytest.fixture
+def revenue_otc_fixture() -> list[dict]:
+    return json.loads(
+        (FIXTURES_DIR / "revenue_otc.json").read_text(encoding="utf-8")
+    )
+
+
+def test_parse_revenue_listed(revenue_listed_fixture):
+    rows = twse_revenue.parse(revenue_listed_fixture)
+    assert len(rows) == len(revenue_listed_fixture)
+    assert all(set(r) == REVENUE_KEYS for r in rows)
+    r = rows[0]  # 1101 台泥, 資料年月 11506
+    assert r["ticker"] == "1101"
+    assert r["month"] == "2026-06"
+    # 營業收入-當月營收 kept verbatim in 千元 (no scaling): 13,382,706 千元.
+    assert r["revenue"] == 13382706
+    assert isinstance(r["revenue"], int)
+    assert r["yoy"] == pytest.approx(32.39878166305348)
+
+
+def test_parse_revenue_otc_shares_listed_schema(revenue_otc_fixture):
+    # 上櫃 feed uses the identical 中文 schema; tpex_revenue reuses the 上市 parser.
+    rows = tpex_revenue.parse(revenue_otc_fixture)
+    assert len(rows) == len(revenue_otc_fixture)
+    assert all(set(r) == REVENUE_KEYS for r in rows)
+    # 3081 聯亞 is the recorded known-ticker row.
+    row_3081 = next(r for r in rows if r["ticker"] == "3081")
+    assert row_3081["month"] == "2026-06"
+    assert row_3081["revenue"] == 420507
+    assert row_3081["yoy"] == pytest.approx(128.13717299074446)
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        ("11506", "2026-06"),  # packed 民國 115 年 06 月
+        ("115/06", "2026-06"),  # slash form
+        ("9912", "2010-12"),  # 4-digit packed (民國 99 年 12 月)
+        ("11513", None),  # month 13 越界 → None
+        ("", None),  # blank → None
+        ("-", None),  # 佔位 → None
+        ("115", None),  # too short → None
+        (None, None),  # missing → None
+    ],
+)
+def test_revenue_roc_ym_to_month(raw, expected):
+    assert twse_revenue.roc_ym_to_month(raw) == expected
+
+
+def test_revenue_tolerates_blank_and_dash():
+    rows = twse_revenue.parse(
+        [
+            {
+                "公司代號": "9999",
+                "資料年月": "11506",
+                "營業收入-當月營收": "-",
+                "營業收入-去年同月增減(%)": "",
+            }
+        ]
+    )
+    assert rows == [
+        {"ticker": "9999", "month": "2026-06", "revenue": None, "yoy": None}
+    ]
+
+
+def test_revenue_english_key_fallback():
+    # Defensive candidate keys: an all-English row still parses.
+    rows = twse_revenue.parse(
+        [{"Code": "2454", "DataYearMonth": "11506", "Revenue": "58011756", "YoY": "2.8"}]
+    )
+    assert rows == [
+        {"ticker": "2454", "month": "2026-06", "revenue": 58011756, "yoy": 2.8}
+    ]
+
+
+def test_revenue_missing_ticker_column_raises():
+    with pytest.raises(SourceFetchError) as excinfo:
+        twse_revenue.parse([{"資料年月": "11506", "營業收入-當月營收": "100"}])
+    assert "月營收" in str(excinfo.value)
+
+
+def test_revenue_empty_response_returns_empty():
+    assert twse_revenue.parse([]) == []
+    assert tpex_revenue.parse([]) == []
+
+
+def test_revenue_fetch_listed_url(monkeypatch):
+    captured = {}
+
+    def fake_get_json(url, *, source):
+        captured.update(url=url, source=source)
+        return []
+
+    monkeypatch.setattr(_common, "get_json", fake_get_json)
+    twse_revenue.fetch()
+    assert captured["url"] == twse_revenue.LISTED_URL
+    assert "上市" in captured["source"]
+
+
+def test_revenue_fetch_otc_url(monkeypatch):
+    captured = {}
+
+    def fake_get_json(url, *, source):
+        captured.update(url=url, source=source)
+        return []
+
+    monkeypatch.setattr(_common, "get_json", fake_get_json)
+    tpex_revenue.fetch()
+    assert captured["url"] == tpex_revenue.OTC_URL
+    assert "上櫃" in captured["source"]
