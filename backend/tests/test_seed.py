@@ -238,6 +238,38 @@ def test_upsert_company_preserves_name_when_key_absent(tmp_path):
         assert c.has_futures is True
 
 
+def test_load_seeds_content_error_includes_filename_and_ticker(tmp_path):
+    """新公司缺 name → ValueError 帶檔名與 ticker，方便定位壞 seed。"""
+    bad_dir = tmp_path / "seeds"
+    bad_dir.mkdir()
+    bad_file = bad_dir / "missing-name.yaml"
+    bad_file.write_text(
+        'slug: t\ntitle: T\ncompanies:\n  - {ticker: "7777"}\nchain: []\n',
+        encoding="utf-8",
+    )
+    with _make_session(tmp_path) as s:
+        with pytest.raises(ValueError, match="seed 內容錯誤") as excinfo:
+            load_seeds(str(bad_dir), s)
+        msg = str(excinfo.value)
+        assert str(bad_file) in msg
+        assert "7777" in msg
+
+
+def test_load_seeds_missing_ticker_error_includes_filename(tmp_path):
+    """裸 KeyError('ticker') 也應被包成帶檔名的 ValueError。"""
+    bad_dir = tmp_path / "seeds"
+    bad_dir.mkdir()
+    bad_file = bad_dir / "missing-ticker.yaml"
+    bad_file.write_text(
+        "slug: t\ntitle: T\ncompanies:\n  - {name: 無代號}\nchain: []\n",
+        encoding="utf-8",
+    )
+    with _make_session(tmp_path) as s:
+        with pytest.raises(ValueError, match="seed 內容錯誤") as excinfo:
+            load_seeds(str(bad_dir), s)
+        assert str(bad_file) in str(excinfo.value)
+
+
 def test_load_seeds_bad_yaml_error_includes_filename(tmp_path):
     bad_dir = tmp_path / "seeds"
     bad_dir.mkdir()

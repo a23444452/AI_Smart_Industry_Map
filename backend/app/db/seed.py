@@ -65,7 +65,7 @@ def _upsert_company(s: Session, entry: dict) -> None:
     if "name" in entry:
         company.name = entry["name"]
     elif is_new:
-        raise KeyError(f"新公司 {ticker} 缺少必要欄位 name")
+        raise ValueError(f"新公司 {ticker} 缺少必要欄位 name")
 
     # market：預設 TW；新公司缺鍵時套預設，既有公司缺鍵時保留原值。
     if "market" in entry:
@@ -137,6 +137,10 @@ def load_seeds(seeds_dir: str, s: Session) -> int:
         except (yaml.YAMLError, OSError) as exc:
             raise ValueError(f"seed 檔解析失敗: {path}: {exc}") from exc
         if doc:
-            load_seed_doc(doc, s)
+            try:
+                load_seed_doc(doc, s)
+            except (KeyError, ValueError) as exc:
+                # 內容錯誤（缺 ticker/name 等）一律帶檔名脈絡，與 YAML 解析錯誤一致。
+                raise ValueError(f"seed 內容錯誤: {path}: {exc}") from exc
             imported += 1
     return imported
