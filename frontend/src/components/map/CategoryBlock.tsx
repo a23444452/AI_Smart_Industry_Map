@@ -21,12 +21,14 @@ export function CategoryBlock({ category }: CategoryBlockProps) {
 
   return (
     <div className="rounded-xl border border-border-line bg-surface p-4">
-      {/* 標題列：name ＋ N 家公司 pill */}
+      {/* 標題列：name ＋ N 家公司 pill（placeholder 分類無公司，不顯示 pill） */}
       <div className="flex items-center justify-between gap-2">
         <h4 className="font-semibold text-text-main">{name}</h4>
-        <span className="shrink-0 rounded-full border border-border-line bg-surface-2 px-2.5 py-0.5 text-xs text-text-dim">
-          {companies.length} 家公司
-        </span>
+        {!placeholder && (
+          <span className="shrink-0 rounded-full border border-border-line bg-surface-2 px-2.5 py-0.5 text-xs text-text-dim">
+            {companies.length} 家公司
+          </span>
+        )}
       </div>
 
       {/* 分類描述（null 不渲染） */}

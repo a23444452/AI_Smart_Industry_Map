@@ -41,6 +41,8 @@ describe("CategoryBlock", () => {
     );
     expect(screen.getByText(/待補充/)).toBeInTheDocument();
     expect(screen.queryByText("公司1")).not.toBeInTheDocument();
+    // placeholder 分類無公司 → 不顯示「N 家公司」pill
+    expect(screen.queryByText(/家公司/)).not.toBeInTheDocument();
   });
 
   it("companies > 5 → 預設顯示前 5 ＋顯示更多按鈕，點擊展開後可收合", () => {
