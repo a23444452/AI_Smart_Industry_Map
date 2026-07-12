@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from loguru import logger
 
-from app.api import ai, companies, daily, meta, topic_map, topics
+from app.api import ai, companies, daily, meta, search, topic_map, topics
 from app.core.config import settings
 from app.db.base import Base, make_engine
 from app.pipeline.scheduler import build_scheduler
@@ -79,5 +79,6 @@ def create_app() -> FastAPI:
     app.include_router(meta.router, prefix="/api")
     app.include_router(companies.router, prefix="/api")
     app.include_router(ai.router, prefix="/api")
+    app.include_router(search.router, prefix="/api")
 
     return app

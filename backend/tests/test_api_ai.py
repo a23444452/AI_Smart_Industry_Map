@@ -135,6 +135,48 @@ def test_analyze_no_conflict_when_prior_done(client):
     assert resp.status_code == 202
 
 
+# ── P1：孤兒 running 回收（時間下界）─────────────────────────────────────────
+def test_analyze_stale_running_does_not_block(client):
+    # 11 分鐘前的 running 已逾回收窗（10 分鐘）→ 視為孤兒，不擋新觸發 → 202。
+    _add(client, [_company()])
+    stale = models.AiAnalysis(
+        ticker="2330",
+        mode="全面檢視",
+        status="running",
+        created_at=utcnow() - timedelta(minutes=11),
+    )
+    _add(client, [stale])
+    resp = client.post("/api/ai/analyze", json={"ticker": "2330", "mode": "全面檢視"})
+    assert resp.status_code == 202
+
+
+def test_analyze_recent_running_still_conflicts(client):
+    # 5 分鐘前的 running 仍在回收窗內 → 真的進行中 → 409。
+    _add(client, [_company()])
+    fresh = models.AiAnalysis(
+        ticker="2330",
+        mode="全面檢視",
+        status="running",
+        created_at=utcnow() - timedelta(minutes=5),
+    )
+    _add(client, [fresh])
+    resp = client.post("/api/ai/analyze", json={"ticker": "2330", "mode": "全面檢視"})
+    assert resp.status_code == 409
+
+
+# ── P2：ticker 驗證（strip／空白）────────────────────────────────────────────
+def test_analyze_ticker_stripped(client):
+    # " 2330 " strip 後為有效 ticker → 正常建立 202。
+    _add(client, [_company()])
+    resp = client.post("/api/ai/analyze", json={"ticker": " 2330 ", "mode": "全面檢視"})
+    assert resp.status_code == 202
+
+
+def test_analyze_blank_ticker_422(client):
+    resp = client.post("/api/ai/analyze", json={"ticker": "   ", "mode": "全面檢視"})
+    assert resp.status_code == 422
+
+
 # ── GET /api/ai/analyses/{id} ────────────────────────────────────────────────
 def test_get_analysis_not_found_404(client):
     resp = client.get("/api/ai/analyses/999999")
