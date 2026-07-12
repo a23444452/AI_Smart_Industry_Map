@@ -468,6 +468,7 @@ def main() -> None:
     _record_margin()
     _record_yahoo()
     _record_mops()
+    _record_revenue()
 
 
 if __name__ == "__main__":
