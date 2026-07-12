@@ -27,3 +27,40 @@ export function formatDateTaipei(iso: string | null): string | null {
   if (Number.isNaN(d.getTime())) return null;
   return d.toLocaleDateString("zh-TW", { timeZone: "Asia/Taipei" });
 }
+
+/**
+ * 將 UTC ISO 時間字串格式化為台北時區「時:分」（如 "09:05"）；解析失敗回 null。
+ */
+export function formatTimeTaipei(iso: string | null): string | null {
+  if (iso === null) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleTimeString("zh-TW", {
+    timeZone: "Asia/Taipei",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+const YI = 100_000_000; // 一億
+const WAN = 10_000; // 一萬
+
+/**
+ * 將以「元」為單位的金額壓縮為易讀字串（台股慣例大額用億）。
+ * - null／NaN → "--"
+ * - 絕對值 ≥ 1 億 → 「X.X億」（一位小數，整數時去除 .0，如 94.9億／5億）
+ * - 絕對值 < 1 億 → 四捨五入到萬、加千分位，如「1,235萬」
+ * - 負數帶前綴「−」（U+2212 真減號，與千分位負號一致）
+ */
+export function formatYi(n: number | null): string {
+  if (n === null || Number.isNaN(n)) return "--";
+  const sign = n < 0 ? "−" : "";
+  const abs = Math.abs(n);
+  if (abs >= YI) {
+    const yi = (abs / YI).toFixed(1).replace(/\.0$/, "");
+    return `${sign}${yi}億`;
+  }
+  const wan = Math.round(abs / WAN);
+  return `${sign}${wan.toLocaleString("en-US")}萬`;
+}

@@ -1,8 +1,8 @@
 import { NavLink } from "react-router-dom";
 
-// 導覽項目：僅「題材總覽」已實作可點，其餘為開發中佔位
+// 導覽項目：「每日焦點」「題材總覽」已實作可點，其餘為開發中佔位
 const NAV_ITEMS = [
-  { label: "每日焦點", to: "/daily", enabled: false },
+  { label: "每日焦點", to: "/", enabled: true },
   { label: "題材總覽", to: "/topics", enabled: true },
   { label: "產業地圖", to: "/map", enabled: false },
   { label: "公司資料庫", to: "/companies", enabled: false },
@@ -23,6 +23,7 @@ export function NavBar() {
               <li key={item.to}>
                 <NavLink
                   to={item.to}
+                  end={item.to === "/"}
                   className={({ isActive }) =>
                     [
                       "inline-block px-3 py-2 text-sm transition-colors",

@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ApiError } from "./api/client";
 import { NavBar } from "./components/layout/NavBar";
+import { DailyPage } from "./pages/DailyPage";
 import { TopicsPage } from "./pages/TopicsPage";
 import { TopicDetailPage } from "./pages/TopicDetailPage";
 import { TopicMapPage } from "./pages/TopicMapPage";
@@ -35,7 +36,7 @@ function App() {
         <NavBar />
         <main>
           <Routes>
-            <Route path="/" element={<Navigate to="/topics" replace />} />
+            <Route path="/" element={<DailyPage />} />
             <Route path="/topics" element={<TopicsPage />} />
             <Route path="/topic/:slug" element={<TopicDetailPage />} />
             <Route path="/topic/:slug/map" element={<TopicMapPage />} />
