@@ -21,6 +21,14 @@ class Settings(BaseSettings):
     # string reaches the validator below (supports comma-separated values).
     cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:5173"]
 
+    # LLM 設定：mock 為零設定預設（無需任何金鑰即可跑）。切換 provider 見 .env.example。
+    #   anthropic     需 AISM_LLM_API_KEY
+    #   openai_compat 需 AISM_LLM_BASE_URL + AISM_LLM_API_KEY + AISM_LLM_MODEL
+    llm_provider: str = "mock"
+    llm_model: str = "claude-sonnet-5"
+    llm_api_key: str = ""
+    llm_base_url: str = ""
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def _split_cors_origins(cls, value: object) -> object:

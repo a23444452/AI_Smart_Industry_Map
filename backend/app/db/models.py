@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, ForeignKeyConstraint, UniqueConstraint
+from sqlalchemy import BigInteger, ForeignKeyConstraint, Index, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import JSON, Boolean, Float, Integer, String, Text
 
@@ -172,3 +172,29 @@ class MajorHolder(TimestampMixin, Base):
     # 400 張以上大戶持股比率 %。
     ratio_400up: Mapped[float] = mapped_column(Float)
     holder_count: Mapped[int | None] = mapped_column(Integer, nullable=True)  # 股東人數
+
+
+class AiAnalysis(TimestampMixin, Base):
+    __tablename__ = "ai_analyses"
+    __table_args__ = (
+        # 依標的查最新一筆分析：ticker + created_at 複合索引。
+        Index("ix_ai_analyses_ticker_created", "ticker", "created_at"),
+    )
+    # LLM 五面向評分結果。mode / status 存字串（僅約定列舉，不建 DB enum）：
+    #   mode   ∈ 近期觀察 | 中期展望 | 全面檢視
+    #   status ∈ pending | running | done | failed
+    # 一次分析請求即一列：pending 建立 → running → done（帶結果）或 failed（帶 error）。
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    ticker: Mapped[str] = mapped_column(String)
+    mode: Mapped[str] = mapped_column(String)
+    status: Mapped[str] = mapped_column(String)
+    # 五鍵評分 {"題材面":85,"基本面":..,"技術面":..,"籌碼面":..,"新聞面":..}。
+    scores: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # 五鍵理由，各為 list[str]。
+    reasons: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    total: Mapped[float | None] = mapped_column(Float, nullable=True)
+    # 產生此結果的模型識別，如 "mock" 或 "anthropic:claude-sonnet-5"。
+    model: Mapped[str | None] = mapped_column(String, nullable=True)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)

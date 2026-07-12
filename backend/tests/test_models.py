@@ -34,6 +34,7 @@ def test_create_all_and_wal(tmp_path):
         "fundamentals",
         "per_daily",
         "major_holders",
+        "ai_analyses",
     } <= names
     with eng.connect() as c:
         assert c.execute(text("PRAGMA journal_mode")).scalar() == "wal"
@@ -306,6 +307,91 @@ def test_major_holder_roundtrip(tmp_path):
         assert row.holder_count == 1_050_000
         assert s.get(models.MajorHolder, ("2330", "2026-06-27")).holder_count is None
         assert s.query(models.MajorHolder).count() == 2
+
+
+def test_ai_analysis_roundtrip(tmp_path):
+    eng = _make_db(tmp_path)
+    scores = {
+        "題材面": 85,
+        "基本面": 72,
+        "技術面": 68,
+        "籌碼面": 90,
+        "新聞面": 60,
+    }
+    reasons = {
+        "題材面": ["AI 需求強勁", "矽光子放量"],
+        "基本面": ["營收年增 18%"],
+        "技術面": ["站上季線"],
+        "籌碼面": ["外資連買"],
+        "新聞面": ["法說會利多"],
+    }
+    with Session(eng) as s:
+        row = models.AiAnalysis(
+            ticker="2330",
+            mode="全面檢視",
+            status="done",
+            scores=scores,
+            reasons=reasons,
+            summary="綜合評分偏多。",
+            total=75.0,
+            model="mock",
+        )
+        s.add(row)
+        s.commit()
+        got = s.get(models.AiAnalysis, row.id)
+        assert got.id is not None
+        assert got.ticker == "2330"
+        assert got.mode == "全面檢視"
+        assert got.status == "done"
+        assert got.scores == scores
+        assert got.scores["籌碼面"] == 90
+        assert got.reasons == reasons
+        assert got.reasons["題材面"] == ["AI 需求強勁", "矽光子放量"]
+        assert got.summary == "綜合評分偏多。"
+        assert got.total == 75.0
+        assert got.model == "mock"
+        assert got.error is None
+        assert got.created_at is not None
+
+
+def test_ai_analysis_pending_nullable_fields(tmp_path):
+    # pending/running rows carry only ticker/mode/status; result columns null.
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        row = models.AiAnalysis(ticker="2454", mode="近期觀察", status="pending")
+        s.add(row)
+        s.commit()
+        got = s.get(models.AiAnalysis, row.id)
+        assert got.status == "pending"
+        assert got.scores is None
+        assert got.reasons is None
+        assert got.summary is None
+        assert got.total is None
+        assert got.model is None
+        assert got.error is None
+
+
+def test_ai_analysis_failed_carries_error(tmp_path):
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        row = models.AiAnalysis(
+            ticker="2330",
+            mode="中期展望",
+            status="failed",
+            error="LLM timeout",
+        )
+        s.add(row)
+        s.commit()
+        got = s.get(models.AiAnalysis, row.id)
+        assert got.status == "failed"
+        assert got.error == "LLM timeout"
+        assert got.scores is None
+
+
+def test_ai_analysis_ticker_created_index_exists(tmp_path):
+    eng = _make_db(tmp_path)
+    index_names = {ix["name"] for ix in inspect(eng).get_indexes("ai_analyses")}
+    assert "ix_ai_analyses_ticker_created" in index_names
 
 
 def test_orphan_topic_company_rejected(tmp_path):
