@@ -138,3 +138,37 @@ class MopsAnnouncement(TimestampMixin, Base):
     category: Mapped[str] = mapped_column(String)
     title: Mapped[str] = mapped_column(Text)
     published_at: Mapped[datetime] = mapped_column()
+
+
+class Fundamental(TimestampMixin, Base):
+    __tablename__ = "fundamentals"
+    # 月營收基本面：ticker＋month 複合 PK。不建 FK 到 companies，與其他匯入表
+    # 同策略（job 於寫入前過濾未知 ticker，DB 層不強制外鍵以免拖累批次匯入）。
+
+    ticker: Mapped[str] = mapped_column(String, primary_key=True)
+    month: Mapped[str] = mapped_column(String, primary_key=True)  # 如 "2026-06"
+    # 單位：千元（新台幣）。來源缺欄時容忍 NULL。單月營收可達千億級，故用 BigInteger。
+    revenue: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    yoy: Mapped[float | None] = mapped_column(Float, nullable=True)  # 年增率 %
+
+
+class PerDaily(TimestampMixin, Base):
+    __tablename__ = "per_daily"
+    # 每日本益比/淨值比/殖利率：ticker＋date 複合 PK。河流圖以此表全期分位計算。
+
+    ticker: Mapped[str] = mapped_column(String, primary_key=True)
+    date: Mapped[str] = mapped_column(String, primary_key=True)  # ISO YYYY-MM-DD
+    per: Mapped[float | None] = mapped_column(Float, nullable=True)  # 本益比（倍）
+    pbr: Mapped[float | None] = mapped_column(Float, nullable=True)  # 股價淨值比（倍）
+    dividend_yield: Mapped[float | None] = mapped_column(Float, nullable=True)  # 殖利率 %
+
+
+class MajorHolder(TimestampMixin, Base):
+    __tablename__ = "major_holders"
+    # 集保大戶持股（TDCC 週資料）：ticker＋week 複合 PK。
+
+    ticker: Mapped[str] = mapped_column(String, primary_key=True)
+    week: Mapped[str] = mapped_column(String, primary_key=True)  # ISO date，TDCC 資料日
+    # 400 張以上大戶持股比率 %。
+    ratio_400up: Mapped[float] = mapped_column(Float)
+    holder_count: Mapped[int | None] = mapped_column(Integer, nullable=True)  # 股東人數

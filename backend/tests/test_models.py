@@ -31,6 +31,9 @@ def test_create_all_and_wal(tmp_path):
         "market_flows",
         "margin_balances",
         "mops_announcements",
+        "fundamentals",
+        "per_daily",
+        "major_holders",
     } <= names
     with eng.connect() as c:
         assert c.execute(text("PRAGMA journal_mode")).scalar() == "wal"
@@ -239,6 +242,70 @@ def test_mops_announcement_unique_constraint(tmp_path):
         )
         with pytest.raises(IntegrityError):
             s.commit()
+
+
+def test_fundamental_roundtrip(tmp_path):
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        s.add(
+            models.Fundamental(
+                ticker="2330",
+                month="2026-06",
+                revenue=250_000_000,  # 千元
+                yoy=18.5,
+            )
+        )
+        s.add(models.Fundamental(ticker="2330", month="2026-05", revenue=240_000_000))
+        s.commit()
+        row = s.get(models.Fundamental, ("2330", "2026-06"))
+        assert row.revenue == 250_000_000
+        assert row.yoy == 18.5
+        assert s.get(models.Fundamental, ("2330", "2026-05")).yoy is None
+        assert s.query(models.Fundamental).count() == 2
+
+
+def test_per_daily_roundtrip(tmp_path):
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        s.add(
+            models.PerDaily(
+                ticker="2330",
+                date="2026-07-11",
+                per=22.4,
+                pbr=6.1,
+                dividend_yield=1.85,
+            )
+        )
+        s.add(models.PerDaily(ticker="2330", date="2026-07-10"))
+        s.commit()
+        row = s.get(models.PerDaily, ("2330", "2026-07-11"))
+        assert row.per == 22.4
+        assert row.pbr == 6.1
+        assert row.dividend_yield == 1.85
+        empty = s.get(models.PerDaily, ("2330", "2026-07-10"))
+        assert empty.per is None
+        assert empty.pbr is None
+        assert empty.dividend_yield is None
+
+
+def test_major_holder_roundtrip(tmp_path):
+    eng = _make_db(tmp_path)
+    with Session(eng) as s:
+        s.add(
+            models.MajorHolder(
+                ticker="2330",
+                week="2026-07-04",
+                ratio_400up=62.3,
+                holder_count=1_050_000,
+            )
+        )
+        s.add(models.MajorHolder(ticker="2330", week="2026-06-27", ratio_400up=61.9))
+        s.commit()
+        row = s.get(models.MajorHolder, ("2330", "2026-07-04"))
+        assert row.ratio_400up == 62.3
+        assert row.holder_count == 1_050_000
+        assert s.get(models.MajorHolder, ("2330", "2026-06-27")).holder_count is None
+        assert s.query(models.MajorHolder).count() == 2
 
 
 def test_orphan_topic_company_rejected(tmp_path):
