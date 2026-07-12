@@ -74,7 +74,7 @@ def backfill_quotes(session: Session, days: int = 35) -> int:
     """Seed ``quotes_daily`` with each company's trailing daily OHLCV history.
 
     Per company: walk months (newest first) via :func:`_collect_ticker_history`
-    until it has ``days`` trading days or hits the 3-month cap, then insert only
+    until it has ``days`` trading days or hits the ``_MAX_MONTHS`` cap, then insert only
     ``(ticker, date)`` rows that do **not** already exist — a row already in the
     table (e.g. today's close from ``fetch_tw_quotes``, which carries a real
     ``change_pct``) must never be clobbered by history's ``change_pct=None``.
