@@ -48,7 +48,7 @@ describe("MarketFlowsTable", () => {
     rerender(
       <MarketFlowsTable data={data([flow({ unit: "投信", net: -5_0000_0000 })])} />,
     );
-    expect(screen.getByText("−5億").className).toContain("text-down");
+    expect(screen.getByText("-5億").className).toContain("text-down");
   });
 
   it("空表 → 顯示佔位", () => {

@@ -50,17 +50,18 @@ const WAN = 10_000; // 一萬
  * 將以「元」為單位的金額壓縮為易讀字串（台股慣例大額用億）。
  * - null／NaN → "--"
  * - 絕對值 ≥ 1 億 → 「X.X億」（一位小數，整數時去除 .0，如 94.9億／5億）
- * - 絕對值 < 1 億 → 四捨五入到萬、加千分位，如「1,235萬」
- * - 負數帶前綴「−」（U+2212 真減號，與千分位負號一致）
+ * - 絕對值 < 1 億 → 四捨五入到萬、加千分位，如「1,235萬」；
+ *   若四捨五入後滿 10,000 萬（如 99,995,000）則進位為「1億」，不顯示「10,000萬」
+ * - 負數帶前綴 ASCII "-"（與 formatPct／toLocaleString 一致）
  */
 export function formatYi(n: number | null): string {
   if (n === null || Number.isNaN(n)) return "--";
-  const sign = n < 0 ? "−" : "";
+  const sign = n < 0 ? "-" : "";
   const abs = Math.abs(n);
-  if (abs >= YI) {
+  const wan = Math.round(abs / WAN);
+  if (abs >= YI || wan >= 10_000) {
     const yi = (abs / YI).toFixed(1).replace(/\.0$/, "");
     return `${sign}${yi}億`;
   }
-  const wan = Math.round(abs / WAN);
   return `${sign}${wan.toLocaleString("en-US")}萬`;
 }
