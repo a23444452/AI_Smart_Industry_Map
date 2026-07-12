@@ -67,4 +67,27 @@ describe("AnalysisCard", () => {
     // 失敗態不渲染分數條
     expect(screen.queryByTestId("bar-題材面")).not.toBeInTheDocument();
   });
+
+  it("有 reasons → 顯示「查看各面向理由」展開區，逐面向每句一行", () => {
+    render(
+      <AnalysisCard
+        data={card({
+          reasons: {
+            題材面: ["題材動能強勁。", "AI 供應鏈核心。"],
+            基本面: ["營收年增穩健。"],
+          },
+        })}
+      />,
+    );
+    expect(screen.getByText("查看各面向理由")).toBeInTheDocument();
+    // <details> 內容於 DOM 中存在（jsdom 不受展開狀態影響）
+    expect(screen.getByText("題材動能強勁。")).toBeInTheDocument();
+    expect(screen.getByText("AI 供應鏈核心。")).toBeInTheDocument();
+    expect(screen.getByText("營收年增穩健。")).toBeInTheDocument();
+  });
+
+  it("reasons 為 null 或未提供 → 不渲染展開區", () => {
+    render(<AnalysisCard data={card({ reasons: null })} />);
+    expect(screen.queryByText("查看各面向理由")).not.toBeInTheDocument();
+  });
 });

@@ -1,11 +1,14 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../api/client";
 import {
   MODES,
+  shouldRefreshLeaderboard,
   useAnalysis,
   useLeaderboard,
   useTriggerAnalysis,
   type AnalysisMode,
+  type AnalysisStatus,
   type LeaderboardSort,
 } from "../api/ai";
 import { AnalysisCard } from "../components/ai/AnalysisCard";
@@ -33,6 +36,18 @@ export function AiPage() {
   const trigger = useTriggerAnalysis();
   const analysis = useAnalysis(currentId);
   const leaderboard = useLeaderboard(sort, modeFilter);
+
+  // I-1：分析狀態「轉為 done」時 invalidate 排行榜——新完成的分析立即上榜，
+  // 不必手動重整。以 ref 記前次狀態，判斷邏輯抽為純函式（shouldRefreshLeaderboard）。
+  const queryClient = useQueryClient();
+  const status = analysis.data?.status;
+  const prevStatusRef = useRef<AnalysisStatus | undefined>(undefined);
+  useEffect(() => {
+    if (shouldRefreshLeaderboard(prevStatusRef.current, status)) {
+      void queryClient.invalidateQueries({ queryKey: ["ai-leaderboard"] });
+    }
+    prevStatusRef.current = status;
+  }, [status, queryClient]);
 
   function handleSubmit(ticker: string, mode: AnalysisMode) {
     trigger.mutate(
@@ -170,13 +185,9 @@ function CurrentAnalysis({
   if (!data) return null;
 
   // 逾時安全網：進行中但已超過輪詢上限（輪詢已停）→ 提示重試。
+  // 重試走 restart()：重置輪詢起始 timestamp 再 refetch，恢復 2 秒輪詢。
   if (analysis.timedOut) {
-    return (
-      <StateCard
-        text="分析逾時，請稍後重試"
-        onRetry={() => void analysis.refetch()}
-      />
-    );
+    return <StateCard text="分析逾時，請稍後重試" onRetry={analysis.restart} />;
   }
 
   if (data.status === "pending" || data.status === "running") {

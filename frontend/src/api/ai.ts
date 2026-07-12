@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchJson, postJson } from "./client";
 
@@ -100,6 +100,18 @@ export function analysisRefetchInterval(
 }
 
 /**
+ * 分析狀態轉為 done 時是否該刷新排行榜（純函式，供 AiPage effect 與測試共用）。
+ * 只在「轉變為 done」的瞬間回 true（prev 非 done → next 為 done），避免重複
+ * invalidate；首次抓取即為 done（prev 為 undefined）亦視為剛完成、需刷新。
+ */
+export function shouldRefreshLeaderboard(
+  prev: AnalysisStatus | undefined,
+  next: AnalysisStatus | undefined,
+): boolean {
+  return next === "done" && prev !== "done";
+}
+
+/**
  * 榜單 hook：queryKey 三參數（sort／mode）——任一變動即重查。
  * @param sort 強勢／弱勢
  * @param mode 模式篩選（null＝全部；有值須與後端 MODES 精確一致）
@@ -120,7 +132,8 @@ export function useLeaderboard(sort: LeaderboardSort, mode: string | null) {
 /**
  * 單筆分析 hook：id 為 null 時停用；進行中（pending/running）每 2 秒輪詢，
  * done/failed 停止。輪詢上限 60 秒——逾時後停止輪詢並回傳 timedOut=true，
- * 由頁面顯示「分析逾時，請稍後重試」。起始時間以 id 變動為界重置。
+ * 由頁面顯示「分析逾時，請稍後重試」。起始時間以 id 變動為界重置；
+ * 逾時後呼叫 restart() 重置起始時間並 refetch，恢復 2 秒輪詢。
  * @param id 分析 id（null＝尚未觸發，停用查詢）
  */
 export function useAnalysis(id: number | null) {
@@ -148,7 +161,15 @@ export function useAnalysis(id: number | null) {
   const inProgress = status === "pending" || status === "running";
   const timedOut = inProgress && Date.now() - startRef.current >= POLL_TIMEOUT_MS;
 
-  return { ...query, timedOut };
+  const { refetch } = query;
+  // 逾時後重試：重置輪詢起始 timestamp 再 refetch——refetch 觸發 re-render 與
+  // refetchInterval 重新評估（elapsed 歸零 → 回到 2 秒輪詢），timedOut 同步解除。
+  const restart = useCallback(() => {
+    startRef.current = Date.now();
+    void refetch();
+  }, [refetch]);
+
+  return { ...query, timedOut, restart };
 }
 
 /**

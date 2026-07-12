@@ -1,10 +1,10 @@
-import type { AnalysisStatus, AspectScores } from "../../api/ai";
+import { ASPECTS, type AnalysisStatus, type AspectScores } from "../../api/ai";
 import { formatDateTaipei } from "../../lib/format";
 import { ScoreBars } from "./ScoreBars";
 
 /**
  * AnalysisCard 的資料契約——同時涵蓋 AnalysisDetail（單筆輪詢）與 LeaderboardItem
- * （榜單列）。status/summary/error 為單筆分析才有的欄位（榜單省略，視為 done）。
+ * （榜單列）。status/summary/reasons/error 為單筆分析才有的欄位（榜單省略，視為 done）。
  */
 export interface AnalysisCardData {
   ticker: string;
@@ -16,6 +16,7 @@ export interface AnalysisCardData {
   created_at: string | null;
   status?: AnalysisStatus;
   summary?: string | null;
+  reasons?: Record<string, string[]> | null;
   error?: string | null;
   rank?: number;
 }
@@ -82,6 +83,38 @@ export function AnalysisCard({ data }: { data: AnalysisCardData }) {
             <p className="mt-3 text-sm leading-relaxed text-text-dim">
               {data.summary}
             </p>
+          )}
+          {data.reasons && (
+            <details className="mt-3 rounded-lg border border-border-line px-3 py-2">
+              <summary className="cursor-pointer select-none text-xs text-text-dim hover:text-text-main">
+                查看各面向理由
+              </summary>
+              <dl className="mt-2 space-y-3">
+                {ASPECTS.map((aspect) => {
+                  const lines = data.reasons?.[aspect];
+                  if (!lines?.length) return null;
+                  return (
+                    <div key={aspect}>
+                      <dt className="text-xs font-semibold text-text-main">
+                        {aspect}
+                      </dt>
+                      <dd className="mt-1">
+                        <ul className="space-y-0.5">
+                          {lines.map((line, i) => (
+                            <li
+                              key={i}
+                              className="text-xs leading-relaxed text-text-dim"
+                            >
+                              {line}
+                            </li>
+                          ))}
+                        </ul>
+                      </dd>
+                    </div>
+                  );
+                })}
+              </dl>
+            </details>
           )}
         </>
       )}
