@@ -31,8 +31,8 @@
 ```
 
 - **pipeline** 從各資料來源抓取行情／法人／公告，經 runner 冪等 upsert 進 SQLite；APScheduler 定時排程。
-- **API**（FastAPI）讀 SQLite，對前端提供題材、每日焦點與 pipeline 狀態 JSON。
-- **frontend**（React + Vite）呼叫 API，渲染每日焦點頁與題材總覽頁。
+- **API**（FastAPI）讀 SQLite，對前端提供題材／每日焦點／公司／AI 分析／搜尋等 JSON 端點。
+- **frontend**（React + Vite）呼叫 API，渲染每日焦點、題材總覽、產業地圖、公司資料庫、個股頁與 AI 分析六大頁面。
 
 ### 資料來源
 
