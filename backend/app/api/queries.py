@@ -31,6 +31,22 @@ def cutoff_date(lookback_days: int) -> str:
     return (utcnow().date() - timedelta(days=lookback_days)).isoformat()
 
 
+def period_change(rows: list, offset: int) -> float | None:
+    """(最新 close ÷ offset 個交易日前 close − 1)×100，round 2；資料不足或缺值 → None。
+
+    ``rows`` 為單一 ticker 的 quotes，依日期降冪（index 0 最新、index N 為 N 個
+    交易日前，見 ``quotes_by_ticker``）。供 topic detail treemap 與 daily movers
+    共用週／月報酬計算。
+    """
+    if len(rows) <= offset:
+        return None
+    latest_close = rows[0].close
+    base_close = rows[offset].close
+    if latest_close is None or base_close is None or base_close == 0:
+        return None
+    return round((latest_close / base_close - 1) * 100, 2)
+
+
 def quotes_by_ticker(session: Session, tickers: list[str]) -> dict[str, list]:
     """成員近 60 日曆日 quotes 一次查回，按 ticker 分組、日期由新到舊排列。
 

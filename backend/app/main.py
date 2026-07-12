@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from loguru import logger
 
-from app.api import meta, topic_map, topics
+from app.api import daily, meta, topic_map, topics
 from app.core.config import settings
 from app.db.base import Base, make_engine
 from app.pipeline.scheduler import build_scheduler
@@ -75,6 +75,7 @@ def create_app() -> FastAPI:
 
     app.include_router(topics.router, prefix="/api")
     app.include_router(topic_map.router, prefix="/api")
+    app.include_router(daily.router, prefix="/api")
     app.include_router(meta.router, prefix="/api")
 
     return app

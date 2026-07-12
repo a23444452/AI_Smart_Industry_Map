@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.api.queries import flows_by_ticker, quotes_by_ticker
+from app.api.queries import flows_by_ticker, period_change, quotes_by_ticker
 from app.api.serializers import to_utc_iso
 from app.db.models import (
     Company,
@@ -205,17 +205,6 @@ def _distinct_members(session: Session, slug: str) -> list[tuple[str, str]]:
     return [(row.ticker, row.name) for row in session.execute(stmt).all()]
 
 
-def _period_change(rows: list, offset: int) -> float | None:
-    """(最新 close ÷ offset 個交易日前 close − 1)×100，round 2；資料不足或缺值 → None。"""
-    if len(rows) <= offset:
-        return None
-    latest_close = rows[0].close
-    base_close = rows[offset].close
-    if latest_close is None or base_close is None or base_close == 0:
-        return None
-    return round((latest_close / base_close - 1) * 100, 2)
-
-
 def _build_treemap(
     members: list[tuple[str, str]], quotes: dict[str, list]
 ) -> Treemap:
@@ -228,9 +217,9 @@ def _build_treemap(
                 raw = rows[0].change_pct if rows else None
                 change = None if raw is None else round(raw, 2)
             elif kind == "week":
-                change = _period_change(rows, WEEK_OFFSET)
+                change = period_change(rows, WEEK_OFFSET)
             else:  # month
-                change = _period_change(rows, MONTH_OFFSET)
+                change = period_change(rows, MONTH_OFFSET)
             out.append(TreemapItem(ticker=ticker, name=name, change_pct=change))
         return out
 
