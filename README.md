@@ -5,10 +5,10 @@
 ## 架構
 
 ```
-                         ┌──────────────────────┐
-   TWSE / TPEx  ───────▶ │   pipeline（抓取）    │
-   （台股收盤 API）        │  runner + jobs +     │
-                         │  APScheduler 排程     │
+   TWSE / TPEx           ┌──────────────────────┐
+   Yahoo Finance ──────▶ │   pipeline（抓取）    │
+   MOPS                  │  runner + jobs +     │
+   （行情/法人/公告）      │  APScheduler 排程     │
                          └──────────┬───────────┘
                                     │ upsert
                                     ▼
@@ -19,9 +19,17 @@
    :5173                     :8000
 ```
 
-- **pipeline** 從 TWSE／TPEx 抓取台股收盤，經 runner 冪等 upsert 進 SQLite；APScheduler 定時排程。
-- **API**（FastAPI）讀 SQLite，對前端提供題材與 pipeline 狀態 JSON。
-- **frontend**（React + Vite）呼叫 API，渲染題材總覽頁。
+- **pipeline** 從各資料來源抓取行情／法人／公告，經 runner 冪等 upsert 進 SQLite；APScheduler 定時排程。
+- **API**（FastAPI）讀 SQLite，對前端提供題材、每日焦點與 pipeline 狀態 JSON。
+- **frontend**（React + Vite）呼叫 API，渲染每日焦點頁與題材總覽頁。
+
+### 資料來源
+
+| 來源 | 內容 | 備註 |
+|------|------|------|
+| TWSE / TPEx | 台股收盤行情、三大法人買賣超、法人買賣金額（BFI82U）、信用交易餘額 | 官方 OpenAPI |
+| Yahoo Finance | 每日焦點指數列（加權、費半、S&P 500、TSM、NVDA、日經、VIX） | 延遲報價，僅供參考，非即時行情 |
+| MOPS 公開資訊觀測站 | 上市／上櫃重大訊息公告 | 每日抓取當日公告（含假日） |
 
 ## 快速開始
 
@@ -31,11 +39,11 @@
 cp .env.example .env       # 建立環境變數
 make seed                  # 匯入題材 seeds（矽光子）
 make fetch                 # 抓取台股收盤資料
-make backfill              # 回填歷史行情（2-3 月）與三大法人（近 14 日）
+make backfill              # 回填歷史行情、三大法人與市場統計
 make dev                   # 同時啟動後端(:8000) 與前端(:5173)
 ```
 
-啟動後開啟 <http://localhost:5173/topics> 檢視題材總覽。
+啟動後開啟 <http://localhost:5173/> 檢視每日焦點，<http://localhost:5173/topics> 檢視題材總覽。
 
 ## 指令表（`make help`）
 
@@ -44,7 +52,7 @@ make dev                   # 同時啟動後端(:8000) 與前端(:5173)
 | `make help` | 顯示可用指令清單 |
 | `make seed` | 匯入題材 seeds（`data/seeds/*.yaml` → SQLite） |
 | `make fetch` | 抓取台股收盤資料並寫入 DB |
-| `make backfill` | 回填歷史行情（近 2-3 月）與三大法人買賣超（近 14 日） |
+| `make backfill` | 回填歷史行情（近 35 日）、三大法人買賣超（近 14 日）與市場統計（法人金額＋資券餘額，近 30 日） |
 | `make dev` | 以 `make -j2` 同時啟動後端＋前端開發伺服器 |
 | `make dev-backend` | 只啟動後端（FastAPI，port 8000） |
 | `make dev-frontend` | 只啟動前端（Vite，port 5173） |
@@ -58,6 +66,8 @@ make dev                   # 同時啟動後端(:8000) 與前端(:5173)
 | GET | `/api/topics?market=tw` | 題材清單＋排行（含 company_count、change_pct_avg） |
 | GET | `/api/topics/{slug}` | 單一題材詳情（metrics、treemap 三週期漲跌、chip_signals 籌碼訊號、quotes_updated_at） |
 | GET | `/api/topics/{slug}/map` | 產業地圖：供應鏈分層（上游／中游／下游）、各分類公司卡（角色、關聯度、收盤漲跌、籌碼徽章），下游含 placeholder 分類 |
+| GET | `/api/daily` | 每日焦點聚合：indices 指數快照（7 檔）、market_flows 三大法人金額、margin 資券餘額、movers 強勢股（日／週／月）、announcements_dates 公告日期列表 |
+| GET | `/api/daily/announcements?date=YYYY-MM-DD` | 指定日期的 MOPS 重大訊息公告列（台北時區） |
 | GET | `/api/meta/pipeline-status` | 各 pipeline job 最近執行狀態 |
 
 ## 目錄結構
@@ -66,19 +76,19 @@ make dev                   # 同時啟動後端(:8000) 與前端(:5173)
 AI_Smart_Industry_Map/
 ├── backend/                # FastAPI 後端
 │   ├── app/
-│   │   ├── api/            # topics、meta 路由
+│   │   ├── api/            # topics、daily、meta 路由
 │   │   ├── core/           # 設定（pydantic-settings）
 │   │   ├── db/             # SQLAlchemy models、session、seed
 │   │   ├── pipeline/       # runner、jobs、scheduler
-│   │   │   └── sources/    # TWSE / TPEx client
+│   │   │   └── sources/    # TWSE / TPEx / Yahoo / MOPS client
 │   │   └── main.py         # app factory
-│   └── tests/              # pytest（125 tests）
+│   └── tests/              # pytest（215 tests）
 ├── frontend/               # React + Vite 前端
 │   └── src/
 │       ├── api/            # API client
-│       ├── components/     # layout、topics 元件
-│       ├── pages/          # TopicsPage、TopicDetailPage、TopicMapPage
-│       └── __tests__/      # vitest（58 tests）
+│       ├── components/     # layout、daily、topics、map 元件
+│       ├── pages/          # DailyPage、TopicsPage、TopicDetailPage、TopicMapPage
+│       └── __tests__/      # vitest（91 tests）
 ├── data/seeds/             # 題材種子資料（YAML）
 ├── docs/superpowers/       # 設計 spec 與實作計畫
 ├── .env.example            # 環境變數範本
@@ -88,13 +98,13 @@ AI_Smart_Industry_Map/
 ## 技術棧
 
 - **前端**：React 19、Vite 8、TypeScript、Tailwind CSS 4、TanStack Query、React Router、ECharts、Vitest
-- **後端**：Python 3.12、FastAPI、SQLAlchemy 2、Pydantic Settings、APScheduler、httpx、loguru
+- **後端**：Python 3.12、FastAPI、SQLAlchemy 2、Pydantic Settings、APScheduler、httpx、curl_cffi（僅 Yahoo 指數：Yahoo 以 TLS 指紋擋非瀏覽器連線，需 Chrome impersonation 才能取得報價）、loguru
 - **資料庫**：SQLite
 - **工具鏈**：uv（後端）、npm（前端）、Makefile
 
 ## 開發狀態
 
-切片 1-4 已完成，後端 125 tests、前端 58 tests 全數通過。已實作功能：
+切片 1-5 已完成，後端 215 tests、前端 91 tests 全數通過。已實作功能：
 
 切片 1＋2（foundation）：
 
@@ -121,9 +131,20 @@ AI_Smart_Industry_Map/
 - 下游未布局分類以 placeholder 呈現
 - ECharts 改採 lazy-load（動態 import），與題材色彩同源
 
+切片 5（每日焦點頁）：
+
+- 每日焦點頁（`/`，設為首頁）與 `/api/daily`、`/api/daily/announcements` API
+- 指數行情列：加權／費半／S&P 500／TSM／NVDA／日經／VIX 七檔快照（Yahoo 延遲報價）
+- 三大法人買賣金額（TWSE BFI82U）與資券餘額（信用交易統計）最新日資料
+- 強勢股排行（日／週／月三 tab，依漲跌幅排序）
+- MOPS 重大訊息時間軸（依日期切換，台北時區歸日）
+- 新排程：`fetch_indices` 平日 08–22 時每 15 分鐘、`fetch_market_stats` 平日三發（16:20／17:20／21:45，冪等補抓晚出資料）、`fetch_mops` 每日 19:10（含假日）
+- `make backfill` 擴充市場統計回填（法人金額＋資券餘額，近 30 日）
+
 設計文件：
 
 - 設計 spec：[`docs/superpowers/specs/2026-07-11-ai-stock-map-clone-design.md`](docs/superpowers/specs/2026-07-11-ai-stock-map-clone-design.md)
 - 實作計畫（切片 1＋2）：[`docs/superpowers/plans/2026-07-11-slice-1-2-foundation.md`](docs/superpowers/plans/2026-07-11-slice-1-2-foundation.md)
 - 實作計畫（切片 3）：[`docs/superpowers/plans/2026-07-11-slice-3-topic-detail.md`](docs/superpowers/plans/2026-07-11-slice-3-topic-detail.md)
 - 實作計畫（切片 4）：[`docs/superpowers/plans/2026-07-12-slice-4-industry-map.md`](docs/superpowers/plans/2026-07-12-slice-4-industry-map.md)
+- 實作計畫（切片 5）：[`docs/superpowers/plans/2026-07-12-slice-5-daily-focus.md`](docs/superpowers/plans/2026-07-12-slice-5-daily-focus.md)
