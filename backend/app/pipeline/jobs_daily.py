@@ -286,7 +286,8 @@ def _upsert_per_daily(session: Session, rows: list[dict], known: set[str]) -> in
     Overwrite is safe because the daily ``twse_per``/``tpex_per`` snapshot and the
     ``twse_per_history`` backfill emit the **same** columns (per/pbr/dividend_yield)
     — there is no field one carries that the other nulls out (unlike quotes'
-    change_pct), so ``backfill_per`` shares this helper. Returns rows written.
+    change_pct)；也因此 ``backfill_per`` 才能安全採 insert-only（毋須擔心覆寫
+    遺漏欄位——它走自己的內聯邏輯，並未共用本 helper）。Returns rows written.
     """
     written = 0
     for row in rows:
