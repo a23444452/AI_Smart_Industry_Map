@@ -167,6 +167,52 @@ def test_build_context_unknown_ticker(engine):
     assert ctx["topics"] == []
 
 
+def test_build_context_flows_cover_20_trading_days(engine):
+    # 25 筆日頻 flows 落在近 5–29 日曆日——其中 22–29 日已超出 queries.flows_by_ticker
+    # 的 21 日曆日窗。合計須取「最新 20 筆」（含 21 日外的資料），證明籌碼段
+    # 真的覆蓋近 20 個交易日，而非只有 ~5 筆。
+    with Session(engine) as s:
+        s.add(Company(ticker="3008", name="大立光", market="TW"))
+        for i in range(5, 30):
+            s.add(
+                InstitutionalFlow(
+                    ticker="3008", date=_d(i), foreign_net=1, trust_net=0, dealer_net=0
+                )
+            )
+        s.commit()
+    with Session(engine) as s:
+        ctx = svc.build_context(s, "3008")
+    assert ctx["flows"]["count"] == 20
+    assert ctx["flows"]["foreign_net_sum"] == 20
+
+
+def test_build_context_flows_cutoff_excludes_stale(engine):
+    # 超出 40 日曆日下界的 flows 不入合計。
+    with Session(engine) as s:
+        s.add(Company(ticker="2317", name="鴻海", market="TW"))
+        s.add(InstitutionalFlow(ticker="2317", date=_d(0), foreign_net=10))
+        s.add(InstitutionalFlow(ticker="2317", date=_d(1), foreign_net=20))
+        s.add(InstitutionalFlow(ticker="2317", date=_d(45), foreign_net=999))
+        s.commit()
+    with Session(engine) as s:
+        ctx = svc.build_context(s, "2317")
+    assert ctx["flows"]["count"] == 2
+    assert ctx["flows"]["foreign_net_sum"] == 30
+
+
+def test_build_context_recent_closes_filters_none(engine):
+    # 近 5 日內有缺值 close → recent_closes 過濾（與 closes 口徑一致）。
+    with Session(engine) as s:
+        s.add(Company(ticker="2454", name="聯發科", market="TW"))
+        s.add(QuoteDaily(ticker="2454", date=_d(2), close=1400, change_pct=1.0))
+        s.add(QuoteDaily(ticker="2454", date=_d(1), close=None, change_pct=None))
+        s.add(QuoteDaily(ticker="2454", date=_d(0), close=1450, change_pct=2.0))
+        s.commit()
+    with Session(engine) as s:
+        ctx = svc.build_context(s, "2454")
+    assert ctx["quote"]["recent_closes"] == [1400, 1450]
+
+
 def test_build_context_single_holder_no_diff(engine):
     with Session(engine) as s:
         s.add(Company(ticker="1111", name="單週大戶", market="TW"))
@@ -428,6 +474,24 @@ def test_run_analysis_missing_row_no_raise(engine, monkeypatch):
     _inject(monkeypatch, called)
     svc.run_analysis(engine, 999_999)  # 不存在的 id
     assert called.calls == 0  # 未進入分析流程
+
+
+def test_run_analysis_skips_non_pending(engine, monkeypatch):
+    # 非 pending（已被處理過）→ 不呼叫 provider、狀態不變——防背景任務重複執行。
+    _seed_full(engine)
+    aid = _new_analysis(engine)
+    with Session(engine) as s:
+        row = s.get(AiAnalysis, aid)
+        row.status = "done"
+        s.commit()
+    provider = _FakeProvider([json.dumps(_valid_payload())])
+    _inject(monkeypatch, provider)
+
+    svc.run_analysis(engine, aid)
+
+    assert provider.calls == 0
+    with Session(engine) as s:
+        assert s.get(AiAnalysis, aid).status == "done"
 
 
 def test_run_analysis_never_raises_on_provider_config_error(engine, monkeypatch):

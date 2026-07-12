@@ -4,14 +4,16 @@
 背景執行入口（``run_analysis``）。分工：
 
 - ``build_context``：以固定筆數查詢組出一檔標的的結構化脈絡；各段缺資料則該鍵為
-  ``None`` 或空 list，絕不炸。重用 ``app.api.queries`` 的批次／最新查詢與時間下界，
+  ``None`` 或空 list，絕不炸。重用 ``app.api.queries`` 的批次／最新查詢與時間下界
+  （法人段例外——需近 20 個交易日，自帶 40 日曆日下界直查，見 ``_recent_flows``），
   與其他 API 同口徑、避免歷史累積後的無界掃描。
 - ``build_prompt``：把脈絡段落化成 system／user 兩段提示。system 明訂輸出契約
   （JSON only、五面向鍵名精確、scores 0-100 整數、reasons 2-3 句 list、summary 一句、
   不要 markdown fence）；user 只列「有資料」的段落，並依 mode 附上分析重點指示。
 - ``parse_llm_response``：容忍 ```json fence，json.loads 後嚴格驗證五面向契約；任一
   不符即 raise ``LLMError``（訊息含原因、不含回應全文）。
-- ``run_analysis``：背景任務入口。獨立 Session，status=running → 呼叫 provider
+- ``run_analysis``：背景任務入口。獨立 Session，僅處理 pending 列（防重入）→
+  status=running → 呼叫 provider
   （``LLMError`` 或 parse 失敗均計為一次失敗，重試 1 次、間隔 1 秒）→ 成功寫結果、
   兩次失敗寫 failed。**全程 try/except 兜底，絕不 raise**（背景任務不能炸行程）。
 
@@ -32,7 +34,6 @@ from app.api.queries import (
     QUOTES_LOOKBACK_DAYS,
     cutoff_date,
     cutoff_month,
-    flows_by_ticker,
     latest_rows,
     quotes_by_ticker,
 )
@@ -41,6 +42,7 @@ from app.db.models import (
     AiAnalysis,
     Company,
     Fundamental,
+    InstitutionalFlow,
     MajorHolder,
     MopsAnnouncement,
     PerDaily,
@@ -54,8 +56,11 @@ logger = logging.getLogger(__name__)
 # 三種分析模式（前端下拉即此三值；status 存 running/done/failed 見 AiAnalysis 註解）。
 MODES: tuple[str, ...] = ("近期觀察", "中期展望", "全面檢視")
 
-# 法人淨額合計取樣上限（近 N 筆）；flows_by_ticker 已帶時間下界，這裡再上限截斷。
+# 法人淨額合計取樣筆數（近 20 個交易日）。不重用 queries.flows_by_ticker——其
+# 21 日曆日窗僅涵蓋約 5 個交易日，取不滿 20 筆；改以 40 日曆日下界（≈ 20+ 個
+# 交易日含假期餘裕）直查，依 date 降冪取前 FLOWS_SAMPLE 筆。
 FLOWS_SAMPLE = 20
+FLOWS_CONTEXT_LOOKBACK_DAYS = 40
 # 近 5 日收盤序列長度。
 RECENT_CLOSES = 5
 # 近期重大訊息取樣筆數。
@@ -73,8 +78,10 @@ def _summarize_quotes(rows: list) -> dict | None:
         return None
     closes = [r.close for r in rows if r.close is not None]
     latest = rows[0]
-    # rows 依 date 降冪；近 5 筆反轉為時序（舊→新），末項即最新收盤。
-    recent = [r.close for r in reversed(rows[:RECENT_CLOSES])]
+    # rows 依 date 降冪；近 5 筆反轉為時序（舊→新）並過濾缺值（與 closes 一致）。
+    recent = [
+        r.close for r in reversed(rows[:RECENT_CLOSES]) if r.close is not None
+    ]
     return {
         "count": len(rows),
         "latest_close": latest.close,
@@ -83,6 +90,23 @@ def _summarize_quotes(rows: list) -> dict | None:
         "low": min(closes) if closes else None,
         "recent_closes": recent,
     }
+
+
+def _recent_flows(session: Session, ticker: str) -> list[InstitutionalFlow]:
+    """近 20 個交易日法人買賣超：40 日曆日下界、date 降冪取前 FLOWS_SAMPLE 筆。"""
+    return (
+        session.execute(
+            select(InstitutionalFlow)
+            .where(
+                InstitutionalFlow.ticker == ticker,
+                InstitutionalFlow.date >= cutoff_date(FLOWS_CONTEXT_LOOKBACK_DAYS),
+            )
+            .order_by(InstitutionalFlow.date.desc())
+            .limit(FLOWS_SAMPLE)
+        )
+        .scalars()
+        .all()
+    )
 
 
 def _summarize_flows(rows: list) -> dict | None:
@@ -177,7 +201,7 @@ def build_context(session: Session, ticker: str) -> dict:
     """組出一檔標的的結構化分析脈絡（固定查詢數；各段缺資料 → None／空 list）。"""
     company = session.get(Company, ticker)
     quotes = quotes_by_ticker(session, [ticker]).get(ticker, [])
-    flows = flows_by_ticker(session, [ticker]).get(ticker, [])[:FLOWS_SAMPLE]
+    flows = _recent_flows(session, ticker)
     return {
         "ticker": ticker,
         "name": company.name if company else None,
@@ -367,7 +391,10 @@ def _friendly_error(exc: Exception) -> str:
 
 
 def run_analysis(engine, analysis_id: int) -> None:
-    """背景執行一筆分析：讀列 → running → 呼叫 LLM（重試 1 次）→ done/failed。
+    """背景執行一筆分析：讀列（須為 pending）→ running → 呼叫 LLM（重試 1 次）→ done/failed。
+
+    只處理 ``status == "pending"`` 的列——非 pending 表示已被處理（或處理中），
+    log warning 後直接 return，防止背景任務重複執行同一列。
 
     **絕不 raise**：所有例外都在內部處理並落庫為 failed，避免炸掉背景任務行程。
     """
@@ -376,6 +403,13 @@ def run_analysis(engine, analysis_id: int) -> None:
             row = session.get(AiAnalysis, analysis_id)
             if row is None:
                 logger.error("run_analysis：找不到 analysis id=%s，略過。", analysis_id)
+                return
+            if row.status != "pending":
+                logger.warning(
+                    "run_analysis：analysis id=%s 狀態為 %s（非 pending），略過重複執行。",
+                    analysis_id,
+                    row.status,
+                )
                 return
 
             row.status = "running"
