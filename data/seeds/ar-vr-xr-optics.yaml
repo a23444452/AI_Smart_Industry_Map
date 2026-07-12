@@ -1,0 +1,35 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: ar-vr-xr-optics
+title: 消費電子與顯示｜AR/VR/XR 光學
+market_tab: tw
+description: >-
+  AR/VR/XR 光學供應鏈提供頭戴裝置的光學元件與光機模組。頭戴裝置輕量化與顯示升級帶動光學元
+  件與整合模組的需求。光波導與微顯示整合是此領域的技術前沿。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2498", name: 宏達電}
+  - {ticker: "3294", name: 英濟}
+  - {ticker: "3406", name: 玉晶光}
+  - {ticker: "3504", name: 揚明光}
+  - {ticker: "3645", name: 達邁}
+  - {ticker: "6176", name: 瑞儀}
+  - {ticker: "6668", name: 中揚光}
+  - {ticker: "6742", name: 澤米}
+  - {ticker: "6789", name: 采鈺}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: AR/VR/XR 光學
+        desc: 擴增與虛擬實境裝置的光學元件與光機模組供應鏈，隨頭戴裝置升級成長。
+        companies:
+          - {ticker: "2498", role: 利基, relevance: 高}
+          - {ticker: "3294", role: 新興, relevance: 高}
+          - {ticker: "3406", role: 利基, relevance: 高}
+          - {ticker: "3504", role: 新興, relevance: 高}
+          - {ticker: "3645", role: 新興, relevance: 高}
+          - {ticker: "6176", role: 利基, relevance: 高}
+          - {ticker: "6668", role: 新興, relevance: 高}
+          - {ticker: "6742", role: 新興, relevance: 高}
+          - {ticker: "6789", role: 利基, relevance: 高}

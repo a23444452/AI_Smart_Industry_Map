@@ -1,0 +1,57 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: pcb-manufacturing
+title: AI 伺服器｜PCB 硬板製造
+market_tab: tw
+description: >-
+  PCB 硬板製造構成電子產品訊號互連的基礎，將元件連結為可運作的電路系統。AI 伺服器與高速運算
+  帶動高層數、高階材料與細線路的硬板需求。疊構設計、材料選擇與良率是廠商分級的關鍵。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2313", name: 華通}
+  - {ticker: "2316", name: 楠梓電}
+  - {ticker: "2355", name: 敬鵬}
+  - {ticker: "2367", name: 燿華}
+  - {ticker: "2368", name: 金像電}
+  - {ticker: "3044", name: 健鼎}
+  - {ticker: "3167", name: 大量}
+  - {ticker: "3229", name: 晟鈦}
+  - {ticker: "3715", name: 定穎投控}
+  - {ticker: "4927", name: 泰鼎-KY}
+  - {ticker: "4958", name: 臻鼎-KY}
+  - {ticker: "5469", name: 瀚宇博}
+  - {ticker: "6108", name: 競國}
+  - {ticker: "6141", name: 柏承}
+  - {ticker: "6191", name: 精成科}
+  - {ticker: "6509", name: 聚和}
+  - {ticker: "8021", name: 尖點}
+  - {ticker: "8074", name: 鉅橡}
+  - {ticker: "8213", name: 志超}
+  - {ticker: "8438", name: 昶昕}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: PCB 硬板製造
+        desc: 生產電子產品硬式印刷電路板的製造廠，受惠 AI 與高速運算的高階板需求。
+        companies:
+          - {ticker: "2313", role: 利基, relevance: 高}
+          - {ticker: "2316", role: 利基, relevance: 高}
+          - {ticker: "2355", role: 新興, relevance: 高}
+          - {ticker: "2367", role: 利基, relevance: 高}
+          - {ticker: "2368", role: 龍頭, relevance: 高}
+          - {ticker: "3044", role: 利基, relevance: 高}
+          - {ticker: "3167", role: 利基, relevance: 高}
+          - {ticker: "3229", role: 新興, relevance: 高}
+          - {ticker: "3715", role: 利基, relevance: 高}
+          - {ticker: "4927", role: 新興, relevance: 高}
+          - {ticker: "4958", role: 龍頭, relevance: 高}
+          - {ticker: "5469", role: 利基, relevance: 高}
+          - {ticker: "6108", role: 新興, relevance: 高}
+          - {ticker: "6141", role: 新興, relevance: 高}
+          - {ticker: "6191", role: 利基, relevance: 高}
+          - {ticker: "6509", role: 新興, relevance: 高}
+          - {ticker: "8021", role: 利基, relevance: 高}
+          - {ticker: "8074", role: 新興, relevance: 高}
+          - {ticker: "8213", role: 新興, relevance: 高}
+          - {ticker: "8438", role: 新興, relevance: 高}

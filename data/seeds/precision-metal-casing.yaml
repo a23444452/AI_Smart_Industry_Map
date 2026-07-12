@@ -1,0 +1,42 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: precision-metal-casing
+title: AI 伺服器｜精密機構件
+market_tab: tw
+description: >-
+  精密機構件涵蓋金屬外觀件與結構件的成型、CNC 加工與表面處理，橫跨消費電子、伺服器與散熱模組。
+  裝置輕量化與散熱一體化設計帶動金屬機構件的附加價值提升。加工精度、良率與表面處理工藝構成技術門檻
+  。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2059", name: 川湖}
+  - {ticker: "2354", name: 鴻準}
+  - {ticker: "2474", name: 可成}
+  - {ticker: "2634", name: 漢翔}
+  - {ticker: "3013", name: 晟銘電}
+  - {ticker: "3376", name: 新日興}
+  - {ticker: "3548", name: 兆利}
+  - {ticker: "3593", name: 力銘}
+  - {ticker: "6117", name: 迎廣}
+  - {ticker: "6235", name: 華孚}
+  - {ticker: "6805", name: 富世達}
+  - {ticker: "8210", name: 勤誠}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 精密機構件
+        desc: 橫跨消費電子與伺服器的金屬機構件成型與加工廠，受惠散熱一體化趨勢。
+        companies:
+          - {ticker: "2059", role: 龍頭, relevance: 高}
+          - {ticker: "2354", role: 利基, relevance: 高}
+          - {ticker: "2474", role: 利基, relevance: 高}
+          - {ticker: "2634", role: 利基, relevance: 高}
+          - {ticker: "3013", role: 新興, relevance: 高}
+          - {ticker: "3376", role: 利基, relevance: 高}
+          - {ticker: "3548", role: 新興, relevance: 高}
+          - {ticker: "3593", role: 新興, relevance: 高}
+          - {ticker: "6117", role: 新興, relevance: 高}
+          - {ticker: "6235", role: 新興, relevance: 高}
+          - {ticker: "6805", role: 利基, relevance: 高}
+          - {ticker: "8210", role: 利基, relevance: 高}

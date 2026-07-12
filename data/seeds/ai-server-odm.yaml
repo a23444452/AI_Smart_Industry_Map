@@ -1,0 +1,43 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: ai-server-odm
+title: AI 伺服器｜AI 伺服器組裝
+market_tab: tw
+description: >-
+  AI 伺服器組裝位於資料中心硬體供應鏈的系統整合末端，將主機板、GPU
+  模組、散熱與電源組成整機或整櫃交付。雲端業者對 AI
+  加速運算的資本支出持續放大，帶動高階伺服器與整櫃 L10/L11
+  出貨動能。散熱設計、供電架構與交付規模是廠商競爭的分水嶺。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2317", name: 鴻海}
+  - {ticker: "2324", name: 仁寶}
+  - {ticker: "2331", name: 精英}
+  - {ticker: "2356", name: 英業達}
+  - {ticker: "2357", name: 華碩}
+  - {ticker: "2376", name: 技嘉}
+  - {ticker: "2377", name: 微星}
+  - {ticker: "2382", name: 廣達}
+  - {ticker: "3231", name: 緯創}
+  - {ticker: "3443", name: 創意}
+  - {ticker: "3661", name: 世芯-KY}
+  - {ticker: "6669", name: 緯穎}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: AI 伺服器組裝
+        desc: 涵蓋 AI 伺服器整機與整櫃組裝的系統廠與代工廠，直接受惠雲端 AI 資本支出。
+        companies:
+          - {ticker: "2317", role: 龍頭, relevance: 高}
+          - {ticker: "2324", role: 利基, relevance: 高}
+          - {ticker: "2331", role: 新興, relevance: 高}
+          - {ticker: "2356", role: 利基, relevance: 高}
+          - {ticker: "2357", role: 龍頭, relevance: 高}
+          - {ticker: "2376", role: 利基, relevance: 高}
+          - {ticker: "2377", role: 利基, relevance: 高}
+          - {ticker: "2382", role: 龍頭, relevance: 高}
+          - {ticker: "3231", role: 龍頭, relevance: 高}
+          - {ticker: "3443", role: 龍頭, relevance: 高}
+          - {ticker: "3661", role: 龍頭, relevance: 高}
+          - {ticker: "6669", role: 龍頭, relevance: 高}

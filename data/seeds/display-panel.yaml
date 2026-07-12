@@ -1,0 +1,43 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: display-panel
+title: 消費電子與顯示｜面板產業
+market_tab: tw
+description: >-
+  面板產業涵蓋平面顯示面板的製造與背光、材料等上下游供應。車用、電競與電子紙等利基應用推升面板的附
+  加價值與差異化。技術轉型與利基化布局是產業的成長方向。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2409", name: 友達}
+  - {ticker: "3481", name: 群創}
+  - {ticker: "3714", name: 富采}
+  - {ticker: "4960", name: 誠美材}
+  - {ticker: "5234", name: 達興材料}
+  - {ticker: "5371", name: 中光電}
+  - {ticker: "6116", name: 彩晶}
+  - {ticker: "6176", name: 瑞儀}
+  - {ticker: "6278", name: 台表科}
+  - {ticker: "6854", name: 錼創科技-KY創}
+  - {ticker: "6861", name: 睿生光電}
+  - {ticker: "8069", name: 元太}
+  - {ticker: "8215", name: 明基材}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 面板產業
+        desc: 平面顯示面板的製造與上下游材料、背光供應鏈，朝利基應用轉型。
+        companies:
+          - {ticker: "2409", role: 利基, relevance: 高}
+          - {ticker: "3481", role: 龍頭, relevance: 高}
+          - {ticker: "3714", role: 利基, relevance: 高}
+          - {ticker: "4960", role: 新興, relevance: 高}
+          - {ticker: "5234", role: 利基, relevance: 高}
+          - {ticker: "5371", role: 利基, relevance: 高}
+          - {ticker: "6116", role: 利基, relevance: 高}
+          - {ticker: "6176", role: 利基, relevance: 高}
+          - {ticker: "6278", role: 利基, relevance: 高}
+          - {ticker: "6854", role: 新興, relevance: 高}
+          - {ticker: "6861", role: 新興, relevance: 高}
+          - {ticker: "8069", role: 利基, relevance: 高}
+          - {ticker: "8215", role: 新興, relevance: 高}

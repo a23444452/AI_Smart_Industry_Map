@@ -1,0 +1,32 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: bbu
+title: AI 伺服器｜BBU 電池備援
+market_tab: tw
+description: >-
+  BBU 電池備援模組在系統瞬斷電時提供備援電力，確保伺服器與資料中心不中斷運作。AI
+  資料中心對供電穩定性要求提高，帶動 BBU
+  在伺服器架構中的滲透率上升。電芯管理與模組整合能力決定產品可靠度。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2301", name: 光寶科}
+  - {ticker: "2308", name: 台達電}
+  - {ticker: "3211", name: 順達}
+  - {ticker: "4931", name: 新盛力}
+  - {ticker: "5309", name: 系統電}
+  - {ticker: "6121", name: 新普}
+  - {ticker: "6781", name: AES-KY}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: BBU 電池備援
+        desc: 提供伺服器斷電備援電池模組的電池與模組廠，隨資料中心供電需求成長。
+        companies:
+          - {ticker: "2301", role: 龍頭, relevance: 高}
+          - {ticker: "2308", role: 龍頭, relevance: 高}
+          - {ticker: "3211", role: 利基, relevance: 高}
+          - {ticker: "4931", role: 新興, relevance: 高}
+          - {ticker: "5309", role: 新興, relevance: 高}
+          - {ticker: "6121", role: 利基, relevance: 高}
+          - {ticker: "6781", role: 利基, relevance: 高}

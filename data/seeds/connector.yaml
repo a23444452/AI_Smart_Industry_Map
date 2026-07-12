@@ -1,0 +1,51 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: connector
+title: AI 伺服器｜連接器（工業/消費）
+market_tab: tw
+description: >-
+  連接器提供工業與消費電子的訊號與電力連接，是裝置間互連不可或缺的元件。裝置多元化與高速傳輸標準演
+  進推動連接器規格持續升級。高頻高速傳輸與長期可靠度是產品競爭焦點。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2392", name: 正崴}
+  - {ticker: "2460", name: 建通}
+  - {ticker: "2462", name: 良得電}
+  - {ticker: "2483", name: 百容}
+  - {ticker: "3021", name: 鴻名}
+  - {ticker: "3023", name: 信邦}
+  - {ticker: "3501", name: 維熹}
+  - {ticker: "3526", name: 凡甲}
+  - {ticker: "3605", name: 宏致}
+  - {ticker: "3665", name: 貿聯-KY}
+  - {ticker: "5254", name: 欣訊科技}
+  - {ticker: "5460", name: 同協}
+  - {ticker: "6115", name: 鎰勝}
+  - {ticker: "6205", name: 詮欣}
+  - {ticker: "6220", name: 岳豐}
+  - {ticker: "6833", name: 太康精密}
+  - {ticker: "8103", name: 瀚荃}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 連接器（工業/消費）
+        desc: 供應工業與消費電子訊號與電力連接器的元件廠，隨高速傳輸標準升級。
+        companies:
+          - {ticker: "2392", role: 新興, relevance: 高}
+          - {ticker: "2460", role: 新興, relevance: 高}
+          - {ticker: "2462", role: 新興, relevance: 高}
+          - {ticker: "2483", role: 新興, relevance: 高}
+          - {ticker: "3021", role: 新興, relevance: 高}
+          - {ticker: "3023", role: 利基, relevance: 高}
+          - {ticker: "3501", role: 新興, relevance: 高}
+          - {ticker: "3526", role: 新興, relevance: 高}
+          - {ticker: "3605", role: 新興, relevance: 高}
+          - {ticker: "3665", role: 龍頭, relevance: 高}
+          - {ticker: "5254", role: 新興, relevance: 高}
+          - {ticker: "5460", role: 新興, relevance: 高}
+          - {ticker: "6115", role: 新興, relevance: 高}
+          - {ticker: "6205", role: 新興, relevance: 高}
+          - {ticker: "6220", role: 新興, relevance: 高}
+          - {ticker: "6833", role: 新興, relevance: 高}
+          - {ticker: "8103", role: 新興, relevance: 高}

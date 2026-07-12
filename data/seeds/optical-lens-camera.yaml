@@ -1,0 +1,33 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: optical-lens-camera
+title: 消費電子與顯示｜光學鏡頭
+market_tab: tw
+description: >-
+  光學鏡頭題材涵蓋相機模組所需鏡頭的光學設計與製造。手機多鏡頭、車用鏡頭與機器視覺帶動鏡頭用量與規
+  格提升。鏡片精度、鍍膜工藝與量產良率是廠商競爭的核心。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "3008", name: 大立光}
+  - {ticker: "3019", name: 亞光}
+  - {ticker: "3362", name: 先進光}
+  - {ticker: "3406", name: 玉晶光}
+  - {ticker: "3441", name: 聯一光電}
+  - {ticker: "4915", name: 致伸}
+  - {ticker: "4976", name: 佳凌}
+  - {ticker: "6271", name: 同欣電}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 光學鏡頭
+        desc: 相機模組用光學鏡頭的設計與製造廠，受惠手機、車用與機器視覺需求。
+        companies:
+          - {ticker: "3008", role: 龍頭, relevance: 高}
+          - {ticker: "3019", role: 利基, relevance: 高}
+          - {ticker: "3362", role: 新興, relevance: 高}
+          - {ticker: "3406", role: 利基, relevance: 高}
+          - {ticker: "3441", role: 新興, relevance: 高}
+          - {ticker: "4915", role: 利基, relevance: 高}
+          - {ticker: "4976", role: 新興, relevance: 高}
+          - {ticker: "6271", role: 利基, relevance: 高}

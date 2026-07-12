@@ -1,0 +1,45 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: passive-inductor
+title: AI 伺服器｜功率電感
+market_tab: tw
+description: >-
+  功率電感是電源電路中負責能量儲存與濾波的被動元件，廣泛用於各式電源模組。伺服器與車用電源模組帶動
+  一體成型電感的需求成長。磁性材料配方與繞線工藝是效能與差異化的核心。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2327", name: "國巨*"}
+  - {ticker: "2492", name: 華新科}
+  - {ticker: "3207", name: 耀勝}
+  - {ticker: "3236", name: 千如}
+  - {ticker: "3357", name: 臺慶科}
+  - {ticker: "4760", name: 勤凱科技}
+  - {ticker: "5228", name: 鈺鎧}
+  - {ticker: "6155", name: 鈞寶}
+  - {ticker: "6156", name: 松上}
+  - {ticker: "6284", name: 佳邦}
+  - {ticker: "6292", name: 迅德}
+  - {ticker: "6432", name: 今展科}
+  - {ticker: "6862", name: 三集瑞-KY}
+  - {ticker: "8121", name: 越峰}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 功率電感
+        desc: 生產電源用功率電感的被動元件廠，隨伺服器與車用電源模組成長。
+        companies:
+          - {ticker: "2327", role: 龍頭, relevance: 高}
+          - {ticker: "2492", role: 利基, relevance: 高}
+          - {ticker: "3207", role: 新興, relevance: 高}
+          - {ticker: "3236", role: 新興, relevance: 高}
+          - {ticker: "3357", role: 利基, relevance: 高}
+          - {ticker: "4760", role: 新興, relevance: 高}
+          - {ticker: "5228", role: 新興, relevance: 高}
+          - {ticker: "6155", role: 新興, relevance: 高}
+          - {ticker: "6156", role: 新興, relevance: 高}
+          - {ticker: "6284", role: 新興, relevance: 高}
+          - {ticker: "6292", role: 新興, relevance: 高}
+          - {ticker: "6432", role: 新興, relevance: 高}
+          - {ticker: "6862", role: 新興, relevance: 高}
+          - {ticker: "8121", role: 新興, relevance: 高}

@@ -1,0 +1,31 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: microled-display
+title: 消費電子與顯示｜MicroLED 顯示供應鏈
+market_tab: tw
+description: >-
+  MicroLED 顯示供應鏈涵蓋磊晶、晶粒與巨量轉移等次世代顯示技術環節。高亮度與低功耗特性使
+  MicroLED 切入穿戴與大尺寸顯示應用。巨量轉移良率與成本是量產落地的關鍵挑戰。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2393", name: 億光}
+  - {ticker: "2409", name: 友達}
+  - {ticker: "2426", name: 鼎元}
+  - {ticker: "3481", name: 群創}
+  - {ticker: "3714", name: 富采}
+  - {ticker: "6854", name: 錼創科技-KY創}
+  - {ticker: "8064", name: 東捷}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: MicroLED 顯示供應鏈
+        desc: 次世代 MicroLED 顯示的磊晶、晶粒與巨量轉移供應鏈，切入穿戴與大尺寸顯示。
+        companies:
+          - {ticker: "2393", role: 利基, relevance: 高}
+          - {ticker: "2409", role: 利基, relevance: 高}
+          - {ticker: "2426", role: 新興, relevance: 高}
+          - {ticker: "3481", role: 龍頭, relevance: 高}
+          - {ticker: "3714", role: 利基, relevance: 高}
+          - {ticker: "6854", role: 新興, relevance: 高}
+          - {ticker: "8064", role: 新興, relevance: 高}

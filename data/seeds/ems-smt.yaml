@@ -1,0 +1,33 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: ems-smt
+title: AI 伺服器｜EMS 電子代工
+market_tab: tw
+description: >-
+  EMS 電子代工提供表面貼裝與整機組裝服務，是網通、消費與工業電子的製造後盾。終端產品多元化與客
+  戶委外趨勢帶動代工需求，製程彈性成為競爭要素。自動化程度與交期管理決定接單與毛利表現。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2301", name: 光寶科}
+  - {ticker: "2314", name: 台揚}
+  - {ticker: "2329", name: 華泰}
+  - {ticker: "2356", name: 英業達}
+  - {ticker: "3596", name: 智易}
+  - {ticker: "6266", name: 泰詠}
+  - {ticker: "6278", name: 台表科}
+  - {ticker: "6285", name: 啟碁}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: EMS 電子代工
+        desc: 提供表面貼裝與整機組裝代工的電子製造服務廠，服務多元電子終端。
+        companies:
+          - {ticker: "2301", role: 龍頭, relevance: 高}
+          - {ticker: "2314", role: 新興, relevance: 高}
+          - {ticker: "2329", role: 利基, relevance: 高}
+          - {ticker: "2356", role: 利基, relevance: 高}
+          - {ticker: "3596", role: 利基, relevance: 高}
+          - {ticker: "6266", role: 新興, relevance: 高}
+          - {ticker: "6278", role: 利基, relevance: 高}
+          - {ticker: "6285", role: 利基, relevance: 高}

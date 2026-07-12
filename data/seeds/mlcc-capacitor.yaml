@@ -1,0 +1,43 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: mlcc-capacitor
+title: AI 伺服器｜電容器
+market_tab: tw
+description: >-
+  電容器以積層陶瓷電容為主，承擔電路儲能與濾波功能，是電子裝置的基礎被動元件。AI
+  伺服器、車用與高階手機推升高容值、高規格電容的用量。材料配方與微型化製程能力決定產品層級。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2327", name: "國巨*"}
+  - {ticker: "2375", name: 凱美}
+  - {ticker: "2472", name: 立隆電}
+  - {ticker: "2492", name: 華新科}
+  - {ticker: "3026", name: 禾伸堂}
+  - {ticker: "3090", name: 日電貿}
+  - {ticker: "4760", name: 勤凱科技}
+  - {ticker: "5328", name: 華容}
+  - {ticker: "6173", name: 信昌電}
+  - {ticker: "6175", name: 立敦}
+  - {ticker: "6449", name: 鈺邦}
+  - {ticker: "8042", name: 金山電}
+  - {ticker: "8043", name: 蜜望實}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 電容器
+        desc: 生產積層陶瓷電容等被動電容元件的廠商，受惠高階應用放量。
+        companies:
+          - {ticker: "2327", role: 龍頭, relevance: 高}
+          - {ticker: "2375", role: 新興, relevance: 高}
+          - {ticker: "2472", role: 利基, relevance: 高}
+          - {ticker: "2492", role: 利基, relevance: 高}
+          - {ticker: "3026", role: 利基, relevance: 高}
+          - {ticker: "3090", role: 利基, relevance: 高}
+          - {ticker: "4760", role: 新興, relevance: 高}
+          - {ticker: "5328", role: 新興, relevance: 高}
+          - {ticker: "6173", role: 利基, relevance: 高}
+          - {ticker: "6175", role: 新興, relevance: 高}
+          - {ticker: "6449", role: 利基, relevance: 高}
+          - {ticker: "8042", role: 新興, relevance: 高}
+          - {ticker: "8043", role: 新興, relevance: 高}

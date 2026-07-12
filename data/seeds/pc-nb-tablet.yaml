@@ -1,0 +1,41 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: pc-nb-tablet
+title: 消費電子與顯示｜PC、筆電與平板
+market_tab: tw
+description: >-
+  PC、筆電與平板供應鏈橫跨品牌與代工，供應個人運算裝置的整機與組裝。AI PC
+  導入與換機需求帶動出貨動能回溫。散熱、輕薄化與效能整合是產品差異化的關鍵。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2324", name: 仁寶}
+  - {ticker: "2352", name: 佳世達}
+  - {ticker: "2353", name: 宏碁}
+  - {ticker: "2356", name: 英業達}
+  - {ticker: "2357", name: 華碩}
+  - {ticker: "2377", name: 微星}
+  - {ticker: "2382", name: 廣達}
+  - {ticker: "2489", name: 瑞軒}
+  - {ticker: "3005", name: 神基}
+  - {ticker: "3231", name: 緯創}
+  - {ticker: "4938", name: 和碩}
+  - {ticker: "6456", name: GIS-KY}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: PC、筆電與平板
+        desc: 個人電腦、筆電與平板的品牌與代工供應鏈，受惠 AI PC 換機動能。
+        companies:
+          - {ticker: "2324", role: 利基, relevance: 高}
+          - {ticker: "2352", role: 利基, relevance: 高}
+          - {ticker: "2353", role: 利基, relevance: 高}
+          - {ticker: "2356", role: 利基, relevance: 高}
+          - {ticker: "2357", role: 龍頭, relevance: 高}
+          - {ticker: "2377", role: 利基, relevance: 高}
+          - {ticker: "2382", role: 龍頭, relevance: 高}
+          - {ticker: "2489", role: 新興, relevance: 高}
+          - {ticker: "3005", role: 利基, relevance: 高}
+          - {ticker: "3231", role: 龍頭, relevance: 高}
+          - {ticker: "4938", role: 利基, relevance: 高}
+          - {ticker: "6456", role: 新興, relevance: 高}

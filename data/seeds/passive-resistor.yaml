@@ -1,0 +1,43 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: passive-resistor
+title: AI 伺服器｜電阻與被動保護
+market_tab: tw
+description: >-
+  此題材涵蓋電阻與過電流、過溫等被動保護元件，構成電路防護與訊號調節的基礎。電子裝置密度提升帶動微
+  型化與高精度被動元件需求。元件一致性與長期可靠度是規格與品質的重點。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2327", name: "國巨*"}
+  - {ticker: "2375", name: 凱美}
+  - {ticker: "2428", name: 興勤}
+  - {ticker: "2478", name: 大毅}
+  - {ticker: "2492", name: 華新科}
+  - {ticker: "3624", name: 光頡}
+  - {ticker: "3663", name: 鑫科}
+  - {ticker: "4760", name: 勤凱科技}
+  - {ticker: "6127", name: 九豪}
+  - {ticker: "6204", name: 艾華}
+  - {ticker: "6224", name: 聚鼎}
+  - {ticker: "6642", name: 富致}
+  - {ticker: "6834", name: 天二科技}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 電阻與被動保護
+        desc: 生產電阻與過流過溫保護等被動元件的廠商，隨裝置微型化與高精度需求成長。
+        companies:
+          - {ticker: "2327", role: 龍頭, relevance: 高}
+          - {ticker: "2375", role: 新興, relevance: 高}
+          - {ticker: "2428", role: 利基, relevance: 高}
+          - {ticker: "2478", role: 新興, relevance: 高}
+          - {ticker: "2492", role: 利基, relevance: 高}
+          - {ticker: "3624", role: 新興, relevance: 高}
+          - {ticker: "3663", role: 新興, relevance: 高}
+          - {ticker: "4760", role: 新興, relevance: 高}
+          - {ticker: "6127", role: 新興, relevance: 高}
+          - {ticker: "6204", role: 新興, relevance: 高}
+          - {ticker: "6224", role: 新興, relevance: 高}
+          - {ticker: "6642", role: 新興, relevance: 高}
+          - {ticker: "6834", role: 新興, relevance: 高}

@@ -1,0 +1,53 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: psu
+title: AI 伺服器｜電源供應器
+market_tab: tw
+description: >-
+  電源供應器負責交直流轉換與電力調節，是伺服器、工業與消費電子的供電核心。AI 伺服器高功率化推升
+  高瓦數、高效率電源需求，並加速氮化鎵等第三代半導體導入。轉換效率與功率密度是產品競爭的重點。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2301", name: 光寶科}
+  - {ticker: "2308", name: 台達電}
+  - {ticker: "2420", name: 新巨}
+  - {ticker: "2431", name: 聯昌}
+  - {ticker: "2436", name: 偉詮電}
+  - {ticker: "2457", name: 飛宏}
+  - {ticker: "2481", name: 強茂}
+  - {ticker: "3015", name: 全漢}
+  - {ticker: "3078", name: 僑威}
+  - {ticker: "3211", name: 順達}
+  - {ticker: "3323", name: 加百裕}
+  - {ticker: "3588", name: 通嘉}
+  - {ticker: "3675", name: 德微}
+  - {ticker: "3707", name: 漢磊}
+  - {ticker: "6121", name: 新普}
+  - {ticker: "6203", name: 海韻電}
+  - {ticker: "6282", name: 康舒}
+  - {ticker: "6412", name: 群電}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 電源供應器
+        desc: 供應伺服器與工業電源模組的電源廠，受惠 AI 伺服器高功率化。
+        companies:
+          - {ticker: "2301", role: 龍頭, relevance: 高}
+          - {ticker: "2308", role: 龍頭, relevance: 高}
+          - {ticker: "2420", role: 新興, relevance: 高}
+          - {ticker: "2431", role: 新興, relevance: 高}
+          - {ticker: "2436", role: 新興, relevance: 高}
+          - {ticker: "2457", role: 新興, relevance: 高}
+          - {ticker: "2481", role: 利基, relevance: 高}
+          - {ticker: "3015", role: 新興, relevance: 高}
+          - {ticker: "3078", role: 新興, relevance: 高}
+          - {ticker: "3211", role: 利基, relevance: 高}
+          - {ticker: "3323", role: 新興, relevance: 高}
+          - {ticker: "3588", role: 新興, relevance: 高}
+          - {ticker: "3675", role: 新興, relevance: 高}
+          - {ticker: "3707", role: 利基, relevance: 高}
+          - {ticker: "6121", role: 利基, relevance: 高}
+          - {ticker: "6203", role: 新興, relevance: 高}
+          - {ticker: "6282", role: 利基, relevance: 高}
+          - {ticker: "6412", role: 利基, relevance: 高}

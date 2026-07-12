@@ -1,0 +1,35 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: connector-automotive
+title: AI 伺服器｜車用連接器
+market_tab: tw
+description: >-
+  車用連接器與端子須通過嚴苛的溫度、振動與可靠度驗證，供應汽車電子系統互連。電動化與智慧座艙提升單
+  車連接器用量與規格要求。車規認證與長期供貨能力是進入門檻。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2476", name: 鉅祥}
+  - {ticker: "3003", name: 健和興}
+  - {ticker: "3310", name: 佳穎}
+  - {ticker: "3492", name: 長盛}
+  - {ticker: "3552", name: 同致}
+  - {ticker: "4943", name: 康控-KY}
+  - {ticker: "6126", name: 信音}
+  - {ticker: "6279", name: 胡連}
+  - {ticker: "6835", name: 圓裕}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 車用連接器
+        desc: 供應通過車規驗證的車用連接器與端子廠，受惠汽車電動化與智慧化。
+        companies:
+          - {ticker: "2476", role: 新興, relevance: 高}
+          - {ticker: "3003", role: 新興, relevance: 高}
+          - {ticker: "3310", role: 新興, relevance: 高}
+          - {ticker: "3492", role: 新興, relevance: 高}
+          - {ticker: "3552", role: 新興, relevance: 高}
+          - {ticker: "4943", role: 新興, relevance: 高}
+          - {ticker: "6126", role: 新興, relevance: 高}
+          - {ticker: "6279", role: 新興, relevance: 高}
+          - {ticker: "6835", role: 新興, relevance: 高}

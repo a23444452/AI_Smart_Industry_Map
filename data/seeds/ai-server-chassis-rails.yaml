@@ -1,0 +1,44 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: ai-server-chassis-rails
+title: AI 伺服器｜機殼與滑軌
+market_tab: tw
+description: >-
+  機殼與滑軌供應機架式伺服器的金屬外殼、滑軌與內部導引結構，是伺服器機構的骨架。高密度 GPU 伺
+  服器對散熱風道與結構強度要求提高，推動精密鈑金與滑軌設計升級。結構可靠度與快速交期是接單能力的關
+  鍵。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2059", name: 川湖}
+  - {ticker: "3013", name: 晟銘電}
+  - {ticker: "3325", name: 旭品}
+  - {ticker: "3483", name: 力致}
+  - {ticker: "3593", name: 力銘}
+  - {ticker: "3693", name: 營邦}
+  - {ticker: "5243", name: 乙盛-KY}
+  - {ticker: "5284", name: jpp-KY}
+  - {ticker: "5465", name: 富驊}
+  - {ticker: "6117", name: 迎廣}
+  - {ticker: "6125", name: 廣運}
+  - {ticker: "6584", name: 南俊國際}
+  - {ticker: "8210", name: 勤誠}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 機殼與滑軌
+        desc: 提供伺服器機殼、滑軌與結構件的機構廠，隨高密度伺服器規格同步升級。
+        companies:
+          - {ticker: "2059", role: 龍頭, relevance: 高}
+          - {ticker: "3013", role: 新興, relevance: 高}
+          - {ticker: "3325", role: 新興, relevance: 高}
+          - {ticker: "3483", role: 新興, relevance: 高}
+          - {ticker: "3593", role: 新興, relevance: 高}
+          - {ticker: "3693", role: 新興, relevance: 高}
+          - {ticker: "5243", role: 新興, relevance: 高}
+          - {ticker: "5284", role: 新興, relevance: 高}
+          - {ticker: "5465", role: 新興, relevance: 高}
+          - {ticker: "6117", role: 新興, relevance: 高}
+          - {ticker: "6125", role: 新興, relevance: 高}
+          - {ticker: "6584", role: 利基, relevance: 高}
+          - {ticker: "8210", role: 利基, relevance: 高}

@@ -1,0 +1,37 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: mobile
+title: 消費電子與顯示｜智慧型手機
+market_tab: tw
+description: >-
+  智慧型手機供應鏈涵蓋整機組裝與光學、軟板、機構等關鍵零組件。換機週期與 AI
+  手機功能升級帶動零組件規格與價值提升。光學升級、軟板整合與機構散熱是供應鏈的重點環節。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2313", name: 華通}
+  - {ticker: "2317", name: 鴻海}
+  - {ticker: "2354", name: 鴻準}
+  - {ticker: "2450", name: 神腦}
+  - {ticker: "3008", name: 大立光}
+  - {ticker: "3406", name: 玉晶光}
+  - {ticker: "4938", name: 和碩}
+  - {ticker: "4958", name: 臻鼎-KY}
+  - {ticker: "6153", name: 嘉聯益}
+  - {ticker: "6269", name: 台郡}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 智慧型手機
+        desc: 智慧型手機的組裝與關鍵零組件供應鏈，隨 AI 手機功能升級成長。
+        companies:
+          - {ticker: "2313", role: 利基, relevance: 高}
+          - {ticker: "2317", role: 龍頭, relevance: 高}
+          - {ticker: "2354", role: 利基, relevance: 高}
+          - {ticker: "2450", role: 新興, relevance: 高}
+          - {ticker: "3008", role: 龍頭, relevance: 高}
+          - {ticker: "3406", role: 利基, relevance: 高}
+          - {ticker: "4938", role: 利基, relevance: 高}
+          - {ticker: "4958", role: 龍頭, relevance: 高}
+          - {ticker: "6153", role: 新興, relevance: 高}
+          - {ticker: "6269", role: 新興, relevance: 高}
