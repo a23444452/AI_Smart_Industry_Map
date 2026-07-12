@@ -4,11 +4,14 @@ export const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000"
 /** 帶 HTTP 狀態碼的 API 錯誤：呼叫端以 status 判斷（如 404），不解析 message 字串。 */
 export class ApiError extends Error {
   readonly status: number;
+  /** 後端原始錯誤訊息（不含 "API {status}:" 前綴），無則 null。供 UI 直接顯示。 */
+  readonly detail: string | null;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, detail: string | null = null) {
     super(message);
     this.name = "ApiError";
     this.status = status;
+    this.detail = detail;
   }
 }
 
@@ -41,12 +44,32 @@ async function readErrorMessage(res: Response): Promise<string | null> {
  */
 export async function fetchJson<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`);
-  if (!res.ok) {
-    const detail = await readErrorMessage(res);
-    throw new ApiError(
-      detail ? `API ${res.status}: ${detail}` : `API ${res.status}: ${path}`,
-      res.status,
-    );
-  }
+  if (!res.ok) await throwApiError(res, path);
   return (await res.json()) as T;
+}
+
+/**
+ * 送出 JSON body 的 POST 並取回 JSON 回應；非 2xx 時 throw ApiError（帶 status 與
+ * 後端 detail，如 409）。呼叫端以 status 分流、以 detail 顯示後端訊息。
+ * @param path 以 / 開頭的 API 路徑
+ * @param body 會序列化為 JSON 的請求主體
+ */
+export async function postJson<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) await throwApiError(res, path);
+  return (await res.json()) as T;
+}
+
+/** 由非 2xx 回應建構並拋出 ApiError（帶 status 與後端 detail）。 */
+async function throwApiError(res: Response, path: string): Promise<never> {
+  const detail = await readErrorMessage(res);
+  throw new ApiError(
+    detail ? `API ${res.status}: ${detail}` : `API ${res.status}: ${path}`,
+    res.status,
+    detail,
+  );
 }
