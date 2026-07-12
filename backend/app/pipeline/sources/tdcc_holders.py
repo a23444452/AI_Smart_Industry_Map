@@ -109,7 +109,14 @@ def fetch() -> str:
             SOURCE, f"{SOURCE} 資料來源連線失敗，請稍後再試"
         ) from exc
 
-    return chunks.decode("utf-8-sig")
+    # decode 也可能失敗（來源改編碼或截斷成非法 UTF-8）——包成 SourceFetchError
+    # 讓 job 層只需捕捉單一例外型別，不會漏接 UnicodeDecodeError。
+    try:
+        return chunks.decode("utf-8-sig")
+    except UnicodeDecodeError as exc:
+        raise SourceFetchError(
+            SOURCE, f"{SOURCE} 資料來源內容編碼異常，請稍後再試"
+        ) from exc
 
 
 def parse(csv_text: str, wanted: set[str]) -> list[dict]:
@@ -148,15 +155,23 @@ def parse(csv_text: str, wanted: set[str]) -> list[dict]:
     i_ratio = col["占集保庫存數比例%"]
     max_i = max(i_date, i_ticker, i_level, i_people, i_ratio)
 
-    agg: dict[tuple[str, str | None], dict] = {}
-    order: list[tuple[str, str | None]] = []
+    agg: dict[tuple[str, str], dict] = {}
+    order: list[tuple[str, str]] = []
+    saw_wanted = False  # 見過至少一列想要的 ticker（用來區分「空 wanted」與「日期全壞」）
+    saw_valid_week = False  # 想要的列中至少一列日期可解析
     for parts in reader:
         if len(parts) <= max_i:
             continue  # truncated/blank line — skip defensively
         ticker = parts[i_ticker].strip()
         if ticker not in wanted:
             continue
+        saw_wanted = True
         week = _common.yyyymmdd_to_iso(parts[i_date])
+        if week is None:
+            # 資料日期 無法解析的列跳過——不產出 (ticker, None) 這種無效聚合鍵
+            # （week 是 major_holders 的 PK，不可為 None）。
+            continue
+        saw_valid_week = True
         key = (ticker, week)
         entry = agg.get(key)
         if entry is None:
@@ -172,6 +187,13 @@ def parse(csv_text: str, wanted: set[str]) -> list[dict]:
             people = _common.to_int(parts[i_people])
             if people is not None:
                 entry["holder_count"] = (entry["holder_count"] or 0) + people
+
+    if saw_wanted and not saw_valid_week:
+        # 有想要的列、卻沒有任何一列日期可解析 → 資料日期欄結構漂移，raise 讓人工
+        # 確認，而非回空（比照 bad-header / empty-input 的「不靜默空解析」原則）。
+        raise SourceFetchError(
+            SOURCE, f"{SOURCE} 資料來源日期欄位無法解析，請人工確認"
+        )
 
     return [
         {

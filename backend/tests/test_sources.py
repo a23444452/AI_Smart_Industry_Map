@@ -1422,6 +1422,42 @@ def test_tdcc_empty_input_raises():
         tdcc_holders.parse("", {"2330"})
 
 
+def test_tdcc_skips_row_with_unparseable_date():
+    # 資料日期 無法解析（非 8 位 YYYYMMDD）→ 該列 skip，不產出 (ticker, None) 鍵。
+    # 只要另有想要的列帶有效日期，整體不 raise。
+    csv_text = (
+        "資料日期,證券代號,持股分級,人數,股數,占集保庫存數比例%\n"
+        "BADDATE,2330,15,5,900,60.00\n"
+        "20260703,3081,15,3,100,50.00\n"
+    )
+    rows = tdcc_holders.parse(csv_text, {"2330", "3081"})
+    # 2330 的唯一列日期壞掉被跳過 → 不產出；3081 正常。
+    assert [r["ticker"] for r in rows] == ["3081"]
+    assert rows[0]["week"] == "2026-07-03"
+
+
+def test_tdcc_all_wanted_rows_unparseable_date_raises():
+    # 想要的列全部日期無法解析 → 結構漂移，raise 而非回空（與 bad header 同philosophy）。
+    csv_text = (
+        "資料日期,證券代號,持股分級,人數,股數,占集保庫存數比例%\n"
+        "BADDATE,2330,15,5,900,60.00\n"
+    )
+    with pytest.raises(SourceFetchError):
+        tdcc_holders.parse(csv_text, {"2330"})
+
+
+def test_tdcc_fetch_wraps_decode_error(monkeypatch):
+    # 非法位元組 → utf-8-sig decode 失敗須包成 SourceFetchError，不外拋 UnicodeDecodeError。
+    bad_bytes = b"\xff\xfe\x00\x01 not valid utf-8"
+    response = _FakeStreamResponse(chunks=[bad_bytes])
+    monkeypatch.setattr(
+        tdcc_holders.httpx, "Client", lambda **kw: _FakeStreamClient(response)
+    )
+    with pytest.raises(SourceFetchError) as excinfo:
+        tdcc_holders.fetch()
+    assert "集保" in str(excinfo.value)
+
+
 class _FakeStreamResponse:
     def __init__(self, *, status_code=200, chunks=()):
         self.status_code = status_code
