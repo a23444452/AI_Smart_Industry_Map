@@ -1,0 +1,35 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-ai-pc-devices
+title: 美股｜AI PC 裝置
+market_tab: us
+description: >-
+  端側 AI 運算把生成式模型下放到個人電腦與行動裝置，帶動 NPU、作業系統與應用軟體的換機循環。
+  成員橫跨處理器、平台軟體與品牌硬體，受惠 AI PC 滲透率提升與商用市場換機潮。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AAPL", name: Apple, market: US}
+  - {ticker: "ADBE", name: Adobe, market: US}
+  - {ticker: "AMD", name: Advanced Micro Devices, market: US}
+  - {ticker: "DELL", name: Dell Technologies, market: US}
+  - {ticker: "HPQ", name: HP, market: US}
+  - {ticker: "INTC", name: Intel, market: US}
+  - {ticker: "META", name: Meta, market: US}
+  - {ticker: "MSFT", name: Microsoft, market: US}
+  - {ticker: "QCOM", name: QUALCOMM, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: AI PC 裝置
+        desc: 涵蓋處理器、平台軟體與品牌裝置廠的美股成員，對應端側 AI 換機題材。
+        companies:
+          - {ticker: "AAPL", role: 龍頭, relevance: 高}
+          - {ticker: "ADBE", role: 利基, relevance: 高}
+          - {ticker: "AMD", role: 龍頭, relevance: 高}
+          - {ticker: "DELL", role: 龍頭, relevance: 高}
+          - {ticker: "HPQ", role: 利基, relevance: 高}
+          - {ticker: "INTC", role: 龍頭, relevance: 高}
+          - {ticker: "META", role: 龍頭, relevance: 高}
+          - {ticker: "MSFT", role: 龍頭, relevance: 高}
+          - {ticker: "QCOM", role: 龍頭, relevance: 高}

@@ -1,0 +1,29 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-social-media
+title: 美股｜社群媒體
+market_tab: us
+description: >-
+  社群媒體平台掌握龐大用戶流量與行為數據，是 AI 內容推薦與廣告變現的核心場域。
+  成員涵蓋社群巨頭與垂直社群平台，受惠短影音、AI 推薦引擎與廣告效率提升。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "BMBL", name: Bumble, market: US}
+  - {ticker: "META", name: Meta, market: US}
+  - {ticker: "MTCH", name: Match Group, market: US}
+  - {ticker: "PINS", name: Pinterest, market: US}
+  - {ticker: "RDDT", name: Reddit, market: US}
+  - {ticker: "SNAP", name: Snap, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 社群媒體
+        desc: 涵蓋社群巨頭與垂直社群平台的美股成員，對應社群流量與廣告變現。
+        companies:
+          - {ticker: "BMBL", role: 新興, relevance: 高}
+          - {ticker: "META", role: 龍頭, relevance: 高}
+          - {ticker: "MTCH", role: 新興, relevance: 高}
+          - {ticker: "PINS", role: 利基, relevance: 高}
+          - {ticker: "RDDT", role: 利基, relevance: 高}
+          - {ticker: "SNAP", role: 新興, relevance: 高}

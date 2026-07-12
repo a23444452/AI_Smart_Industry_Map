@@ -1,0 +1,27 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-advanced-packaging
+title: 美股｜先進封裝
+market_tab: us
+description: >-
+  先進封裝以 2.5D／3D 堆疊與異質整合突破製程微縮限制，是 AI 晶片效能延續的關鍵。
+  成員涵蓋封測代工、材料與檢測設備，受惠 CoWoS 級封裝與 HBM 整合放量。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AMKR", name: Amkor, market: US}
+  - {ticker: "COHU", name: Cohu, market: US}
+  - {ticker: "ENTG", name: Entegris, market: US}
+  - {ticker: "FORM", name: FormFactor, market: US}
+  - {ticker: "KLIC", name: "Kulicke & Soffa", market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 先進封裝（美股）
+        desc: 涵蓋封測代工、材料與檢測設備的美股成員，對應先進封裝與異質整合。
+        companies:
+          - {ticker: "AMKR", role: 利基, relevance: 高}
+          - {ticker: "COHU", role: 新興, relevance: 高}
+          - {ticker: "ENTG", role: 利基, relevance: 高}
+          - {ticker: "FORM", role: 新興, relevance: 高}
+          - {ticker: "KLIC", role: 新興, relevance: 高}

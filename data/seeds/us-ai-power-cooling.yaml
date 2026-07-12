@@ -1,0 +1,31 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-ai-power-cooling
+title: 美股｜AI 電力與散熱
+market_tab: us
+description: >-
+  AI 電力與散熱解決資料中心暴增的功耗與熱密度，是算力擴張的實體瓶頸。成員涵蓋電力設備、
+  燃料電池與液冷／機櫃供應商，受惠高功率機櫃普及與供電基礎設施投資。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "BE", name: Bloom Energy, market: US}
+  - {ticker: "CEG", name: Constellation Energy, market: US}
+  - {ticker: "ETN", name: Eaton, market: US}
+  - {ticker: "GEV", name: GE Vernova, market: US}
+  - {ticker: "NVT", name: nVent Electric, market: US}
+  - {ticker: "OKLO", name: Oklo, market: US}
+  - {ticker: "VRT", name: Vertiv Holdings Co, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: AI 電力與散熱
+        desc: 涵蓋電力設備、燃料電池與液冷／機櫃供應商的美股成員，對應 AI 電力與散熱。
+        companies:
+          - {ticker: "BE", role: 利基, relevance: 高}
+          - {ticker: "CEG", role: 利基, relevance: 高}
+          - {ticker: "ETN", role: 龍頭, relevance: 高}
+          - {ticker: "GEV", role: 龍頭, relevance: 高}
+          - {ticker: "NVT", role: 利基, relevance: 高}
+          - {ticker: "OKLO", role: 新興, relevance: 高}
+          - {ticker: "VRT", role: 龍頭, relevance: 高}

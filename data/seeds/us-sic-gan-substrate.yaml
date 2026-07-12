@@ -1,0 +1,25 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-sic-gan-substrate
+title: 美股｜SiC 基板材料
+market_tab: us
+description: >-
+  碳化矽（SiC）基板是第三代半導體的上游材料，供應功率元件所需的高品質晶圓。成員涵蓋基板長晶與元件整合廠，
+  受惠電動車、工業與資料中心供電對寬能隙元件的需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "COHR", name: Coherent, market: US}
+  - {ticker: "ON", name: onsemi, market: US}
+  - {ticker: "STM", name: STMicro, market: US}
+  - {ticker: "WOLF", name: Wolfspeed, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: SiC 基板材料
+        desc: 涵蓋 SiC 基板長晶與元件整合廠的美股成員，對應寬能隙材料上游。
+        companies:
+          - {ticker: "COHR", role: 利基, relevance: 高}
+          - {ticker: "ON", role: 利基, relevance: 高}
+          - {ticker: "STM", role: 利基, relevance: 高}
+          - {ticker: "WOLF", role: 新興, relevance: 高}

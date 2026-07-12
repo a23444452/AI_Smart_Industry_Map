@@ -1,0 +1,31 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-quantum-computing
+title: 美股｜量子運算
+market_tab: us
+description: >-
+  量子運算以疊加與糾纏突破古典運算極限，瞄準藥物、材料與最佳化等難題。成員橫跨科技巨頭的量子部門與純量子新創，
+  受惠糾錯里程碑與政府、企業的前瞻投資。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "GOOGL", name: Alphabet, market: US}
+  - {ticker: "IBM", name: International Business Machines, market: US}
+  - {ticker: "IONQ", name: IonQ, market: US}
+  - {ticker: "MSFT", name: Microsoft, market: US}
+  - {ticker: "QBTS", name: D-Wave Quantum, market: US}
+  - {ticker: "QUBT", name: Quantum Computing, market: US}
+  - {ticker: "RGTI", name: Rigetti Computing, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 量子運算
+        desc: 涵蓋科技巨頭量子部門與純量子新創的美股成員，對應量子運算前瞻投資。
+        companies:
+          - {ticker: "GOOGL", role: 龍頭, relevance: 高}
+          - {ticker: "IBM", role: 龍頭, relevance: 高}
+          - {ticker: "IONQ", role: 利基, relevance: 高}
+          - {ticker: "MSFT", role: 龍頭, relevance: 高}
+          - {ticker: "QBTS", role: 新興, relevance: 高}
+          - {ticker: "QUBT", role: 新興, relevance: 高}
+          - {ticker: "RGTI", role: 新興, relevance: 高}

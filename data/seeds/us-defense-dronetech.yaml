@@ -1,0 +1,47 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-defense-dronetech
+title: 美股｜國防科技
+market_tab: us
+description: >-
+  國防科技結合無人系統、軍用 AI 與精準武器，反映地緣緊張下的國防升級。成員橫跨傳統軍工巨頭、
+  無人機與國防軟體新銳，受惠無人化作戰與各國國防預算擴張。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AVAV", name: AeroVironment, market: US}
+  - {ticker: "GD", name: General Dynamics, market: US}
+  - {ticker: "GE", name: GE Aerospace, market: US}
+  - {ticker: "JOBY", name: Joby Aviation, market: US}
+  - {ticker: "KTOS", name: "Kratos Defense & Security Solutions", market: US}
+  - {ticker: "LHX", name: L3Harris Technologies, market: US}
+  - {ticker: "LMT", name: Lockheed Martin, market: US}
+  - {ticker: "NOC", name: Northrop Grumman, market: US}
+  - {ticker: "NVDA", name: NVIDIA, market: US}
+  - {ticker: "ONDS", name: Ondas, market: US}
+  - {ticker: "PLTR", name: Palantir Technologies, market: US}
+  - {ticker: "RCAT", name: Red Cat, market: US}
+  - {ticker: "RKLB", name: Rocket Lab, market: US}
+  - {ticker: "RTX", name: RTX, market: US}
+  - {ticker: "TXT", name: Textron, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 國防科技
+        desc: 涵蓋軍工巨頭、無人機與國防軟體的美股成員，對應國防科技升級。
+        companies:
+          - {ticker: "AVAV", role: 新興, relevance: 高}
+          - {ticker: "GD", role: 龍頭, relevance: 高}
+          - {ticker: "GE", role: 龍頭, relevance: 高}
+          - {ticker: "JOBY", role: 新興, relevance: 高}
+          - {ticker: "KTOS", role: 新興, relevance: 高}
+          - {ticker: "LHX", role: 利基, relevance: 高}
+          - {ticker: "LMT", role: 龍頭, relevance: 高}
+          - {ticker: "NOC", role: 利基, relevance: 高}
+          - {ticker: "NVDA", role: 龍頭, relevance: 高}
+          - {ticker: "ONDS", role: 新興, relevance: 高}
+          - {ticker: "PLTR", role: 龍頭, relevance: 高}
+          - {ticker: "RCAT", role: 新興, relevance: 高}
+          - {ticker: "RKLB", role: 利基, relevance: 高}
+          - {ticker: "RTX", role: 龍頭, relevance: 高}
+          - {ticker: "TXT", role: 利基, relevance: 高}

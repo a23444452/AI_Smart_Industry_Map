@@ -1,0 +1,43 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-fintech-payments
+title: 美股｜金融科技與支付
+market_tab: us
+description: >-
+  金融科技與支付整合信用卡網路、數位錢包與先買後付，重塑消費金流。成員橫跨卡組織、
+  支付處理商與新興數位銀行，受惠現金無紙化與跨境電商成長。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AFRM", name: Affirm, market: US}
+  - {ticker: "AXP", name: American Express Company, market: US}
+  - {ticker: "COIN", name: Coinbase Global, market: US}
+  - {ticker: "CRCL", name: Circle Internet Group, market: US}
+  - {ticker: "FIS", name: Fidelity National Information Services, market: US}
+  - {ticker: "FISV", name: Fiserv, market: US}
+  - {ticker: "GPN", name: Global Payments, market: US}
+  - {ticker: "MA", name: Mastercard, market: US}
+  - {ticker: "NU", name: Nu Holdings, market: US}
+  - {ticker: "PYPL", name: PayPal, market: US}
+  - {ticker: "SOFI", name: SoFi Technologies, market: US}
+  - {ticker: "V", name: Visa, market: US}
+  - {ticker: "XYZ", name: Block, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 金融科技與支付
+        desc: 涵蓋卡組織、支付處理與數位銀行的美股成員，對應數位金流成長。
+        companies:
+          - {ticker: "AFRM", role: 利基, relevance: 高}
+          - {ticker: "AXP", role: 龍頭, relevance: 高}
+          - {ticker: "COIN", role: 利基, relevance: 高}
+          - {ticker: "CRCL", role: 利基, relevance: 高}
+          - {ticker: "FIS", role: 利基, relevance: 高}
+          - {ticker: "FISV", role: 利基, relevance: 高}
+          - {ticker: "GPN", role: 利基, relevance: 高}
+          - {ticker: "MA", role: 龍頭, relevance: 高}
+          - {ticker: "NU", role: 利基, relevance: 高}
+          - {ticker: "PYPL", role: 利基, relevance: 高}
+          - {ticker: "SOFI", role: 利基, relevance: 高}
+          - {ticker: "V", role: 龍頭, relevance: 高}
+          - {ticker: "XYZ", role: 利基, relevance: 高}

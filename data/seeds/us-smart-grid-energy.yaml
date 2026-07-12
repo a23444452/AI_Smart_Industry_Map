@@ -1,0 +1,37 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-smart-grid-energy
+title: 美股｜智慧電網
+market_tab: us
+description: >-
+  智慧電網結合電力設備、輸配電工程與智慧電表，因應電氣化與資料中心用電激增。成員橫跨重電設備、
+  電網建設與儲能，受惠電網現代化投資與再生能源併網需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AMSC", name: American Superconductor, market: US}
+  - {ticker: "EMR", name: Emerson, market: US}
+  - {ticker: "ETN", name: Eaton, market: US}
+  - {ticker: "FLNC", name: Fluence Energy, market: US}
+  - {ticker: "GEV", name: GE Vernova, market: US}
+  - {ticker: "HUBB", name: Hubbell, market: US}
+  - {ticker: "ITRI", name: Itron, market: US}
+  - {ticker: "MTZ", name: MasTec, market: US}
+  - {ticker: "MYRG", name: MYR Group, market: US}
+  - {ticker: "PWR", name: Quanta Services, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 美股智慧電網
+        desc: 涵蓋重電設備、電網建設與儲能的美股成員，對應電網現代化投資。
+        companies:
+          - {ticker: "AMSC", role: 新興, relevance: 高}
+          - {ticker: "EMR", role: 利基, relevance: 高}
+          - {ticker: "ETN", role: 龍頭, relevance: 高}
+          - {ticker: "FLNC", role: 新興, relevance: 高}
+          - {ticker: "GEV", role: 龍頭, relevance: 高}
+          - {ticker: "HUBB", role: 利基, relevance: 高}
+          - {ticker: "ITRI", role: 新興, relevance: 高}
+          - {ticker: "MTZ", role: 利基, relevance: 高}
+          - {ticker: "MYRG", role: 新興, relevance: 高}
+          - {ticker: "PWR", role: 利基, relevance: 高}

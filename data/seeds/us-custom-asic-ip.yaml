@@ -1,0 +1,24 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-custom-asic-ip
+title: 美股｜客製 ASIC 與矽智財
+market_tab: us
+description: >-
+  客製 ASIC 與矽智財協助雲端業者打造專屬 AI 加速晶片，降低對通用 GPU 的依賴。
+  成員涵蓋 ASIC 設計服務與 CPU／IP 授權龍頭，受惠自研晶片（in-house silicon）
+  浪潮與 IP 授權金成長。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "ARM", name: Arm Holdings, market: US}
+  - {ticker: "AVGO", name: Broadcom, market: US}
+  - {ticker: "MRVL", name: Marvell Technology, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 客製 ASIC 與矽智財
+        desc: 涵蓋 ASIC 設計服務與 CPU／IP 授權的美股成員，對應客製 AI 晶片需求。
+        companies:
+          - {ticker: "ARM", role: 龍頭, relevance: 高}
+          - {ticker: "AVGO", role: 龍頭, relevance: 高}
+          - {ticker: "MRVL", role: 龍頭, relevance: 高}

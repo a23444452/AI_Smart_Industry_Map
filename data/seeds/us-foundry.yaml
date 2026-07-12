@@ -1,0 +1,27 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-foundry
+title: 美股｜晶圓代工廠
+market_tab: us
+description: >-
+  晶圓代工廠提供成熟與特殊製程產能，是無晶圓廠設計公司的製造夥伴。成員涵蓋美系代工、
+  特殊製程與寬能隙晶圓廠，受惠晶片在地化製造與汽車、工業特用製程需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "GFS", name: GlobalFoundries, market: US}
+  - {ticker: "INTC", name: Intel, market: US}
+  - {ticker: "SKYT", name: SkyWater, market: US}
+  - {ticker: "TSEM", name: Tower, market: US}
+  - {ticker: "WOLF", name: Wolfspeed, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 晶圓代工廠
+        desc: 涵蓋美系代工、特殊製程與寬能隙晶圓廠的美股成員，對應晶片在地化製造。
+        companies:
+          - {ticker: "GFS", role: 利基, relevance: 高}
+          - {ticker: "INTC", role: 龍頭, relevance: 高}
+          - {ticker: "SKYT", role: 新興, relevance: 高}
+          - {ticker: "TSEM", role: 利基, relevance: 高}
+          - {ticker: "WOLF", role: 新興, relevance: 高}

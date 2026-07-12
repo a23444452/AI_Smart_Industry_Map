@@ -1,0 +1,49 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-nuclear-smr
+title: 美股｜核能復興與 SMR
+market_tab: us
+description: >-
+  AI 資料中心龐大的用電需求重新點燃核能投資，小型模組化反應爐（SMR）成為潔淨基載電力的焦點。
+  成員涵蓋核電營運商、SMR 開發商與鈾礦上游，受惠長約供電與能源政策轉向。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AEE", name: Ameren, market: US}
+  - {ticker: "BWXT", name: BWX Technologies, market: US}
+  - {ticker: "CCJ", name: Cameco, market: US}
+  - {ticker: "CEG", name: Constellation Energy, market: US}
+  - {ticker: "DNN", name: Denison Mines, market: US}
+  - {ticker: "DUK", name: Duke Energy, market: US}
+  - {ticker: "ETR", name: Entergy, market: US}
+  - {ticker: "GEV", name: GE Vernova, market: US}
+  - {ticker: "LEU", name: Centrus Energy, market: US}
+  - {ticker: "NEE", name: NextEra, market: US}
+  - {ticker: "NXE", name: NexGen Energy, market: US}
+  - {ticker: "OKLO", name: Oklo, market: US}
+  - {ticker: "SMR", name: NuScale Power, market: US}
+  - {ticker: "UEC", name: Uranium Energy, market: US}
+  - {ticker: "UUUU", name: Energy Fuels, market: US}
+  - {ticker: "VST", name: Vistra, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 核能復興與 SMR
+        desc: 涵蓋核電營運、SMR 開發與鈾礦上游的美股成員，對應 AI 用電與核能復興。
+        companies:
+          - {ticker: "AEE", role: 利基, relevance: 高}
+          - {ticker: "BWXT", role: 利基, relevance: 高}
+          - {ticker: "CCJ", role: 利基, relevance: 高}
+          - {ticker: "CEG", role: 利基, relevance: 高}
+          - {ticker: "DNN", role: 新興, relevance: 高}
+          - {ticker: "DUK", role: 利基, relevance: 高}
+          - {ticker: "ETR", role: 利基, relevance: 高}
+          - {ticker: "GEV", role: 龍頭, relevance: 高}
+          - {ticker: "LEU", role: 新興, relevance: 高}
+          - {ticker: "NEE", role: 龍頭, relevance: 高}
+          - {ticker: "NXE", role: 新興, relevance: 高}
+          - {ticker: "OKLO", role: 新興, relevance: 高}
+          - {ticker: "SMR", role: 新興, relevance: 高}
+          - {ticker: "UEC", role: 新興, relevance: 高}
+          - {ticker: "UUUU", role: 新興, relevance: 高}
+          - {ticker: "VST", role: 利基, relevance: 高}

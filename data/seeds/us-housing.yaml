@@ -1,0 +1,53 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-housing
+title: 美股｜美國房市
+market_tab: us
+description: >-
+  美國房市涵蓋建商、建材、租賃 REIT 與房貸平台，反映利率循環與住宅供需。結構性供給短缺與人口組成支撐長線需求，
+  降息預期為成屋與新屋銷售提供彈性。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AMH", name: American Homes 4 Rent, market: US}
+  - {ticker: "BCC", name: Boise Cascade Company, market: US}
+  - {ticker: "BLDR", name: Builders FirstSource, market: US}
+  - {ticker: "DHI", name: D.R. Horton, market: US}
+  - {ticker: "HHH", name: Howard Hughes, market: US}
+  - {ticker: "INVH", name: Invitation Homes, market: US}
+  - {ticker: "KBH", name: KB Home, market: US}
+  - {ticker: "LEN", name: Lennar, market: US}
+  - {ticker: "MLM", name: Martin Marietta Materials, market: US}
+  - {ticker: "PHM", name: PulteGroup, market: US}
+  - {ticker: "RKT", name: Rocket Companies, market: US}
+  - {ticker: "ROAD", name: Construction Partners, market: US}
+  - {ticker: "SHW", name: The Sherwin-Williams Company, market: US}
+  - {ticker: "TMHC", name: Taylor Morrison Home, market: US}
+  - {ticker: "TOL", name: Toll Brothers, market: US}
+  - {ticker: "VMC", name: Vulcan Materials Company, market: US}
+  - {ticker: "WY", name: Weyerhaeuser Company, market: US}
+  - {ticker: "Z", name: Zillow Group, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 美國房市
+        desc: 涵蓋建商、建材、租賃 REIT 與房貸平台的美股成員，對應美國住宅循環。
+        companies:
+          - {ticker: "AMH", role: 利基, relevance: 高}
+          - {ticker: "BCC", role: 新興, relevance: 高}
+          - {ticker: "BLDR", role: 新興, relevance: 高}
+          - {ticker: "DHI", role: 利基, relevance: 高}
+          - {ticker: "HHH", role: 新興, relevance: 高}
+          - {ticker: "INVH", role: 利基, relevance: 高}
+          - {ticker: "KBH", role: 新興, relevance: 高}
+          - {ticker: "LEN", role: 利基, relevance: 高}
+          - {ticker: "MLM", role: 利基, relevance: 高}
+          - {ticker: "PHM", role: 利基, relevance: 高}
+          - {ticker: "RKT", role: 利基, relevance: 高}
+          - {ticker: "ROAD", role: 新興, relevance: 高}
+          - {ticker: "SHW", role: 利基, relevance: 高}
+          - {ticker: "TMHC", role: 新興, relevance: 高}
+          - {ticker: "TOL", role: 利基, relevance: 高}
+          - {ticker: "VMC", role: 利基, relevance: 高}
+          - {ticker: "WY", role: 利基, relevance: 高}
+          - {ticker: "Z", role: 新興, relevance: 高}

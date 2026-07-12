@@ -1,0 +1,29 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-wafer-fab-equipment
+title: 美股｜晶圓廠設備龍頭
+market_tab: us
+description: >-
+  晶圓廠設備是半導體製造的資本支出核心，涵蓋沉積、蝕刻、量測與檢測等關鍵機台。先進製程與先進封裝擴產、
+  加上地緣驅動的在地建廠，支撐設備的長期需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AMAT", name: Applied Materials, market: US}
+  - {ticker: "CAMT", name: Camtek, market: US}
+  - {ticker: "GLW", name: Corning, market: US}
+  - {ticker: "KLAC", name: KLA, market: US}
+  - {ticker: "LRCX", name: Lam Research, market: US}
+  - {ticker: "ONTO", name: Onto Innovation, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 晶圓廠設備龍頭
+        desc: 涵蓋沉積、蝕刻、量測與檢測設備的美股成員，對應晶圓廠資本支出。
+        companies:
+          - {ticker: "AMAT", role: 龍頭, relevance: 高}
+          - {ticker: "CAMT", role: 新興, relevance: 高}
+          - {ticker: "GLW", role: 龍頭, relevance: 高}
+          - {ticker: "KLAC", role: 龍頭, relevance: 高}
+          - {ticker: "LRCX", role: 龍頭, relevance: 高}
+          - {ticker: "ONTO", role: 利基, relevance: 高}

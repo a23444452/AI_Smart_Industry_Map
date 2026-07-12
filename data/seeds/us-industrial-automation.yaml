@@ -1,0 +1,29 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-industrial-automation
+title: 美股｜工廠自動化
+market_tab: us
+description: >-
+  工廠自動化整合機器視覺、控制系統與倉儲機器人，推動製造業降本增效。成員橫跨機器視覺、
+  工業控制與自動化倉儲，受惠製造回流（reshoring）與勞動力短缺帶動的自動化投資。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "CGNX", name: Cognex, market: US}
+  - {ticker: "EMR", name: Emerson, market: US}
+  - {ticker: "ROK", name: Rockwell, market: US}
+  - {ticker: "SYM", name: Symbotic, market: US}
+  - {ticker: "TER", name: Teradyne, market: US}
+  - {ticker: "ZBRA", name: Zebra, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 工廠自動化
+        desc: 涵蓋機器視覺、工業控制與自動化倉儲的美股成員，對應工廠自動化投資。
+        companies:
+          - {ticker: "CGNX", role: 利基, relevance: 高}
+          - {ticker: "EMR", role: 利基, relevance: 高}
+          - {ticker: "ROK", role: 利基, relevance: 高}
+          - {ticker: "SYM", role: 新興, relevance: 高}
+          - {ticker: "TER", role: 利基, relevance: 高}
+          - {ticker: "ZBRA", role: 利基, relevance: 高}

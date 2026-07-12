@@ -1,0 +1,37 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-aerospace-manufacturing
+title: 美股｜航太製造
+market_tab: us
+description: >-
+  航太製造涵蓋引擎、機體結構與售後維修（MRO），受惠民航機交付回升與機隊擴張。飛航需求復甦與國防預算支撐訂單能見度，
+  售後零件與服務提供穩定高毛利。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AIR", name: AAR, market: US}
+  - {ticker: "GD", name: General Dynamics, market: US}
+  - {ticker: "GE", name: GE Aerospace, market: US}
+  - {ticker: "HEI", name: HEICO, market: US}
+  - {ticker: "HWM", name: Howmet Aerospace, market: US}
+  - {ticker: "LMT", name: Lockheed Martin, market: US}
+  - {ticker: "NOC", name: Northrop Grumman, market: US}
+  - {ticker: "RTX", name: RTX, market: US}
+  - {ticker: "SARO", name: StandardAero, market: US}
+  - {ticker: "TDG", name: TransDigm Group, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 航太製造
+        desc: 涵蓋引擎、機體與售後維修（MRO）廠商的美股成員，對應民航與國防需求。
+        companies:
+          - {ticker: "AIR", role: 新興, relevance: 高}
+          - {ticker: "GD", role: 龍頭, relevance: 高}
+          - {ticker: "GE", role: 龍頭, relevance: 高}
+          - {ticker: "HEI", role: 利基, relevance: 高}
+          - {ticker: "HWM", role: 龍頭, relevance: 高}
+          - {ticker: "LMT", role: 龍頭, relevance: 高}
+          - {ticker: "NOC", role: 利基, relevance: 高}
+          - {ticker: "RTX", role: 龍頭, relevance: 高}
+          - {ticker: "SARO", role: 新興, relevance: 高}
+          - {ticker: "TDG", role: 利基, relevance: 高}

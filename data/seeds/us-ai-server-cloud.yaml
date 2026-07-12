@@ -1,0 +1,39 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-ai-server-cloud
+title: 美股｜AI 伺服器與新興雲
+market_tab: us
+description: >-
+  AI 伺服器與新興雲端整合整機組裝、電子代工（EMS）與 GPU 租賃服務。成員涵蓋伺服器品牌、
+  EMS 大廠與新興 GPU 雲，受惠 AI 算力外包與資料中心快速部署需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "APLD", name: Applied Digital, market: US}
+  - {ticker: "CLS", name: Celestica, market: US}
+  - {ticker: "CRWV", name: CoreWeave, market: US}
+  - {ticker: "DELL", name: Dell Technologies, market: US}
+  - {ticker: "FLEX", name: Flex, market: US}
+  - {ticker: "HPE", name: Hewlett Packard Enterprise Company, market: US}
+  - {ticker: "IREN", name: IREN, market: US}
+  - {ticker: "JBL", name: Jabil, market: US}
+  - {ticker: "NBIS", name: Nebius Group, market: US}
+  - {ticker: "SANM", name: Sanmina, market: US}
+  - {ticker: "SMCI", name: Super Micro Computer, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: AI 伺服器與新興雲
+        desc: 涵蓋伺服器品牌、EMS 大廠與新興 GPU 雲的美股成員，對應 AI 算力部署。
+        companies:
+          - {ticker: "APLD", role: 新興, relevance: 高}
+          - {ticker: "CLS", role: 利基, relevance: 高}
+          - {ticker: "CRWV", role: 利基, relevance: 高}
+          - {ticker: "DELL", role: 龍頭, relevance: 高}
+          - {ticker: "FLEX", role: 利基, relevance: 高}
+          - {ticker: "HPE", role: 利基, relevance: 高}
+          - {ticker: "IREN", role: 利基, relevance: 高}
+          - {ticker: "JBL", role: 利基, relevance: 高}
+          - {ticker: "NBIS", role: 利基, relevance: 高}
+          - {ticker: "SANM", role: 利基, relevance: 高}
+          - {ticker: "SMCI", role: 利基, relevance: 高}

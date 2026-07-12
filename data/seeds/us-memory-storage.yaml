@@ -1,0 +1,27 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-memory-storage
+title: 美股｜HBM 與 NAND
+market_tab: us
+description: >-
+  記憶體與儲存涵蓋 DRAM／HBM 與 NAND 快閃，是 AI 算力的資料吞吐核心。
+  成員橫跨記憶體大廠、介面 IC 與硬碟儲存商，受惠 HBM 供不應求與 AI 帶動的高容量儲存需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "MU", name: Micron Technology, market: US}
+  - {ticker: "RMBS", name: Rambus, market: US}
+  - {ticker: "SNDK", name: Sandisk, market: US}
+  - {ticker: "STX", name: Seagate Technology, market: US}
+  - {ticker: "WDC", name: Western Digital, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: HBM 與 NAND
+        desc: 涵蓋記憶體大廠、介面 IC 與硬碟儲存商的美股成員，對應 HBM 與 NAND 需求。
+        companies:
+          - {ticker: "MU", role: 龍頭, relevance: 高}
+          - {ticker: "RMBS", role: 利基, relevance: 高}
+          - {ticker: "SNDK", role: 龍頭, relevance: 高}
+          - {ticker: "STX", role: 龍頭, relevance: 高}
+          - {ticker: "WDC", role: 龍頭, relevance: 高}

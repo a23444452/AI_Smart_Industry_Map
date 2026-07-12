@@ -1,0 +1,25 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-pcb-ems
+title: 美股｜PCB 與電子代工
+market_tab: us
+description: >-
+  PCB 與電子代工提供高多層板與整機組裝服務，是 AI 硬體的製造中台。成員涵蓋 EMS 大廠與高階 PCB 供應商，
+  受惠 AI 伺服器高層數 PCB 與客製化製造需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "FLEX", name: Flex, market: US}
+  - {ticker: "JBL", name: Jabil, market: US}
+  - {ticker: "SANM", name: Sanmina, market: US}
+  - {ticker: "TTMI", name: TTM, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: PCB 與電子代工
+        desc: 涵蓋 EMS 大廠與高階 PCB 供應商的美股成員，對應 AI 硬體製造需求。
+        companies:
+          - {ticker: "FLEX", role: 利基, relevance: 高}
+          - {ticker: "JBL", role: 利基, relevance: 高}
+          - {ticker: "SANM", role: 利基, relevance: 高}
+          - {ticker: "TTMI", role: 利基, relevance: 高}

@@ -1,0 +1,41 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-glp1-obesity
+title: 美股｜GLP-1 減肥藥
+market_tab: us
+description: >-
+  GLP-1 減重與代謝藥物開啟龐大市場，帶動藥廠、生技與上游耗材、給藥裝置的成長。
+  成員橫跨新藥龍頭、生命科學工具與遠距醫療平台，受惠適應症擴張與產能爬坡。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AMGN", name: Amgen, market: US}
+  - {ticker: "AVTR", name: Avantor, market: US}
+  - {ticker: "DHR", name: Danaher, market: US}
+  - {ticker: "DXCM", name: DexCom, market: US}
+  - {ticker: "HIMS", name: "Hims & Hers Health", market: US}
+  - {ticker: "LLY", name: Eli Lilly, market: US}
+  - {ticker: "NVO", name: Novo Nordisk, market: US}
+  - {ticker: "PODD", name: Insulet Corporation, market: US}
+  - {ticker: "TDOC", name: Teladoc Health, market: US}
+  - {ticker: "TMO", name: Thermo Fisher Scientific, market: US}
+  - {ticker: "VKTX", name: Viking Therapeutics, market: US}
+  - {ticker: "WST", name: West Pharmaceutical Services, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: GLP-1 減肥藥
+        desc: 涵蓋新藥、生命科學工具與遠距醫療的美股成員，對應 GLP-1 減重市場。
+        companies:
+          - {ticker: "AMGN", role: 龍頭, relevance: 高}
+          - {ticker: "AVTR", role: 新興, relevance: 高}
+          - {ticker: "DHR", role: 龍頭, relevance: 高}
+          - {ticker: "DXCM", role: 利基, relevance: 高}
+          - {ticker: "HIMS", role: 新興, relevance: 高}
+          - {ticker: "LLY", role: 龍頭, relevance: 高}
+          - {ticker: "NVO", role: 龍頭, relevance: 高}
+          - {ticker: "PODD", role: 利基, relevance: 高}
+          - {ticker: "TDOC", role: 新興, relevance: 高}
+          - {ticker: "TMO", role: 龍頭, relevance: 高}
+          - {ticker: "VKTX", role: 新興, relevance: 高}
+          - {ticker: "WST", role: 利基, relevance: 高}

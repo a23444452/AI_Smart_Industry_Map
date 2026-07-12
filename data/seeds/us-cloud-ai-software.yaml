@@ -1,0 +1,33 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-cloud-ai-software
+title: 美股｜雲端 AI 軟體
+market_tab: us
+description: >-
+  雲端 AI 軟體把大型模型能力嵌入企業級 SaaS 與資料平台，形成訂閱制的成長引擎。
+  成員涵蓋 CRM、資料倉儲與分析平台，受惠企業導入 AI copilot 與資料現代化的支出擴張。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "ADBE", name: Adobe, market: US}
+  - {ticker: "CRM", name: Salesforce, market: US}
+  - {ticker: "MDB", name: MongoDB, market: US}
+  - {ticker: "NOW", name: ServiceNow, market: US}
+  - {ticker: "PLTR", name: Palantir Technologies, market: US}
+  - {ticker: "SAP", name: SAP SE, market: US}
+  - {ticker: "SNOW", name: Snowflake, market: US}
+  - {ticker: "WDAY", name: Workday, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 雲端 AI 軟體
+        desc: 涵蓋企業級 SaaS、資料平台與 AI 應用軟體的美股成員，對應雲端 AI 導入。
+        companies:
+          - {ticker: "ADBE", role: 利基, relevance: 高}
+          - {ticker: "CRM", role: 龍頭, relevance: 高}
+          - {ticker: "MDB", role: 利基, relevance: 高}
+          - {ticker: "NOW", role: 龍頭, relevance: 高}
+          - {ticker: "PLTR", role: 龍頭, relevance: 高}
+          - {ticker: "SAP", role: 龍頭, relevance: 高}
+          - {ticker: "SNOW", role: 利基, relevance: 高}
+          - {ticker: "WDAY", role: 利基, relevance: 高}

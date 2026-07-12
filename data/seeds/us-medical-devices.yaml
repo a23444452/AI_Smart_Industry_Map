@@ -1,0 +1,33 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-medical-devices
+title: 美股｜醫療器材
+market_tab: us
+description: >-
+  醫療器材結合感測、影像與機器人手術等技術，是醫療照護的高階耗材與設備供應核心。人口老化與微創手術普及支撐穩定成長，
+  AI 影像判讀與連續監測進一步擴大應用場景。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "ABT", name: Abbott Laboratories, market: US}
+  - {ticker: "BSX", name: Boston Scientific, market: US}
+  - {ticker: "DXCM", name: DexCom, market: US}
+  - {ticker: "GEHC", name: GE HealthCare, market: US}
+  - {ticker: "ISRG", name: Intuitive Surgical, market: US}
+  - {ticker: "MDT", name: Medtronic, market: US}
+  - {ticker: "SYK", name: Stryker, market: US}
+  - {ticker: "ZBH", name: Zimmer Biomet, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 醫療器材
+        desc: 涵蓋高階醫材、影像與手術機器人廠商的美股成員，對應醫療設備與耗材需求。
+        companies:
+          - {ticker: "ABT", role: 龍頭, relevance: 高}
+          - {ticker: "BSX", role: 利基, relevance: 高}
+          - {ticker: "DXCM", role: 利基, relevance: 高}
+          - {ticker: "GEHC", role: 利基, relevance: 高}
+          - {ticker: "ISRG", role: 龍頭, relevance: 高}
+          - {ticker: "MDT", role: 龍頭, relevance: 高}
+          - {ticker: "SYK", role: 龍頭, relevance: 高}
+          - {ticker: "ZBH", role: 利基, relevance: 高}

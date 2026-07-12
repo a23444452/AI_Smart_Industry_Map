@@ -1,0 +1,27 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-sic-gan-power
+title: 美股｜SiC/GaN 功率半導體
+market_tab: us
+description: >-
+  碳化矽與氮化鎵功率元件以高效率、高頻特性取代傳統矽元件，用於快充、電動車與資料中心供電。
+  成員涵蓋寬能隙功率龍頭與 GaN 新創，受惠電源密度提升與能效法規。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "MTSI", name: MACOM, market: US}
+  - {ticker: "NVTS", name: Navitas, market: US}
+  - {ticker: "ON", name: onsemi, market: US}
+  - {ticker: "STM", name: STMicro, market: US}
+  - {ticker: "WOLF", name: Wolfspeed, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: SiC/GaN 功率半導體
+        desc: 涵蓋寬能隙功率元件龍頭與 GaN 新創的美股成員，對應高效率電源需求。
+        companies:
+          - {ticker: "MTSI", role: 利基, relevance: 高}
+          - {ticker: "NVTS", role: 新興, relevance: 高}
+          - {ticker: "ON", role: 利基, relevance: 高}
+          - {ticker: "STM", role: 利基, relevance: 高}
+          - {ticker: "WOLF", role: 新興, relevance: 高}

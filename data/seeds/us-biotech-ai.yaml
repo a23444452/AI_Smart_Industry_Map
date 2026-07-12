@@ -1,0 +1,49 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-biotech-ai
+title: 美股｜AI 生技製藥
+market_tab: us
+description: >-
+  AI 生技製藥運用機器學習加速藥物發現、基因編輯與精準診斷。成員橫跨基因治療、定序工具與 AI 藥物開發平台，
+  受惠計算生物學突破與新療法的臨床進展。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "BEAM", name: Beam Therapeutics, market: US}
+  - {ticker: "BNTX", name: BioNTech SE, market: US}
+  - {ticker: "CRSP", name: CRISPR Therapeutics AG, market: US}
+  - {ticker: "EDIT", name: Editas Medicine, market: US}
+  - {ticker: "FATE", name: Fate Therapeutics, market: US}
+  - {ticker: "GH", name: Guardant Health, market: US}
+  - {ticker: "ILMN", name: Illumina, market: US}
+  - {ticker: "IOVA", name: Iovance Biotherapeutics, market: US}
+  - {ticker: "NTLA", name: Intellia Therapeutics, market: US}
+  - {ticker: "PRME", name: Prime Medicine, market: US}
+  - {ticker: "RLAY", name: Relay Therapeutics, market: US}
+  - {ticker: "RXRX", name: Recursion Pharmaceuticals, market: US}
+  - {ticker: "SDGR", name: Schrödinger, market: US}
+  - {ticker: "TEM", name: Tempus AI, market: US}
+  - {ticker: "TXG", name: 10x Genomics, market: US}
+  - {ticker: "VCYT", name: Veracyte, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: AI 生技製藥
+        desc: 涵蓋基因治療、定序工具與 AI 藥物平台的美股成員，對應 AI 生技製藥。
+        companies:
+          - {ticker: "BEAM", role: 新興, relevance: 高}
+          - {ticker: "BNTX", role: 利基, relevance: 高}
+          - {ticker: "CRSP", role: 新興, relevance: 高}
+          - {ticker: "EDIT", role: 新興, relevance: 高}
+          - {ticker: "FATE", role: 新興, relevance: 高}
+          - {ticker: "GH", role: 利基, relevance: 高}
+          - {ticker: "ILMN", role: 利基, relevance: 高}
+          - {ticker: "IOVA", role: 新興, relevance: 高}
+          - {ticker: "NTLA", role: 新興, relevance: 高}
+          - {ticker: "PRME", role: 新興, relevance: 高}
+          - {ticker: "RLAY", role: 新興, relevance: 高}
+          - {ticker: "RXRX", role: 新興, relevance: 高}
+          - {ticker: "SDGR", role: 新興, relevance: 高}
+          - {ticker: "TEM", role: 利基, relevance: 高}
+          - {ticker: "TXG", role: 新興, relevance: 高}
+          - {ticker: "VCYT", role: 新興, relevance: 高}

@@ -1,0 +1,56 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-space-satellite
+title: 美股｜太空與衛星
+market_tab: us
+description: >-
+  太空與衛星涵蓋發射載具、低軌通訊星系與遙測服務，商業航太快速起飛。成員橫跨火箭發射、
+  衛星通訊與國防承包商，受惠直連衛星（D2C）、對地觀測與政府太空預算；含未上市的 SpaceX，
+  行情從缺。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "ASTS", name: AST SpaceMobile, market: US}
+  - {ticker: "BA", name: The Boeing Company, market: US}
+  - {ticker: "BKSY", name: BlackSky Technology, market: US}
+  - {ticker: "GSAT", name: Globalstar, market: US}
+  - {ticker: "HEI", name: HEICO, market: US}
+  - {ticker: "IRDM", name: Iridium Communications, market: US}
+  - {ticker: "KTOS", name: "Kratos Defense & Security Solutions", market: US}
+  - {ticker: "LHX", name: L3Harris Technologies, market: US}
+  - {ticker: "LMT", name: Lockheed Martin, market: US}
+  - {ticker: "LUNR", name: Intuitive Machines, market: US}
+  - {ticker: "NOC", name: Northrop Grumman, market: US}
+  - {ticker: "PL", name: Planet Labs PBC, market: US}
+  - {ticker: "RDW", name: Redwire, market: US}
+  - {ticker: "RKLB", name: Rocket Lab, market: US}
+  - {ticker: "RTX", name: RTX, market: US}
+  - {ticker: "SPCE", name: Virgin Galactic, market: US}
+  - {ticker: "SPCX", name: SpaceX, market: US}
+  - {ticker: "SPIR", name: Spire Global, market: US}
+  - {ticker: "VSAT", name: Viasat, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 太空與衛星
+        desc: 涵蓋火箭發射、衛星通訊與國防承包商的美股成員（含未上市 SpaceX），對應商業航太。
+        companies:
+          - {ticker: "ASTS", role: 利基, relevance: 高}
+          - {ticker: "BA", role: 龍頭, relevance: 高}
+          - {ticker: "BKSY", role: 新興, relevance: 高}
+          - {ticker: "GSAT", role: 利基, relevance: 高}
+          - {ticker: "HEI", role: 利基, relevance: 高}
+          - {ticker: "IRDM", role: 新興, relevance: 高}
+          - {ticker: "KTOS", role: 新興, relevance: 高}
+          - {ticker: "LHX", role: 利基, relevance: 高}
+          - {ticker: "LMT", role: 龍頭, relevance: 高}
+          - {ticker: "LUNR", role: 新興, relevance: 高}
+          - {ticker: "NOC", role: 利基, relevance: 高}
+          - {ticker: "PL", role: 新興, relevance: 高}
+          - {ticker: "RDW", role: 新興, relevance: 高}
+          - {ticker: "RKLB", role: 利基, relevance: 高}
+          - {ticker: "RTX", role: 龍頭, relevance: 高}
+          - {ticker: "SPCE", role: 新興, relevance: 高}
+          - {ticker: "SPCX", role: 龍頭, relevance: 高}
+          - {ticker: "SPIR", role: 新興, relevance: 高}
+          - {ticker: "VSAT", role: 利基, relevance: 高}

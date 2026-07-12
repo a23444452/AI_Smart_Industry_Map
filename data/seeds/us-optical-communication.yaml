@@ -1,0 +1,39 @@
+# 角色為市值啟發式初稿（美元：市值 ≥1000 億→龍頭；≥100 億→利基；<100 億→新興），relevance 暫全為高，待人工細分。
+slug: us-optical-communication
+title: 美股｜光通訊與互連
+market_tab: us
+description: >-
+  AI 資料中心內部與跨節點傳輸推升光模組、相干光通訊與高速互連 IC 的需求。此題材涵蓋光收發模組、
+  DSP／retimer 與電信級光網路設備供應商，受惠 800G／1.6T 世代升級與 scale-out 網路擴張。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "AAOI", name: Applied Optoelectronics, market: US}
+  - {ticker: "ALAB", name: Astera Labs, market: US}
+  - {ticker: "AVGO", name: Broadcom, market: US}
+  - {ticker: "CIEN", name: Ciena, market: US}
+  - {ticker: "COHR", name: Coherent, market: US}
+  - {ticker: "CRDO", name: Credo Technology Group Holding Ltd, market: US}
+  - {ticker: "LITE", name: Lumentum, market: US}
+  - {ticker: "MRVL", name: Marvell Technology, market: US}
+  - {ticker: "MXL", name: MaxLinear, market: US}
+  - {ticker: "NOK", name: Nokia Oyj, market: US}
+  - {ticker: "VIAV", name: Viavi Solutions, market: US}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 光通訊與互連
+        desc: 涵蓋光模組、光網路 DSP 與電信級光通訊設備的美股成員，受惠資料中心與電信光互連升級。
+        companies:
+          - {ticker: "AAOI", role: 新興, relevance: 高}
+          - {ticker: "ALAB", role: 利基, relevance: 高}
+          - {ticker: "AVGO", role: 龍頭, relevance: 高}
+          - {ticker: "CIEN", role: 利基, relevance: 高}
+          - {ticker: "COHR", role: 利基, relevance: 高}
+          - {ticker: "CRDO", role: 利基, relevance: 高}
+          - {ticker: "LITE", role: 利基, relevance: 高}
+          - {ticker: "MRVL", role: 龍頭, relevance: 高}
+          - {ticker: "MXL", role: 新興, relevance: 高}
+          - {ticker: "NOK", role: 利基, relevance: 高}
+          - {ticker: "VIAV", role: 利基, relevance: 高}
