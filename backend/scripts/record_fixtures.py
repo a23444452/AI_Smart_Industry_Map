@@ -417,6 +417,50 @@ def _record_yahoo() -> None:
     _write("yahoo_error.json", err_raw)
 
 
+# --- Yahoo Finance 美股日線 (v8 chart, range 多根 K 棒) -----------------------
+# Same v8 chart endpoint as the index snapshot but with range=5d/6mo → the
+# response carries the full timestamp[] + indicators.quote[0] OHLCV arrays (not
+# just meta.regularMarketPrice). Recorded 2026-07-13:
+#   * NVDA range=5d — the happy-path multi-bar fixture.
+#   * an unknown/delisted symbol — HTTP 404 with a non-null chart.error
+#     {"code":"Not Found",...} and result=null. NOTE: the seeded ``SPCX`` ticker
+#     is a *live* ETF that returns valid data, so a truly non-existent symbol
+#     (SPACEX — SpaceX is not publicly traded) is used to capture the 404 shape.
+YAHOO_QUOTES_URL = (
+    "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+    "?interval=1d&range={range}"
+)
+YAHOO_QUOTES_404_SYMBOL = "SPACEX"  # not publicly traded → 404 with chart.error
+
+
+def _record_yahoo_quotes() -> None:
+    """Store NVDA range=5d (happy path) + an unknown-symbol 404 fixture."""
+    from curl_cffi import requests as cffi_requests
+
+    nvda_url = YAHOO_QUOTES_URL.format(symbol="NVDA", range="5d")
+    print(f"GET {nvda_url}")
+    resp = cffi_requests.get(nvda_url, impersonate="chrome", timeout=30)
+    resp.raise_for_status()
+    raw = resp.json()
+    result = (raw.get("chart", {}).get("result") or [{}])[0]
+    ts = result.get("timestamp") or []
+    quote = ((result.get("indicators", {}).get("quote")) or [{}])[0]
+    print(
+        f"  bars={len(ts)} closes={len(quote.get('close') or [])} "
+        f"tz={result.get('meta', {}).get('exchangeTimezoneName')}"
+    )
+    _write("yahoo_quotes_nvda_5d.json", raw)
+
+    time.sleep(YAHOO_RATE_LIMIT_SECONDS)
+    err_url = YAHOO_QUOTES_URL.format(symbol=YAHOO_QUOTES_404_SYMBOL, range="5d")
+    print(f"GET {err_url}")
+    err_resp = cffi_requests.get(err_url, impersonate="chrome", timeout=30)
+    print(f"  status={err_resp.status_code}")
+    err_raw = err_resp.json()
+    print(f"  chart.error={err_raw.get('chart', {}).get('error')}")
+    _write("yahoo_quotes_404.json", err_raw)
+
+
 def _record_mops() -> None:
     for name, url in (("mops_listed", MOPS_LISTED_URL), ("mops_otc", MOPS_OTC_URL)):
         print(f"GET {url}")
@@ -583,6 +627,7 @@ def main() -> None:
     _record_bfi82u()
     _record_margin()
     _record_yahoo()
+    _record_yahoo_quotes()
     _record_mops()
     _record_revenue()
     _record_per()
