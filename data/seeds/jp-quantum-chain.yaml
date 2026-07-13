@@ -1,0 +1,28 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-quantum-chain
+title: 日股｜量子技術
+market_tab: jp
+description: >-
+  量子技術題材串起量子運算硬體、感測與通訊的研發主力，日本大型電子與電信集團在此投入前瞻資源。量子運算從實驗室邁向產業化，使相關硬體與元件供應商具備長線題材價值。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "6501.JP", name: 日立, market: JP}
+  - {ticker: "6701.JP", name: NEC, market: JP}
+  - {ticker: "6702.JP", name: 富士通, market: JP}
+  - {ticker: "6864.JP", name: NF控股, market: JP}
+  - {ticker: "6965.JP", name: Hamamatsu, market: JP}
+  - {ticker: "9432.JP", name: NTT, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 量子技術
+        desc: 量子技術 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "6501.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6701.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6702.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6864.JP", role: 新興, relevance: 高}
+          - {ticker: "6965.JP", role: 利基, relevance: 高}
+          - {ticker: "9432.JP", role: 龍頭, relevance: 高}

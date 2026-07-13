@@ -1,0 +1,20 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-analog-ic
+title: 日股｜類比 IC
+market_tab: jp
+description: >-
+  類比 IC 負責訊號放大、電源管理與感測介面，設計 know-how 與製程經驗構成高進入門檻，日本大廠在車用與工業領域根基深厚。車用電子與工業自動化滲透率提升，是類比 IC 需求的穩定支柱。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "6723.JP", name: 瑞薩電子, market: JP}
+  - {ticker: "6963.JP", name: 羅姆, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 類比 IC
+        desc: 類比 IC 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "6723.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6963.JP", role: 龍頭, relevance: 高}

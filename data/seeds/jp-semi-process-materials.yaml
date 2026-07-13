@@ -1,0 +1,28 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-semi-process-materials
+title: 日股｜製程化學品
+market_tab: jp
+description: >-
+  製程化學品涵蓋光阻、顯影液與高純度試劑，是決定良率與微縮能力的關鍵耗材，日本在高純度化學領域具全球主導地位。先進製程對材料純度要求日益嚴苛，強化了日商的技術護城河。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "4109.JP", name: Stella Chemifa, market: JP}
+  - {ticker: "4186.JP", name: 東京應化工業, market: JP}
+  - {ticker: "4901.JP", name: 富士軟片控股, market: JP}
+  - {ticker: "5384.JP", name: 富士見, market: JP}
+  - {ticker: "6254.JP", name: 野村微科學, market: JP}
+  - {ticker: "6370.JP", name: 栗田工業, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 製程化學品
+        desc: 製程化學品 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "4109.JP", role: 新興, relevance: 高}
+          - {ticker: "4186.JP", role: 龍頭, relevance: 高}
+          - {ticker: "4901.JP", role: 龍頭, relevance: 高}
+          - {ticker: "5384.JP", role: 利基, relevance: 高}
+          - {ticker: "6254.JP", role: 利基, relevance: 高}
+          - {ticker: "6370.JP", role: 利基, relevance: 高}

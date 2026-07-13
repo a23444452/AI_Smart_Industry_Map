@@ -1,0 +1,28 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-leo-satellite
+title: 日股｜LEO衛星
+market_tab: jp
+description: >-
+  低軌衛星（LEO）題材涵蓋衛星本體、零組件與地面通訊業者，日本在衛星材料與精密機構件具供應能力。全球衛星寬頻與通訊星座部署加速，帶動 LEO 供應鏈的訂單能見度。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "3853.JP", name: Asteria, market: JP}
+  - {ticker: "5741.JP", name: UACJ, market: JP}
+  - {ticker: "6507.JP", name: 神鋼電機, market: JP}
+  - {ticker: "6787.JP", name: 美光電子, market: JP}
+  - {ticker: "6853.JP", name: 共和電業, market: JP}
+  - {ticker: "9412.JP", name: 天空完美JSAT, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: LEO衛星
+        desc: LEO衛星 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "3853.JP", role: 新興, relevance: 高}
+          - {ticker: "5741.JP", role: 利基, relevance: 高}
+          - {ticker: "6507.JP", role: 利基, relevance: 高}
+          - {ticker: "6787.JP", role: 利基, relevance: 高}
+          - {ticker: "6853.JP", role: 新興, relevance: 高}
+          - {ticker: "9412.JP", role: 利基, relevance: 高}

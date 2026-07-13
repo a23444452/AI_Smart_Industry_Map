@@ -1,0 +1,26 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-quantum-software
+title: 日股｜量子AI最適化
+market_tab: jp
+description: >-
+  此題材聚焦量子啟發最佳化與量子 AI 軟體業者，透過演算法在物流、金融與製造排程等場景創造價值。在通用量子硬體成熟前，軟體與最佳化解決方案是率先落地的商業切入點。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "3687.JP", name: Fixstars, market: JP}
+  - {ticker: "3915.JP", name: TerraSky, market: JP}
+  - {ticker: "5582.JP", name: GRID, market: JP}
+  - {ticker: "6597.JP", name: HPC Systems, market: JP}
+  - {ticker: "6702.JP", name: 富士通, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 量子AI最適化
+        desc: 量子AI最適化 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "3687.JP", role: 新興, relevance: 高}
+          - {ticker: "3915.JP", role: 新興, relevance: 高}
+          - {ticker: "5582.JP", role: 新興, relevance: 高}
+          - {ticker: "6597.JP", role: 新興, relevance: 高}
+          - {ticker: "6702.JP", role: 龍頭, relevance: 高}

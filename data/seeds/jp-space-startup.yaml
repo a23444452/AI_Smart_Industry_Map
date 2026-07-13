@@ -1,0 +1,26 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-space-startup
+title: 日股｜宇宙新創
+market_tab: jp
+description: >-
+  此題材聚焦日本新一代太空新創，業務涵蓋衛星服務、軌道碎片清除與月球探勘等前沿領域。在政府太空政策與民間資本推動下，日本太空新創進入商業化加速期。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "186A.JP", name: Astroscale, market: JP}
+  - {ticker: "290A.JP", name: Synspective, market: JP}
+  - {ticker: "402A.JP", name: AxelSpace, market: JP}
+  - {ticker: "464A.JP", name: QPS研究所, market: JP}
+  - {ticker: "9348.JP", name: ispace, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 宇宙新創
+        desc: 宇宙新創 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "186A.JP", role: 利基, relevance: 高}
+          - {ticker: "290A.JP", role: 利基, relevance: 高}
+          - {ticker: "402A.JP", role: 新興, relevance: 高}
+          - {ticker: "464A.JP", role: 利基, relevance: 高}
+          - {ticker: "9348.JP", role: 新興, relevance: 高}

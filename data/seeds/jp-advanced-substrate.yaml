@@ -1,0 +1,36 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-advanced-substrate
+title: 日股｜高階載板
+market_tab: jp
+description: >-
+  高階載板承接晶片與電路板間的訊號互連，日本在 ABF 味之素膜、玻纖布與載板本體構成完整材料鏈。AI 加速器與高效能運算對大尺寸、高層數載板需求激增，帶動整鏈量價齊揚。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2802.JP", name: 味之素, market: JP}
+  - {ticker: "4004.JP", name: Resonac, market: JP}
+  - {ticker: "4062.JP", name: 揖斐電, market: JP}
+  - {ticker: "4182.JP", name: 三菱瓦斯化學, market: JP}
+  - {ticker: "4203.JP", name: 住友電木, market: JP}
+  - {ticker: "4626.JP", name: 太陽控股, market: JP}
+  - {ticker: "4975.JP", name: JCU, market: JP}
+  - {ticker: "6327.JP", name: 北川精機, market: JP}
+  - {ticker: "6656.JP", name: 英斯派克, market: JP}
+  - {ticker: "6787.JP", name: 美光電子, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 高階載板
+        desc: 高階載板 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "2802.JP", role: 龍頭, relevance: 高}
+          - {ticker: "4004.JP", role: 龍頭, relevance: 高}
+          - {ticker: "4062.JP", role: 龍頭, relevance: 高}
+          - {ticker: "4182.JP", role: 利基, relevance: 高}
+          - {ticker: "4203.JP", role: 利基, relevance: 高}
+          - {ticker: "4626.JP", role: 利基, relevance: 高}
+          - {ticker: "4975.JP", role: 利基, relevance: 高}
+          - {ticker: "6327.JP", role: 新興, relevance: 高}
+          - {ticker: "6656.JP", role: 新興, relevance: 高}
+          - {ticker: "6787.JP", role: 利基, relevance: 高}

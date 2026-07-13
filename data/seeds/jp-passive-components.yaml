@@ -1,0 +1,28 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-passive-components
+title: 日股｜被動元件
+market_tab: jp
+description: >-
+  被動元件涵蓋電容、電感與電阻，是每一片電路板不可或缺的基礎料件，日本大廠在高階 MLCC 與電感握有絕對主導地位。AI 伺服器與車用電子單機用量倍增，帶動高容高頻被動元件結構性成長。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "6762.JP", name: TDK電子, market: JP}
+  - {ticker: "6971.JP", name: 京瓷, market: JP}
+  - {ticker: "6976.JP", name: 太陽誘電, market: JP}
+  - {ticker: "6981.JP", name: 村田製作所, market: JP}
+  - {ticker: "6996.JP", name: 尼吉康, market: JP}
+  - {ticker: "6997.JP", name: 日本貴彌功, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 被動元件
+        desc: 被動元件 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "6762.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6971.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6976.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6981.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6996.JP", role: 利基, relevance: 高}
+          - {ticker: "6997.JP", role: 利基, relevance: 高}

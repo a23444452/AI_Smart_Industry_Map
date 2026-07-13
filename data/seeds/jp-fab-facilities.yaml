@@ -1,0 +1,36 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-fab-facilities
+title: 日股｜廠務工程
+market_tab: jp
+description: >-
+  晶圓廠的無塵室、超純水、氣體與電力配套工程是產能落地的隱形基礎，日本廠務工程商在此累積深厚 turnkey 經驗。全球晶圓廠新建與擴建潮，直接轉化為廠務工程的訂單能見度。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1942.JP", name: 関電工, market: JP}
+  - {ticker: "1944.JP", name: 近電工業, market: JP}
+  - {ticker: "1961.JP", name: 三機工業, market: JP}
+  - {ticker: "1969.JP", name: 高砂熱學工業, market: JP}
+  - {ticker: "1980.JP", name: 大段, market: JP}
+  - {ticker: "6254.JP", name: 野村微科學, market: JP}
+  - {ticker: "6361.JP", name: 荏原製作所, market: JP}
+  - {ticker: "6368.JP", name: 奧加諾, market: JP}
+  - {ticker: "6370.JP", name: 栗田工業, market: JP}
+  - {ticker: "6383.JP", name: 大福, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 廠務工程
+        desc: 廠務工程 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "1942.JP", role: 龍頭, relevance: 高}
+          - {ticker: "1944.JP", role: 龍頭, relevance: 高}
+          - {ticker: "1961.JP", role: 利基, relevance: 高}
+          - {ticker: "1969.JP", role: 利基, relevance: 高}
+          - {ticker: "1980.JP", role: 利基, relevance: 高}
+          - {ticker: "6254.JP", role: 利基, relevance: 高}
+          - {ticker: "6361.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6368.JP", role: 利基, relevance: 高}
+          - {ticker: "6370.JP", role: 利基, relevance: 高}
+          - {ticker: "6383.JP", role: 龍頭, relevance: 高}

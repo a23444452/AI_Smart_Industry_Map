@@ -1,0 +1,30 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-battery-dc-power
+title: 日股｜蓄電BESS
+market_tab: jp
+description: >-
+  此題材聚焦蓄電系統（BESS）與相關電池、電力電子業者，是穩定再生能源與資料中心供電的儲能後盾。電網調節與備援供電需求上升，推動大型儲能系統的市場擴張。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1436.JP", name: 綠能能源, market: JP}
+  - {ticker: "485A.JP", name: PowerX, market: JP}
+  - {ticker: "6501.JP", name: 日立, market: JP}
+  - {ticker: "6653.JP", name: 正興電機, market: JP}
+  - {ticker: "6674.JP", name: GS Yuasa, market: JP}
+  - {ticker: "6752.JP", name: 松下電器, market: JP}
+  - {ticker: "6996.JP", name: 尼吉康, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 蓄電BESS
+        desc: 蓄電BESS 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "1436.JP", role: 新興, relevance: 高}
+          - {ticker: "485A.JP", role: 利基, relevance: 高}
+          - {ticker: "6501.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6653.JP", role: 新興, relevance: 高}
+          - {ticker: "6674.JP", role: 利基, relevance: 高}
+          - {ticker: "6752.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6996.JP", role: 利基, relevance: 高}

@@ -1,0 +1,22 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-copper-foil
+title: 日股｜銅箔
+market_tab: jp
+description: >-
+  銅箔是電路板導電層與電池集電體的核心材料，日本業者在高階電解銅箔與載體銅箔技術上居領先梯隊。AI 伺服器高速板材與電動車電池同步放量，雙引擎拉動高規銅箔需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "5016.JP", name: JX金属, market: JP}
+  - {ticker: "5706.JP", name: 三井金属鉱業, market: JP}
+  - {ticker: "5801.JP", name: 古河電氣, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 銅箔
+        desc: 銅箔 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "5016.JP", role: 龍頭, relevance: 高}
+          - {ticker: "5706.JP", role: 龍頭, relevance: 高}
+          - {ticker: "5801.JP", role: 龍頭, relevance: 高}

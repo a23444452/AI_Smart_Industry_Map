@@ -1,0 +1,32 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-nextgen-solar-process
+title: 日股｜鈣鈦礦製程
+market_tab: jp
+description: >-
+  此題材聚焦鈣鈦礦太陽能的製程與設備業者，涵蓋成膜設備、封裝材料與模組整合環節，日本在薄膜製程技術上布局積極。輕量可撓與高轉換效率的次世代太陽能，帶動相關製程供應鏈的商業化想像。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "4118.JP", name: Kaneka, market: JP}
+  - {ticker: "4204.JP", name: 積水化學工業, market: JP}
+  - {ticker: "4237.JP", name: Fujipream, market: JP}
+  - {ticker: "6387.JP", name: Samco, market: JP}
+  - {ticker: "6728.JP", name: 愛發科, market: JP}
+  - {ticker: "6971.JP", name: 京瓷, market: JP}
+  - {ticker: "7752.JP", name: 理光, market: JP}
+  - {ticker: "7911.JP", name: TOPPAN, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 鈣鈦礦製程
+        desc: 鈣鈦礦製程 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "4118.JP", role: 利基, relevance: 高}
+          - {ticker: "4204.JP", role: 龍頭, relevance: 高}
+          - {ticker: "4237.JP", role: 新興, relevance: 高}
+          - {ticker: "6387.JP", role: 利基, relevance: 高}
+          - {ticker: "6728.JP", role: 利基, relevance: 高}
+          - {ticker: "6971.JP", role: 龍頭, relevance: 高}
+          - {ticker: "7752.JP", role: 利基, relevance: 高}
+          - {ticker: "7911.JP", role: 龍頭, relevance: 高}

@@ -1,0 +1,24 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-perovskite-materials
+title: 日股｜鈣鈦礦碘
+market_tab: jp
+description: >-
+  鈣鈦礦太陽能的關鍵在於碘化物與吸光層材料，日本在碘資源與特殊化學材料端具供應優勢。次世代薄膜光電技術若量產化，將為上游材料商開啟全新需求曲線。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1663.JP", name: K&O能源集團, market: JP}
+  - {ticker: "4107.JP", name: 伊勢化學工業, market: JP}
+  - {ticker: "4114.JP", name: 日本觸媒, market: JP}
+  - {ticker: "5018.JP", name: MORESCO, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 鈣鈦礦碘
+        desc: 鈣鈦礦碘 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "1663.JP", role: 新興, relevance: 高}
+          - {ticker: "4107.JP", role: 利基, relevance: 高}
+          - {ticker: "4114.JP", role: 利基, relevance: 高}
+          - {ticker: "5018.JP", role: 新興, relevance: 高}

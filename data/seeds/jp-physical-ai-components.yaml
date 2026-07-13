@@ -1,0 +1,30 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-physical-ai-components
+title: 日股｜精密機械
+market_tab: jp
+description: >-
+  精密機械題材涵蓋減速機、伺服馬達、線性導引與工業機器人核心元件，是實體 AI 與自動化的關節與肌肉，日本在此握有全球寡占地位。人形機器人與智慧製造浪潮，為高精度傳動與運動控制元件開啟長線需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "6268.JP", name: 那博特斯科, market: JP}
+  - {ticker: "6324.JP", name: 諧波傳動系統, market: JP}
+  - {ticker: "6480.JP", name: 日本湯姆遜, market: JP}
+  - {ticker: "6481.JP", name: THK Co., market: JP}
+  - {ticker: "6506.JP", name: 安川電機, market: JP}
+  - {ticker: "6594.JP", name: 尼得科, market: JP}
+  - {ticker: "6954.JP", name: 發那科, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 精密機械
+        desc: 精密機械 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "6268.JP", role: 利基, relevance: 高}
+          - {ticker: "6324.JP", role: 利基, relevance: 高}
+          - {ticker: "6480.JP", role: 利基, relevance: 高}
+          - {ticker: "6481.JP", role: 利基, relevance: 高}
+          - {ticker: "6506.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6594.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6954.JP", role: 龍頭, relevance: 高}

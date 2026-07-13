@@ -1,0 +1,24 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-quartz-device
+title: 日股｜石英元件
+market_tab: jp
+description: >-
+  石英元件提供電路時脈與頻率基準，是通訊、車用與工業設備的節拍器，日本在高精度石英振盪器領域長年領先。5G、車聯網與資料中心對時脈精度要求提高，強化高階石英元件需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "6666.JP", name: 利晶電技, market: JP}
+  - {ticker: "6724.JP", name: 精工愛普生, market: JP}
+  - {ticker: "6779.JP", name: 日本電波, market: JP}
+  - {ticker: "6962.JP", name: 大真空, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 石英元件
+        desc: 石英元件 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "6666.JP", role: 新興, relevance: 高}
+          - {ticker: "6724.JP", role: 利基, relevance: 高}
+          - {ticker: "6779.JP", role: 新興, relevance: 高}
+          - {ticker: "6962.JP", role: 新興, relevance: 高}

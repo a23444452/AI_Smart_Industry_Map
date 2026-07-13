@@ -1,0 +1,26 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-glass-substrate-materials
+title: 日股｜玻纖與玻璃基材
+market_tab: jp
+description: >-
+  玻纖布與玻璃基材是載板與電路板的補強骨架，日本業者在低介電、低膨脹的高階玻纖領域技術領先。高頻高速傳輸與 AI 伺服器板材升級，推升高規玻纖材料的滲透率。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "3110.JP", name: 日東紡, market: JP}
+  - {ticker: "3407.JP", name: 旭化成, market: JP}
+  - {ticker: "5201.JP", name: AGC, market: JP}
+  - {ticker: "5208.JP", name: 有沢製作所, market: JP}
+  - {ticker: "5214.JP", name: 日本電氣硝子, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 玻纖與玻璃基材
+        desc: 玻纖與玻璃基材 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "3110.JP", role: 利基, relevance: 高}
+          - {ticker: "3407.JP", role: 龍頭, relevance: 高}
+          - {ticker: "5201.JP", role: 龍頭, relevance: 高}
+          - {ticker: "5208.JP", role: 新興, relevance: 高}
+          - {ticker: "5214.JP", role: 利基, relevance: 高}

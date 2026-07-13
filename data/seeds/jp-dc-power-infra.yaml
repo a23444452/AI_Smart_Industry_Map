@@ -1,0 +1,36 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-dc-power-infra
+title: 日股｜DC 電力基建
+market_tab: jp
+description: >-
+  資料中心電力基建涵蓋變壓器、開關設備與不斷電系統，是 AI 算力落地的能源命脈，日本重電大廠在高壓電力設備供應鏈具全球分量。AI 資料中心用電量激增，使電力基建成為算力擴張的關鍵瓶頸與受惠環節。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1407.JP", name: 威斯特HD, market: JP}
+  - {ticker: "5074.JP", name: 特斯HD, market: JP}
+  - {ticker: "6501.JP", name: 日立, market: JP}
+  - {ticker: "6503.JP", name: 三菱電機, market: JP}
+  - {ticker: "6504.JP", name: 富士電機, market: JP}
+  - {ticker: "6508.JP", name: 明電舎, market: JP}
+  - {ticker: "6594.JP", name: 尼得科, market: JP}
+  - {ticker: "6617.JP", name: 東光高岳, market: JP}
+  - {ticker: "6622.JP", name: 大電, market: JP}
+  - {ticker: "6651.JP", name: 日東工業, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: DC 電力基建
+        desc: DC 電力基建 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "1407.JP", role: 新興, relevance: 高}
+          - {ticker: "5074.JP", role: 新興, relevance: 高}
+          - {ticker: "6501.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6503.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6504.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6508.JP", role: 利基, relevance: 高}
+          - {ticker: "6594.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6617.JP", role: 利基, relevance: 高}
+          - {ticker: "6622.JP", role: 利基, relevance: 高}
+          - {ticker: "6651.JP", role: 利基, relevance: 高}

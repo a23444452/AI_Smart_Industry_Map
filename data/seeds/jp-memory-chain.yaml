@@ -1,0 +1,32 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-memory-chain
+title: 日股｜NAND供應鏈
+market_tab: jp
+description: >-
+  NAND 快閃記憶體供應鏈涵蓋記憶體本體與其上游材料、設備，日本在快閃顆粒與配套化學材料皆有代表性廠商。資料中心儲存與 AI 資料量爆發，是拉動 NAND 需求的長期結構動能。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "268A.JP", name: 理學電機, market: JP}
+  - {ticker: "285A.JP", name: 鎧俠, market: JP}
+  - {ticker: "4004.JP", name: Resonac, market: JP}
+  - {ticker: "4061.JP", name: 電化, market: JP}
+  - {ticker: "4182.JP", name: 三菱瓦斯化學, market: JP}
+  - {ticker: "6315.JP", name: 東和, market: JP}
+  - {ticker: "6525.JP", name: 國際電氣, market: JP}
+  - {ticker: "6871.JP", name: Micronics Japan, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: NAND供應鏈
+        desc: NAND供應鏈 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "268A.JP", role: 利基, relevance: 高}
+          - {ticker: "285A.JP", role: 龍頭, relevance: 高}
+          - {ticker: "4004.JP", role: 龍頭, relevance: 高}
+          - {ticker: "4061.JP", role: 利基, relevance: 高}
+          - {ticker: "4182.JP", role: 利基, relevance: 高}
+          - {ticker: "6315.JP", role: 利基, relevance: 高}
+          - {ticker: "6525.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6871.JP", role: 利基, relevance: 高}

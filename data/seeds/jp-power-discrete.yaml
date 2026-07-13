@@ -1,0 +1,22 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-power-discrete
+title: 日股｜功率離散元件
+market_tab: jp
+description: >-
+  功率離散元件涵蓋 MOSFET、IGBT 與二極體，是電源電路的基本開關單元，日本業者在車規與寬能隙產品線布局完整。電動車與工業變頻需求成長，帶動功率元件量價同步向上。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "6723.JP", name: 瑞薩電子, market: JP}
+  - {ticker: "6844.JP", name: 新電元工業, market: JP}
+  - {ticker: "6963.JP", name: 羅姆, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 功率離散元件
+        desc: 功率離散元件 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "6723.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6844.JP", role: 新興, relevance: 高}
+          - {ticker: "6963.JP", role: 龍頭, relevance: 高}

@@ -1,0 +1,22 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-fa-sensing-platform
+title: 日股｜FA感測平台
+market_tab: jp
+description: >-
+  工廠自動化（FA）感測平台涵蓋高精度感測器、氣動元件與微型馬達，是智慧製造的感知與執行末梢，日本在感測領域具全球領導地位。製造業智慧化與機器人普及，持續放大高階感測與精密元件的用量。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "6273.JP", name: SMC, market: JP}
+  - {ticker: "6479.JP", name: 美蓓亞三美, market: JP}
+  - {ticker: "6861.JP", name: 基恩斯, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: FA感測平台
+        desc: FA感測平台 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "6273.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6479.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6861.JP", role: 龍頭, relevance: 高}

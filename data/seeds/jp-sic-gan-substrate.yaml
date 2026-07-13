@@ -1,0 +1,22 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-sic-gan-substrate
+title: 日股｜SiC/GaN 基板材料
+market_tab: jp
+description: >-
+  碳化矽與氮化鎵是第三代半導體的基材，耐高壓高溫特性使其成為電動車與快充的功率首選，日本在基板與元件端布局深厚。能源轉換效率升級的長期趨勢，支撐寬能隙基板材料的滲透動能。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "4004.JP", name: Resonac, market: JP}
+  - {ticker: "5802.JP", name: 住友電氣, market: JP}
+  - {ticker: "6963.JP", name: 羅姆, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: SiC/GaN 基板材料
+        desc: SiC/GaN 基板材料 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "4004.JP", role: 龍頭, relevance: 高}
+          - {ticker: "5802.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6963.JP", role: 龍頭, relevance: 高}

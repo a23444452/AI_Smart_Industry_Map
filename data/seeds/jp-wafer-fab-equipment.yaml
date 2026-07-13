@@ -1,0 +1,30 @@
+# 角色為市值啟發式初稿（日圓：市值 ≥10000 億→龍頭；≥1000 億→利基；<1000 億→新興），relevance 暫全為高，待人工細分。
+slug: jp-wafer-fab-equipment
+title: 日股｜前段設備
+market_tab: jp
+description: >-
+  前段設備對應晶圓成形前的曝光、沉積與蝕刻步驟，日本廠商在微影光學與塗佈顯影設備握有難以取代的技術壁壘。隨先進製程節點推進與成熟製程擴產，前段設備投資動能同步升溫。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "6525.JP", name: 國際電氣, market: JP}
+  - {ticker: "6728.JP", name: 愛發科, market: JP}
+  - {ticker: "6920.JP", name: 雷瑟泰克, market: JP}
+  - {ticker: "7731.JP", name: 尼康, market: JP}
+  - {ticker: "7735.JP", name: 迪恩士, market: JP}
+  - {ticker: "7751.JP", name: 佳能, market: JP}
+  - {ticker: "8035.JP", name: 東京威力科創, market: JP}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 前段設備
+        desc: 前段設備 的日股成員總覽，角色依市值（億日圓）初步分級。
+        companies:
+          - {ticker: "6525.JP", role: 龍頭, relevance: 高}
+          - {ticker: "6728.JP", role: 利基, relevance: 高}
+          - {ticker: "6920.JP", role: 龍頭, relevance: 高}
+          - {ticker: "7731.JP", role: 利基, relevance: 高}
+          - {ticker: "7735.JP", role: 龍頭, relevance: 高}
+          - {ticker: "7751.JP", role: 龍頭, relevance: 高}
+          - {ticker: "8035.JP", role: 龍頭, relevance: 高}
