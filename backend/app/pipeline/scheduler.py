@@ -19,6 +19,7 @@ from app.pipeline.jobs_daily import (
     fetch_market_stats,
     fetch_mops,
     fetch_per,
+    fetch_us_quotes,
 )
 from app.pipeline.jobs_monthly import fetch_fundamentals, fetch_tdcc
 from app.pipeline.runner import run_job
@@ -77,6 +78,22 @@ def build_scheduler(engine: Engine) -> BackgroundScheduler:
         ),
         args=(engine, "fetch_indices", fetch_indices),
         id="fetch_indices",
+        misfire_grace_time=3600,
+        coalesce=True,
+    )
+
+    # ``fetch_us_quotes``：美股日線 OHLCV。美股週一至五收盤為美東 16:00
+    # (America/New_York)，換算台北為隔日凌晨（夏令 +12h → 04:00、冬令 +13h →
+    # 05:00）。取台北時間「週二至週六 06:30」單發：一律落在美股當日收盤之後、
+    # 且 Yahoo 日線資料已穩定，避免抓到未定案的盤中值。週一無美股前一交易日
+    # （週日休市）故不排；週六對應美東週五收盤，需涵蓋。misfire/coalesce 同上。
+    scheduler.add_job(
+        run_job,
+        trigger=CronTrigger(
+            day_of_week="tue-sat", hour=6, minute=30, timezone="Asia/Taipei"
+        ),
+        args=(engine, "fetch_us_quotes", fetch_us_quotes),
+        id="fetch_us_quotes",
         misfire_grace_time=3600,
         coalesce=True,
     )

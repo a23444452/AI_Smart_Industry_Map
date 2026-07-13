@@ -35,6 +35,7 @@ from app.pipeline.sources import (
     twse_revenue,
     twse_t86,
     yahoo_indices,
+    yahoo_quotes,
 )
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -563,6 +564,140 @@ def test_fetch_indices_skips_null_price(monkeypatch, eng):
         # 全部 7 檔皆 price None → 等同全失敗 → raise。
         with pytest.raises(RuntimeError):
             jobs_daily.fetch_indices(s)
+
+
+# --------------------------------------------------------------------------- #
+# fetch_us_quotes — 美股日線 OHLCV (Yahoo v8 chart) into quotes_daily
+# --------------------------------------------------------------------------- #
+
+
+def _seed_us_companies(session: Session, tickers: list[str]) -> None:
+    for t in tickers:
+        session.add(models.Company(ticker=t, name=f"US {t}", market="US"))
+    session.flush()
+
+
+def test_fetch_us_quotes_upserts_us_companies(monkeypatch, eng):
+    nvda = _load("yahoo_quotes_nvda_5d.json")
+    # 每檔都回同一份 raw；parse 以 symbol 決定 ticker，故每檔各寫 5 列。
+    monkeypatch.setattr(yahoo_quotes, "fetch", lambda symbol, range="5d": nvda)
+
+    with Session(eng) as s:
+        _seed_us_companies(s, ["NVDA", "AAPL"])
+        written = jobs_daily.fetch_us_quotes(s)
+        s.commit()
+
+    with Session(eng) as s:
+        assert s.query(models.QuoteDaily).filter_by(ticker="NVDA").count() == 5
+        assert s.query(models.QuoteDaily).filter_by(ticker="AAPL").count() == 5
+        assert written == 10
+        # 最新日（2026-07-10）close 與 change_pct 正確、非 null。
+        q = s.get(models.QuoteDaily, ("NVDA", "2026-07-10"))
+        assert q is not None
+        assert q.close == pytest.approx(210.96, abs=0.01)
+        assert q.change_pct == pytest.approx(4.03, abs=0.01)
+        # 序列首日 change_pct 為 None。
+        first = s.get(models.QuoteDaily, ("NVDA", "2026-07-06"))
+        assert first.change_pct is None
+
+
+def test_fetch_us_quotes_only_us_market(monkeypatch, eng):
+    nvda = _load("yahoo_quotes_nvda_5d.json")
+    monkeypatch.setattr(yahoo_quotes, "fetch", lambda symbol, range="5d": nvda)
+
+    with Session(eng) as s:
+        _seed_us_companies(s, ["NVDA"])
+        _seed_companies(s, ["2330"])  # TW 公司不得被 US job 觸及
+        jobs_daily.fetch_us_quotes(s)
+        s.commit()
+
+    with Session(eng) as s:
+        tickers = {q.ticker for q in s.query(models.QuoteDaily).all()}
+        assert tickers == {"NVDA"}  # 只有 US 市場的 ticker 入庫
+
+
+def test_fetch_us_quotes_is_idempotent(monkeypatch, eng):
+    nvda = _load("yahoo_quotes_nvda_5d.json")
+    monkeypatch.setattr(yahoo_quotes, "fetch", lambda symbol, range="5d": nvda)
+
+    with Session(eng) as s:
+        _seed_us_companies(s, ["NVDA"])
+        jobs_daily.fetch_us_quotes(s)
+        s.commit()
+    with Session(eng) as s:
+        jobs_daily.fetch_us_quotes(s)  # 同窗重跑 ticker+date PK 覆寫
+        s.commit()
+    with Session(eng) as s:
+        assert s.query(models.QuoteDaily).filter_by(ticker="NVDA").count() == 5
+
+
+def test_fetch_us_quotes_skips_single_failing_symbol(monkeypatch, eng):
+    nvda = _load("yahoo_quotes_nvda_5d.json")
+
+    def flaky(symbol: str, range: str = "5d") -> dict:
+        if symbol == "SPACEX":  # 單檔退市/未知代號 404
+            raise _common.SourceFetchError("Yahoo", "查無 SPACEX 資料")
+        return nvda
+
+    monkeypatch.setattr(yahoo_quotes, "fetch", flaky)
+
+    with Session(eng) as s:
+        # 1/4 失敗 = 0.25 < 0.5 門檻 → 不 raise，其餘三檔照常入庫。
+        _seed_us_companies(s, ["NVDA", "AAPL", "MSFT", "SPACEX"])
+        written = jobs_daily.fetch_us_quotes(s)  # 不因 SPACEX 中止
+        s.commit()
+
+    with Session(eng) as s:
+        assert s.query(models.QuoteDaily).filter_by(ticker="SPACEX").count() == 0
+        assert s.query(models.QuoteDaily).filter_by(ticker="NVDA").count() == 5
+        assert written == 15  # 3 檔 × 5 列
+
+
+def test_fetch_us_quotes_systemic_failure_raises(monkeypatch, eng):
+    nvda = _load("yahoo_quotes_nvda_5d.json")
+
+    def half_fail(symbol: str, range: str = "5d") -> dict:
+        if symbol in {"AAPL", "MSFT"}:  # 2/4 = 0.5 ≥ 門檻
+            raise _common.SourceFetchError("Yahoo", "端點封鎖")
+        return nvda
+
+    monkeypatch.setattr(yahoo_quotes, "fetch", half_fail)
+
+    with Session(eng) as s:
+        _seed_us_companies(s, ["NVDA", "GOOG", "AAPL", "MSFT"])
+        with pytest.raises(_common.SourceFetchError):
+            jobs_daily.fetch_us_quotes(s)  # 過半失敗 → 系統性封鎖，raise
+
+
+def test_fetch_us_quotes_no_us_companies_is_noop(monkeypatch, eng):
+    # 沒有 US 公司 → total 0，不觸發除零、不 raise、寫入 0 列。
+    monkeypatch.setattr(
+        yahoo_quotes, "fetch", lambda symbol, range="5d": _load("yahoo_quotes_nvda_5d.json")
+    )
+    with Session(eng) as s:
+        _seed_companies(s, ["2330"])  # 僅 TW
+        written = jobs_daily.fetch_us_quotes(s)
+        s.commit()
+    assert written == 0
+
+
+def test_fetch_us_quotes_backfill_passes_range(monkeypatch, eng):
+    # backfill 以 range="6mo" 呼叫同一 job；驗證 range 透傳至 fetch。
+    nvda = _load("yahoo_quotes_nvda_5d.json")
+    seen_ranges: list[str] = []
+
+    def capture(symbol: str, range: str = "5d") -> dict:
+        seen_ranges.append(range)
+        return nvda
+
+    monkeypatch.setattr(yahoo_quotes, "fetch", capture)
+
+    with Session(eng) as s:
+        _seed_us_companies(s, ["NVDA"])
+        jobs_daily.fetch_us_quotes(s, range="6mo")
+        s.commit()
+
+    assert seen_ranges == ["6mo"]
 
 
 # --------------------------------------------------------------------------- #

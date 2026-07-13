@@ -16,6 +16,7 @@ from app.pipeline.jobs_backfill import (
     backfill_per,
     backfill_quotes,
 )
+from app.pipeline.jobs_daily import fetch_us_quotes
 from app.pipeline.runner import run_job
 
 
@@ -48,18 +49,31 @@ def main() -> None:
             raise SystemExit(1)
     elif cmd == "backfill":
         # 依序回填歷史行情與法人資料；每個 job 各自透過 runner 記 PipelineRun。
-        # partial 包住 days 參數以符合 run_job 的 fn(session) 契約。任一 job
+        # partial 包住 range/days 參數以符合 run_job 的 fn(session) 契約。任一 job
         # failed → 印狀態後以 exit 1 收場（CI/Make 可據此判斷）。
+        #
+        # 可選 target（`python -m cli backfill <target>`）只跑單一項，便於補單一
+        # 資料源而不重跑全部（如美股 us_quotes 一次補 6 個月歷史）。省略則全跑。
         jobs = (
             # days 目標設高於 6 個月的交易日數（約 120），使 _collect_ticker_history
             # 不會提早 break，而是走滿 _MAX_MONTHS=6 個月上限——K 線圖需 ≥100 交易日。
-            ("backfill_quotes", partial(backfill_quotes, days=130)),
-            ("backfill_institutional", partial(backfill_institutional, days=14)),
-            ("backfill_market_stats", partial(backfill_market_stats, days=30)),
-            ("backfill_per", partial(backfill_per, months=3)),
+            ("quotes", "backfill_quotes", partial(backfill_quotes, days=130)),
+            ("institutional", "backfill_institutional", partial(backfill_institutional, days=14)),
+            ("market_stats", "backfill_market_stats", partial(backfill_market_stats, days=30)),
+            ("per", "backfill_per", partial(backfill_per, months=3)),
+            # 美股：同 fetch_us_quotes 邏輯但 range="6mo"（一次補約 6 個月日線）。
+            ("us_quotes", "fetch_us_quotes", partial(fetch_us_quotes, range="6mo")),
         )
+        target = sys.argv[2] if len(sys.argv) > 2 else None
+        if target is not None:
+            selected = tuple(j for j in jobs if j[0] == target)
+            if not selected:
+                valid = "/".join(t for t, _n, _f in jobs)
+                raise SystemExit(f"未知 backfill target：{target}（可用：{valid}）")
+            jobs = selected
+
         failed = False
-        for name, fn in jobs:
+        for _target, name, fn in jobs:
             run = run_job(eng, name, fn)
             print(f"{name}：status={run.status}", end="")
             print("" if run.status == "success" else f"，error={run.error}")

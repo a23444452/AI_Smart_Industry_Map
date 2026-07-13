@@ -118,6 +118,27 @@ def test_scheduler_registers_fetch_indices_cron(monkeypatch):
         assert str(trigger.timezone) == "Asia/Taipei"
 
 
+def test_scheduler_registers_fetch_us_quotes_cron(monkeypatch):
+    monkeypatch.setattr(settings, "scheduler_enabled", True)
+
+    app = create_app()
+    with TestClient(app):
+        scheduler = app.state.scheduler
+        job = scheduler.get_job("fetch_us_quotes")
+        assert job is not None
+        assert job.args[1] == "fetch_us_quotes"
+        assert job.misfire_grace_time == 3600
+        assert job.coalesce is True
+
+        trigger = job.trigger
+        assert isinstance(trigger, CronTrigger)
+        # 美股收盤（美東平日）→ 台北隔日凌晨；週二至週六 06:30 資料已穩定。
+        assert _field(trigger, "day_of_week") == "tue-sat"
+        assert _field(trigger, "hour") == "6"
+        assert _field(trigger, "minute") == "30"
+        assert str(trigger.timezone) == "Asia/Taipei"
+
+
 def test_scheduler_registers_three_market_stats_crons(monkeypatch):
     monkeypatch.setattr(settings, "scheduler_enabled", True)
 

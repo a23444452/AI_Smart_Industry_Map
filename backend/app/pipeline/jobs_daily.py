@@ -32,8 +32,13 @@ from app.pipeline.sources import (
     twse_margin,
     twse_per,
     yahoo_indices,
+    yahoo_quotes,
 )
 from app.pipeline.sources._common import SourceFetchError
+
+# 美股行情 job 判定「系統性封鎖」的失敗比例門檻：跑完全部 US ticker 後，失敗檔數
+# 佔比 ≥ 此值即視為 Yahoo 端點封鎖（而非零星個股退市），raise 讓 runner 記 failed。
+_US_QUOTES_FAIL_RATIO = 0.5
 
 # 「合計」列不入庫：它是各身份別的衍生總和，前端可自行加總，存了只會與明細重複。
 _TOTAL_UNIT = "合計"
@@ -101,6 +106,85 @@ def fetch_indices(session: Session) -> None:
             f"fetch_indices: 全部 {total} 檔指數皆抓取失敗，疑似 Yahoo 端點異常"
         )
     logger.info("fetch_indices: 更新 {} 檔指數快照（跳過 {} 檔）", written, failed)
+
+
+# --------------------------------------------------------------------------- #
+# fetch_us_quotes — 美股日線 OHLCV（Yahoo v8 chart）→ quotes_daily
+# --------------------------------------------------------------------------- #
+
+
+def fetch_us_quotes(session: Session, range: str = "5d") -> int:  # noqa: A002 - Yahoo 參數名
+    """Fetch每檔 US company 的日線 OHLCV into ``quotes_daily`` (ticker+date PK 覆寫).
+
+    Iterates every ``companies.market == 'US'`` ticker, calls
+    ``yahoo_quotes.fetch(symbol, range=range)`` + ``parse`` and upserts one row
+    per ``(ticker, date)`` — plain overwrite, exactly like
+    :func:`app.pipeline.jobs.fetch_tw_quotes`. Overwrite is safe (no None-clobber
+    concern like TW's history backfill) because ``yahoo_quotes.parse`` computes a
+    real in-series ``change_pct`` for both ranges, and every consumer reads only
+    a ticker's *latest* date — always the newest, non-None bar of the window.
+
+    ``range`` is "5d" for the daily scheduled fetch and "6mo" for the one-shot
+    backfill (same job body, wider window); the backfill CLI passes range="6mo".
+
+    Per-symbol fault tolerance — deliberately **unlike** ``fetch_tw_quotes``,
+    which lets a source error propagate: here a single symbol raising
+    ``SourceFetchError`` (e.g. a delisted ticker's 404) is logged and recorded in
+    a failed list so the loop continues over the remaining ~287 symbols; one bad
+    symbol must never abort the whole batch (TW fetches two whole-market feeds in
+    one call, so it has no per-symbol axis to be resilient on — US does). Only
+    after the full run, if ``failed / total >= _US_QUOTES_FAIL_RATIO`` (systemic
+    Yahoo block, not scattered delistings), is ``SourceFetchError`` raised so the
+    runner records the run as failed; otherwise the run ends normally with an
+    upserted/failed summary. Returns the number of rows upserted.
+
+    Contract: stages changes only; the runner commits/rolls back.
+    """
+    tickers = list(
+        session.scalars(
+            select(models.Company.ticker).where(models.Company.market == "US")
+        ).all()
+    )
+    total = len(tickers)
+    upserted = 0
+    failed: list[str] = []
+    for ticker in tickers:
+        try:
+            rows = yahoo_quotes.parse(yahoo_quotes.fetch(ticker, range=range), ticker)
+        except SourceFetchError as exc:
+            # 單檔失敗（多為退市/未知代號的 404）不中止批次——記入 failed 續跑下一檔。
+            failed.append(ticker)
+            logger.warning("fetch_us_quotes: 跳過 {} — {}", ticker, exc)
+            continue
+        for row in rows:
+            date = row["date"]
+            quote = session.get(models.QuoteDaily, (ticker, date))
+            if quote is None:
+                quote = models.QuoteDaily(ticker=ticker, date=date)
+                session.add(quote)
+            quote.open = row["open"]
+            quote.high = row["high"]
+            quote.low = row["low"]
+            quote.close = row["close"]
+            quote.volume = row["volume"]
+            quote.change_pct = row["change_pct"]
+            upserted += 1
+
+    if total and len(failed) / total >= _US_QUOTES_FAIL_RATIO:
+        # 過半失敗不是個別退市：多半是 Yahoo 端點封鎖/掛掉，屬系統性失敗，raise 讓
+        # runner 記 failed 並重試（個別檔失敗仍只是 warning，不影響其餘檔入庫）。
+        raise SourceFetchError(
+            "Yahoo",
+            f"美股行情 {len(failed)}/{total} 檔抓取失敗，疑似 Yahoo 端點封鎖，請稍後再試",
+        )
+    logger.info(
+        "fetch_us_quotes: upserted {} 列（{} 檔成功、{} 檔失敗，range={}）",
+        upserted,
+        total - len(failed),
+        len(failed),
+        range,
+    )
+    return upserted
 
 
 # --------------------------------------------------------------------------- #

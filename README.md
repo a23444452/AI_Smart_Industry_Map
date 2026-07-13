@@ -41,6 +41,7 @@
 | TWSE / TPEx | 台股收盤行情、三大法人買賣超、法人買賣金額（BFI82U）、信用交易餘額、個股月營收、本益比／殖利率（BWIBBU／peratio） | 官方 OpenAPI |
 | TDCC 集保結算所 | 個股股權分散表（>400 張大戶持股比） | 每週更新（週六抓取） |
 | Yahoo Finance | 每日焦點指數列（加權、費半、S&P 500、TSM、NVDA、日經、VIX） | 延遲報價，僅供參考，非即時行情 |
+| Yahoo Finance | 美股行情：美股個股日線 OHLCV（chart API，curl_cffi） | 延遲報價，僅供參考；每日台北週二至週六 06:30 抓取（美股收盤後） |
 | MOPS 公開資訊觀測站 | 上市／上櫃重大訊息公告 | 每日抓取當日公告（含假日） |
 
 ## 快速開始
@@ -51,7 +52,7 @@
 cp .env.example .env       # 建立環境變數
 make seed                  # 匯入題材 seeds（矽光子）
 make fetch                 # 抓取台股收盤資料
-make backfill              # 回填歷史行情、三大法人與市場統計
+make backfill              # 回填歷史行情（台股＋美股）、三大法人與市場統計
 make dev                   # 同時啟動後端(:8000) 與前端(:5173)
 ```
 
@@ -64,7 +65,7 @@ make dev                   # 同時啟動後端(:8000) 與前端(:5173)
 | `make help` | 顯示可用指令清單 |
 | `make seed` | 匯入題材 seeds（`data/seeds/*.yaml` → SQLite） |
 | `make fetch` | 抓取台股收盤資料並寫入 DB |
-| `make backfill` | 回填歷史行情（近 6 個月，每檔 ≥100 交易日）、三大法人買賣超（近 14 日）、市場統計（法人金額＋資券餘額，近 30 日）與本益比歷史（近 3 個月） |
+| `make backfill` | 回填台股歷史行情（近 6 個月，每檔 ≥100 交易日）、美股日線（近 6 個月，`us_quotes`）、三大法人買賣超（近 14 日）、市場統計（法人金額＋資券餘額，近 30 日）與本益比歷史（近 3 個月）。可加 target 只跑單項，如 `uv run python -m cli backfill us_quotes` |
 | `make dev` | 以 `make -j2` 同時啟動後端＋前端開發伺服器 |
 | `make dev-backend` | 只啟動後端（FastAPI，port 8000） |
 | `make dev-frontend` | 只啟動前端（Vite，port 5173） |
