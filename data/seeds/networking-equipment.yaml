@@ -1,0 +1,38 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: networking-equipment
+title: 網通｜高速交換器與無線網路
+market_tab: tw
+description: >-
+  高速交換器與無線網路涵蓋資料中心交換器、企業與家用網通設備及無線射頻元件。AI 資料中心對高速交換與互連頻寬的需求，帶動高階交換器與相關晶片放量，產品競爭在於埠速升級、功耗與交期。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2332", name: 友訊}
+  - {ticker: "2345", name: 智邦}
+  - {ticker: "2379", name: 瑞昱}
+  - {ticker: "3380", name: 明泰}
+  - {ticker: "3491", name: 昇達科}
+  - {ticker: "3596", name: 智易}
+  - {ticker: "4906", name: 正文}
+  - {ticker: "4968", name: 立積}
+  - {ticker: "5388", name: 中磊}
+  - {ticker: "6285", name: 啟碁}
+  - {ticker: "6526", name: 達發}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 高速交換器與無線網路
+        desc: 涵蓋資料中心交換器、網通設備與射頻元件的成員。
+        companies:
+          - {ticker: "2332", role: 新興, relevance: 高}
+          - {ticker: "2345", role: 龍頭, relevance: 高}
+          - {ticker: "2379", role: 龍頭, relevance: 高}
+          - {ticker: "3380", role: 新興, relevance: 高}
+          - {ticker: "3491", role: 利基, relevance: 高}
+          - {ticker: "3596", role: 利基, relevance: 高}
+          - {ticker: "4906", role: 新興, relevance: 高}
+          - {ticker: "4968", role: 新興, relevance: 高}
+          - {ticker: "5388", role: 新興, relevance: 高}
+          - {ticker: "6285", role: 利基, relevance: 高}
+          - {ticker: "6526", role: 利基, relevance: 高}

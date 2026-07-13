@@ -1,0 +1,66 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: leo-satellite
+title: 網通｜低軌衛星
+market_tab: tw
+description: >-
+  低軌衛星圍繞地面設備、天線、射頻元件與衛星本體零組件的供應鏈，支撐衛星通訊布建與地面接收。台廠以 PCB、射頻與天線切入國際衛星大廠供應鏈，受惠通訊涵蓋擴張與地面設備放量。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2313", name: 華通}
+  - {ticker: "2314", name: 台揚}
+  - {ticker: "2355", name: 敬鵬}
+  - {ticker: "2367", name: 燿華}
+  - {ticker: "2368", name: 金像電}
+  - {ticker: "2383", name: 台光電}
+  - {ticker: "2412", name: 中華電}
+  - {ticker: "2454", name: 聯發科}
+  - {ticker: "2485", name: 兆赫}
+  - {ticker: "3062", name: 建漢}
+  - {ticker: "3152", name: 璟德}
+  - {ticker: "3481", name: 群創}
+  - {ticker: "3491", name: 昇達科}
+  - {ticker: "4906", name: 正文}
+  - {ticker: "4916", name: 事欣科}
+  - {ticker: "5222", name: 全訊}
+  - {ticker: "5243", name: "乙盛-KY"}
+  - {ticker: "6190", name: 萬泰科}
+  - {ticker: "6271", name: 同欣電}
+  - {ticker: "6274", name: 台燿}
+  - {ticker: "6278", name: 台表科}
+  - {ticker: "6282", name: 康舒}
+  - {ticker: "6285", name: 啟碁}
+  - {ticker: "6442", name: 光聖}
+  - {ticker: "6526", name: 達發}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 低軌衛星
+        desc: 圍繞地面設備、天線、射頻與衛星零組件的低軌衛星供應鏈成員。
+        companies:
+          - {ticker: "2313", role: 利基, relevance: 高}
+          - {ticker: "2314", role: 新興, relevance: 高}
+          - {ticker: "2355", role: 新興, relevance: 高}
+          - {ticker: "2367", role: 利基, relevance: 高}
+          - {ticker: "2368", role: 龍頭, relevance: 高}
+          - {ticker: "2383", role: 龍頭, relevance: 高}
+          - {ticker: "2412", role: 龍頭, relevance: 高}
+          - {ticker: "2454", role: 龍頭, relevance: 高}
+          - {ticker: "2485", role: 新興, relevance: 高}
+          - {ticker: "3062", role: 新興, relevance: 高}
+          - {ticker: "3152", role: 新興, relevance: 高}
+          - {ticker: "3481", role: 龍頭, relevance: 高}
+          - {ticker: "3491", role: 利基, relevance: 高}
+          - {ticker: "4906", role: 新興, relevance: 高}
+          - {ticker: "4916", role: 新興, relevance: 高}
+          - {ticker: "5222", role: 新興, relevance: 高}
+          - {ticker: "5243", role: 新興, relevance: 高}
+          - {ticker: "6190", role: 新興, relevance: 高}
+          - {ticker: "6271", role: 利基, relevance: 高}
+          - {ticker: "6274", role: 龍頭, relevance: 高}
+          - {ticker: "6278", role: 利基, relevance: 高}
+          - {ticker: "6282", role: 利基, relevance: 高}
+          - {ticker: "6285", role: 利基, relevance: 高}
+          - {ticker: "6442", role: 利基, relevance: 高}
+          - {ticker: "6526", role: 利基, relevance: 高}

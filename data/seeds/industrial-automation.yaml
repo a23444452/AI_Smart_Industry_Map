@@ -1,0 +1,52 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: industrial-automation
+title: 傳產｜工業自動化
+market_tab: tw
+description: >-
+  工業自動化涵蓋伺服馬達、線性傳動、控制器、機器人與工業電腦，是智慧製造的骨幹。台廠在傳動元件與運動控制具利基，並延伸協作機器人與整線整合，受惠製造業自動化與缺工趨勢。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1503", name: 士電}
+  - {ticker: "1504", name: 東元}
+  - {ticker: "1536", name: 和大}
+  - {ticker: "1590", name: "亞德客-KY"}
+  - {ticker: "1597", name: 直得}
+  - {ticker: "2049", name: 上銀}
+  - {ticker: "2308", name: 台達電}
+  - {ticker: "2395", name: 研華}
+  - {ticker: "2464", name: 盟立}
+  - {ticker: "3563", name: 牧德}
+  - {ticker: "4540", name: 全球傳動}
+  - {ticker: "4576", name: 大銀微系統}
+  - {ticker: "4583", name: 台灣精銳}
+  - {ticker: "4585", name: 達明}
+  - {ticker: "6166", name: 凌華}
+  - {ticker: "6414", name: 樺漢}
+  - {ticker: "8234", name: 新漢}
+  - {ticker: "8374", name: 羅昇}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 工業自動化
+        desc: 涵蓋伺服傳動、控制器、機器人與工業電腦的自動化成員。
+        companies:
+          - {ticker: "1503", role: 利基, relevance: 高}
+          - {ticker: "1504", role: 利基, relevance: 高}
+          - {ticker: "1536", role: 新興, relevance: 高}
+          - {ticker: "1590", role: 利基, relevance: 高}
+          - {ticker: "1597", role: 新興, relevance: 高}
+          - {ticker: "2049", role: 利基, relevance: 高}
+          - {ticker: "2308", role: 龍頭, relevance: 高}
+          - {ticker: "2395", role: 龍頭, relevance: 高}
+          - {ticker: "2464", role: 利基, relevance: 高}
+          - {ticker: "3563", role: 利基, relevance: 高}
+          - {ticker: "4540", role: 新興, relevance: 高}
+          - {ticker: "4576", role: 新興, relevance: 高}
+          - {ticker: "4583", role: 利基, relevance: 高}
+          - {ticker: "4585", role: 利基, relevance: 高}
+          - {ticker: "6166", role: 新興, relevance: 高}
+          - {ticker: "6414", role: 利基, relevance: 高}
+          - {ticker: "8234", role: 新興, relevance: 高}
+          - {ticker: "8374", role: 新興, relevance: 高}

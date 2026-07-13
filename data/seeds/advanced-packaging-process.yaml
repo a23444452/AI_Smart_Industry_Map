@@ -1,0 +1,46 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: advanced-packaging-process
+title: 先進封裝｜封裝製程機台
+market_tab: tw
+description: >-
+  封裝製程機台供應先進封裝所需的濕製程、鍍膜、雷射與貼合等設備，支撐扇出型、矽中介層與混合鍵合等製程。AI 晶片對封裝良率與互連密度的要求，帶動製程設備國產化與客製化需求成長。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2467", name: 志聖}
+  - {ticker: "2493", name: 揚博}
+  - {ticker: "3131", name: 弘塑}
+  - {ticker: "3580", name: 友威科}
+  - {ticker: "3583", name: 辛耘}
+  - {ticker: "5443", name: 均豪}
+  - {ticker: "6187", name: 萬潤}
+  - {ticker: "6207", name: 雷科}
+  - {ticker: "6425", name: 易發}
+  - {ticker: "6640", name: 均華}
+  - {ticker: "6664", name: 群翊}
+  - {ticker: "6937", name: 天虹}
+  - {ticker: "7751", name: 竑騰}
+  - {ticker: "8027", name: 鈦昇}
+  - {ticker: "8064", name: 東捷}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 封裝製程機台
+        desc: 供應先進封裝濕製程、鍍膜、雷射與貼合設備的成員。
+        companies:
+          - {ticker: "2467", role: 利基, relevance: 高}
+          - {ticker: "2493", role: 利基, relevance: 高}
+          - {ticker: "3131", role: 利基, relevance: 高}
+          - {ticker: "3580", role: 新興, relevance: 高}
+          - {ticker: "3583", role: 利基, relevance: 高}
+          - {ticker: "5443", role: 新興, relevance: 高}
+          - {ticker: "6187", role: 利基, relevance: 高}
+          - {ticker: "6207", role: 新興, relevance: 高}
+          - {ticker: "6425", role: 新興, relevance: 高}
+          - {ticker: "6640", role: 新興, relevance: 高}
+          - {ticker: "6664", role: 新興, relevance: 高}
+          - {ticker: "6937", role: 新興, relevance: 高}
+          - {ticker: "7751", role: 利基, relevance: 高}
+          - {ticker: "8027", role: 新興, relevance: 高}
+          - {ticker: "8064", role: 新興, relevance: 高}

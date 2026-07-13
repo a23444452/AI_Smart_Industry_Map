@@ -1,0 +1,40 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: cpu-agentic-ai
+title: IC 設計｜CPU 與 Agentic AI
+market_tab: tw
+description: >-
+  CPU 與 Agentic AI 圍繞伺服器級處理器平台與能自主規劃、調用工具的代理式 AI 應用，帶動運算、載板、散熱與供電的整體升級。台廠在伺服器代工、ABF 載板、散熱與電源模組深度參與，受惠資料中心運算密度持續攀升。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2308", name: 台達電}
+  - {ticker: "2317", name: 鴻海}
+  - {ticker: "2330", name: 台積電}
+  - {ticker: "2356", name: 英業達}
+  - {ticker: "2376", name: 技嘉}
+  - {ticker: "2382", name: 廣達}
+  - {ticker: "3017", name: 奇鋐}
+  - {ticker: "3037", name: 欣興}
+  - {ticker: "3189", name: 景碩}
+  - {ticker: "3231", name: 緯創}
+  - {ticker: "6669", name: 緯穎}
+  - {ticker: "8046", name: 南電}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: CPU 與 Agentic AI
+        desc: 圍繞伺服器處理器平台與代理式 AI 的載板、散熱、供電與代工成員。
+        companies:
+          - {ticker: "2308", role: 龍頭, relevance: 高}
+          - {ticker: "2317", role: 龍頭, relevance: 高}
+          - {ticker: "2330", role: 龍頭, relevance: 高}
+          - {ticker: "2356", role: 利基, relevance: 高}
+          - {ticker: "2376", role: 利基, relevance: 高}
+          - {ticker: "2382", role: 龍頭, relevance: 高}
+          - {ticker: "3017", role: 龍頭, relevance: 高}
+          - {ticker: "3037", role: 龍頭, relevance: 高}
+          - {ticker: "3189", role: 龍頭, relevance: 高}
+          - {ticker: "3231", role: 龍頭, relevance: 高}
+          - {ticker: "6669", role: 龍頭, relevance: 高}
+          - {ticker: "8046", role: 龍頭, relevance: 高}

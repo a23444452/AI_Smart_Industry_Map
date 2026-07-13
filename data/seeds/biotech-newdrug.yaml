@@ -1,0 +1,36 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: biotech-newdrug
+title: 生技醫療｜新藥與再生醫療
+market_tab: tw
+description: >-
+  新藥與再生醫療聚焦創新小分子、蛋白質藥物、細胞與基因治療的研發與臨床開發。此領域高風險高報酬，價值取決於臨床數據、法規審查進度與授權合作里程碑，台廠多以特定適應症或平台技術切入國際市場。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1784", name: 訊聯}
+  - {ticker: "4162", name: 智擎}
+  - {ticker: "4168", name: 醣聯}
+  - {ticker: "4743", name: 合一}
+  - {ticker: "6446", name: 藥華藥}
+  - {ticker: "6492", name: 生華科}
+  - {ticker: "6535", name: 順藥}
+  - {ticker: "6550", name: "北極星藥業-KY"}
+  - {ticker: "6576", name: 逸達}
+  - {ticker: "6712", name: 長聖}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 新藥與再生醫療
+        desc: 聚焦創新藥物與細胞基因治療研發、臨床與授權的成員。
+        companies:
+          - {ticker: "1784", role: 新興, relevance: 高}
+          - {ticker: "4162", role: 新興, relevance: 高}
+          - {ticker: "4168", role: 新興, relevance: 高}
+          - {ticker: "4743", role: 新興, relevance: 高}
+          - {ticker: "6446", role: 龍頭, relevance: 高}
+          - {ticker: "6492", role: 新興, relevance: 高}
+          - {ticker: "6535", role: 新興, relevance: 高}
+          - {ticker: "6550", role: 新興, relevance: 高}
+          - {ticker: "6576", role: 新興, relevance: 高}
+          - {ticker: "6712", role: 新興, relevance: 高}

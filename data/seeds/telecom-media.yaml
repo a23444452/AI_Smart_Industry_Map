@@ -1,0 +1,40 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: telecom-media
+title: 數位服務｜電信與數位媒體
+market_tab: tw
+description: >-
+  電信與數位媒體涵蓋行動與固網電信服務、有線電視與數位內容，並延伸網通設備與數位加值業務。電信三雄以穩定現金流與 5G 布建為基礎，並拓展雲端、資安與媒體平台等新營收來源。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2412", name: 中華電}
+  - {ticker: "3045", name: 台灣大}
+  - {ticker: "3138", name: 耀登}
+  - {ticker: "3380", name: 明泰}
+  - {ticker: "3558", name: 神準}
+  - {ticker: "3596", name: 智易}
+  - {ticker: "4904", name: 遠傳}
+  - {ticker: "4906", name: 正文}
+  - {ticker: "5388", name: 中磊}
+  - {ticker: "6184", name: 大豐電}
+  - {ticker: "6285", name: 啟碁}
+  - {ticker: "6464", name: 台數科}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 電信與數位媒體
+        desc: 涵蓋電信服務、有線電視、數位內容與網通設備的成員。
+        companies:
+          - {ticker: "2412", role: 龍頭, relevance: 高}
+          - {ticker: "3045", role: 龍頭, relevance: 高}
+          - {ticker: "3138", role: 新興, relevance: 高}
+          - {ticker: "3380", role: 新興, relevance: 高}
+          - {ticker: "3558", role: 新興, relevance: 高}
+          - {ticker: "3596", role: 利基, relevance: 高}
+          - {ticker: "4904", role: 龍頭, relevance: 高}
+          - {ticker: "4906", role: 新興, relevance: 高}
+          - {ticker: "5388", role: 新興, relevance: 高}
+          - {ticker: "6184", role: 新興, relevance: 高}
+          - {ticker: "6285", role: 利基, relevance: 高}
+          - {ticker: "6464", role: 新興, relevance: 高}

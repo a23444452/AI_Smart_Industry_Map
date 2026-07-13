@@ -1,0 +1,48 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: battery-cell-module
+title: 能源｜電芯製造與電池模組
+market_tab: tw
+description: >-
+  電芯製造與電池模組涵蓋鋰電池芯量產與電池組系統設計，供應消費電子、電動載具與儲能等應用。台廠多切入電池模組與保護電路的設計組裝，並延伸至工具機、電動二輪與資料中心備援電源等利基市場，關鍵在於能量密度、安全性與客製化整合能力。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1101", name: 台泥}
+  - {ticker: "1301", name: 台塑}
+  - {ticker: "2206", name: 三陽工業}
+  - {ticker: "2317", name: 鴻海}
+  - {ticker: "3211", name: 順達}
+  - {ticker: "3323", name: 加百裕}
+  - {ticker: "3665", name: "貿聯-KY"}
+  - {ticker: "4931", name: 新盛力}
+  - {ticker: "5243", name: "乙盛-KY"}
+  - {ticker: "5309", name: 系統電}
+  - {ticker: "6121", name: 新普}
+  - {ticker: "6558", name: 興能高}
+  - {ticker: "6781", name: "AES-KY"}
+  - {ticker: "8038", name: 長園科}
+  - {ticker: "8163", name: 達方}
+  - {ticker: "8171", name: 天宇}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 電芯製造與電池模組
+        desc: 涵蓋電芯量產與電池模組設計組裝的成員，供應消費電子、電動載具與儲能等應用。
+        companies:
+          - {ticker: "1101", role: 利基, relevance: 高}
+          - {ticker: "1301", role: 龍頭, relevance: 高}
+          - {ticker: "2206", role: 利基, relevance: 高}
+          - {ticker: "2317", role: 龍頭, relevance: 高}
+          - {ticker: "3211", role: 利基, relevance: 高}
+          - {ticker: "3323", role: 新興, relevance: 高}
+          - {ticker: "3665", role: 龍頭, relevance: 高}
+          - {ticker: "4931", role: 新興, relevance: 高}
+          - {ticker: "5243", role: 新興, relevance: 高}
+          - {ticker: "5309", role: 新興, relevance: 高}
+          - {ticker: "6121", role: 利基, relevance: 高}
+          - {ticker: "6558", role: 新興, relevance: 高}
+          - {ticker: "6781", role: 利基, relevance: 高}
+          - {ticker: "8038", role: 新興, relevance: 高}
+          - {ticker: "8163", role: 新興, relevance: 高}
+          - {ticker: "8171", role: 新興, relevance: 高}

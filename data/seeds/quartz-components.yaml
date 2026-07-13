@@ -1,0 +1,28 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: quartz-components
+title: 半導體製造｜石英頻率控制
+market_tab: tw
+description: >-
+  石英頻率控制元件提供石英振盪器與晶體，為電子系統提供精準時脈基準，是通訊、車用與物聯網裝置的必備被動元件。競爭關鍵在於頻率穩定度、小型化與量產良率，並隨高速通訊與車載需求增溫。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2484", name: 希華}
+  - {ticker: "3042", name: 晶技}
+  - {ticker: "3221", name: 台嘉碩}
+  - {ticker: "6174", name: 安碁}
+  - {ticker: "8182", name: 加高}
+  - {ticker: "8289", name: 泰藝}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 石英頻率控制
+        desc: 提供石英振盪器與晶體、供應精準時脈基準的頻率控制成員。
+        companies:
+          - {ticker: "2484", role: 新興, relevance: 高}
+          - {ticker: "3042", role: 利基, relevance: 高}
+          - {ticker: "3221", role: 新興, relevance: 高}
+          - {ticker: "6174", role: 新興, relevance: 高}
+          - {ticker: "8182", role: 新興, relevance: 高}
+          - {ticker: "8289", role: 新興, relevance: 高}

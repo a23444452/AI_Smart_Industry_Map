@@ -1,0 +1,30 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: cxl-technology
+title: 網通｜CXL 技術
+market_tab: tw
+description: >-
+  CXL 技術以快取一致性互連協定打通 CPU、加速器與記憶體的資源池化，提升資料中心記憶體使用效率與擴充彈性。台廠在控制晶片、高速介面 IP 與交換器切入，隨伺服器架構世代演進逐步導入。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2345", name: 智邦}
+  - {ticker: "3443", name: 創意}
+  - {ticker: "3661", name: "世芯-KY"}
+  - {ticker: "4966", name: "譜瑞-KY"}
+  - {ticker: "5269", name: 祥碩}
+  - {ticker: "5274", name: 信驊}
+  - {ticker: "5289", name: 宜鼎}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: CXL 技術
+        desc: 以 CXL 互連打通記憶體池化的控制晶片與高速介面成員。
+        companies:
+          - {ticker: "2345", role: 龍頭, relevance: 高}
+          - {ticker: "3443", role: 龍頭, relevance: 高}
+          - {ticker: "3661", role: 龍頭, relevance: 高}
+          - {ticker: "4966", role: 利基, relevance: 高}
+          - {ticker: "5269", role: 利基, relevance: 高}
+          - {ticker: "5274", role: 龍頭, relevance: 高}
+          - {ticker: "5289", role: 利基, relevance: 高}

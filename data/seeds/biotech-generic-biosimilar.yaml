@@ -1,0 +1,28 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: biotech-generic-biosimilar
+title: 生技醫療｜相似藥與學名藥
+market_tab: tw
+description: >-
+  相似藥與學名藥以專利到期後的替代供應為核心，涵蓋學名藥與生物相似藥的開發、查驗登記與量產。競爭關鍵在於製程成本、法規通關速度與國際市場布局，生物相似藥更需具備細胞培養與純化的規模化能力。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1752", name: 南光}
+  - {ticker: "1795", name: 美時}
+  - {ticker: "4105", name: 東洋}
+  - {ticker: "4168", name: 醣聯}
+  - {ticker: "6541", name: "泰福-KY"}
+  - {ticker: "6589", name: 台康生技}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 相似藥與學名藥
+        desc: 涵蓋學名藥與生物相似藥開發、查登與量產的成員。
+        companies:
+          - {ticker: "1752", role: 新興, relevance: 高}
+          - {ticker: "1795", role: 利基, relevance: 高}
+          - {ticker: "4105", role: 新興, relevance: 高}
+          - {ticker: "4168", role: 新興, relevance: 高}
+          - {ticker: "6541", role: 新興, relevance: 高}
+          - {ticker: "6589", role: 新興, relevance: 高}

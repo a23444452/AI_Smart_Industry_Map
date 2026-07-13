@@ -1,0 +1,32 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: circular-economy-ewaste
+title: 傳產｜電子廢料與回收
+market_tab: tw
+description: >-
+  電子廢料與回收聚焦貴金屬回收、電子廢棄物處理與再生資源循環，把廢料轉為可再利用原料。營運受金屬價格與環保法規影響，台廠以貴金屬提煉與廢棄物清運處理切入，技術門檻在於回收純度與合規處理能力。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1785", name: 光洋科}
+  - {ticker: "6803", name: 崑鼎}
+  - {ticker: "6894", name: 衛司特}
+  - {ticker: "8341", name: 日友}
+  - {ticker: "8390", name: 金益鼎}
+  - {ticker: "8422", name: "可寧衛*"}
+  - {ticker: "8438", name: 昶昕}
+  - {ticker: "8440", name: 綠電}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 電子廢料與回收
+        desc: 聚焦貴金屬回收與電子廢棄物再生的循環經濟成員。
+        companies:
+          - {ticker: "1785", role: 利基, relevance: 高}
+          - {ticker: "6803", role: 新興, relevance: 高}
+          - {ticker: "6894", role: 新興, relevance: 高}
+          - {ticker: "8341", role: 新興, relevance: 高}
+          - {ticker: "8390", role: 新興, relevance: 高}
+          - {ticker: "8422", role: 利基, relevance: 高}
+          - {ticker: "8438", role: 新興, relevance: 高}
+          - {ticker: "8440", role: 新興, relevance: 高}

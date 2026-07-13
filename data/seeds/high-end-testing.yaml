@@ -1,0 +1,34 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: high-end-testing
+title: 先進封裝｜IC 測試服務
+market_tab: tw
+description: >-
+  IC 測試服務涵蓋晶圓針測、成品測試與探針卡、測試介面等關鍵耗材，是半導體製造品質把關的重要環節。高階製程與異質整合推升測試複雜度與時間，帶動測試產能與探針、測試座等介面元件需求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2360", name: 致茂}
+  - {ticker: "2449", name: 京元電子}
+  - {ticker: "3030", name: 德律}
+  - {ticker: "3264", name: 欣銓}
+  - {ticker: "6217", name: 中探針}
+  - {ticker: "6223", name: 旺矽}
+  - {ticker: "6510", name: 精測}
+  - {ticker: "6515", name: 穎崴}
+  - {ticker: "6683", name: 雍智科技}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: IC 測試服務
+        desc: 涵蓋晶圓針測、成品測試與探針卡測試介面的 IC 測試成員。
+        companies:
+          - {ticker: "2360", role: 龍頭, relevance: 高}
+          - {ticker: "2449", role: 龍頭, relevance: 高}
+          - {ticker: "3030", role: 利基, relevance: 高}
+          - {ticker: "3264", role: 利基, relevance: 高}
+          - {ticker: "6217", role: 新興, relevance: 高}
+          - {ticker: "6223", role: 龍頭, relevance: 高}
+          - {ticker: "6510", role: 利基, relevance: 高}
+          - {ticker: "6515", role: 利基, relevance: 高}
+          - {ticker: "6683", role: 利基, relevance: 高}

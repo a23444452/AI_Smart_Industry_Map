@@ -1,0 +1,54 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: petrochem-plastics
+title: 傳產｜石化與塑膠產業
+market_tab: tw
+description: >-
+  石化與塑膠產業涵蓋乙烯、芳香烴等基礎原料到塑膠、橡膠與合成纖維的中下游加工，是傳統製造業的原料骨幹。景氣與油價高度連動，台廠透過一體化生產與高值化產品因應區域產能競爭與循環週期。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1301", name: 台塑}
+  - {ticker: "1303", name: 南亞}
+  - {ticker: "1304", name: 台聚}
+  - {ticker: "1305", name: 華夏}
+  - {ticker: "1308", name: 亞聚}
+  - {ticker: "1310", name: 台苯}
+  - {ticker: "1312", name: 國喬}
+  - {ticker: "1313", name: 聯成}
+  - {ticker: "1314", name: 中石化}
+  - {ticker: "1326", name: 台化}
+  - {ticker: "1402", name: 遠東新}
+  - {ticker: "1710", name: 東聯}
+  - {ticker: "1718", name: 中纖}
+  - {ticker: "1721", name: 三晃}
+  - {ticker: "2103", name: 台橡}
+  - {ticker: "2104", name: 國際中橡}
+  - {ticker: "2105", name: 正新}
+  - {ticker: "2108", name: 南帝}
+  - {ticker: "6505", name: 台塑化}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 石化與塑膠產業
+        desc: 涵蓋基礎原料到塑膠、橡膠與合纖加工的石化中下游成員。
+        companies:
+          - {ticker: "1301", role: 龍頭, relevance: 高}
+          - {ticker: "1303", role: 龍頭, relevance: 高}
+          - {ticker: "1304", role: 新興, relevance: 高}
+          - {ticker: "1305", role: 新興, relevance: 高}
+          - {ticker: "1308", role: 新興, relevance: 高}
+          - {ticker: "1310", role: 新興, relevance: 高}
+          - {ticker: "1312", role: 新興, relevance: 高}
+          - {ticker: "1313", role: 新興, relevance: 高}
+          - {ticker: "1314", role: 利基, relevance: 高}
+          - {ticker: "1326", role: 龍頭, relevance: 高}
+          - {ticker: "1402", role: 利基, relevance: 高}
+          - {ticker: "1710", role: 新興, relevance: 高}
+          - {ticker: "1718", role: 新興, relevance: 高}
+          - {ticker: "1721", role: 新興, relevance: 高}
+          - {ticker: "2103", role: 新興, relevance: 高}
+          - {ticker: "2104", role: 新興, relevance: 高}
+          - {ticker: "2105", role: 利基, relevance: 高}
+          - {ticker: "2108", role: 新興, relevance: 高}
+          - {ticker: "6505", role: 龍頭, relevance: 高}

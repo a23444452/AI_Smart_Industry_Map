@@ -1,0 +1,36 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: fiberglass-cloth
+title: 傳產｜玻纖布
+market_tab: tw
+description: >-
+  玻纖布是印刷電路板銅箔基板的關鍵補強材料，涵蓋玻纖紗、玻纖布到特殊低介電材料。AI 伺服器與高速運算對高頻高速板材的需求，帶動低損耗玻纖布升級與擴產，材料等級與供貨穩定度成為競爭焦點。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1303", name: 南亞}
+  - {ticker: "1802", name: 台玻}
+  - {ticker: "1815", name: 富喬}
+  - {ticker: "2383", name: 台光電}
+  - {ticker: "4764", name: 雙鍵}
+  - {ticker: "4989", name: 榮科}
+  - {ticker: "5340", name: 建榮}
+  - {ticker: "5475", name: 德宏}
+  - {ticker: "6213", name: 聯茂}
+  - {ticker: "6274", name: 台燿}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 玻纖布
+        desc: 涵蓋玻纖紗、玻纖布到低介電材料的 PCB 補強材成員。
+        companies:
+          - {ticker: "1303", role: 龍頭, relevance: 高}
+          - {ticker: "1802", role: 利基, relevance: 高}
+          - {ticker: "1815", role: 利基, relevance: 高}
+          - {ticker: "2383", role: 龍頭, relevance: 高}
+          - {ticker: "4764", role: 新興, relevance: 高}
+          - {ticker: "4989", role: 新興, relevance: 高}
+          - {ticker: "5340", role: 新興, relevance: 高}
+          - {ticker: "5475", role: 新興, relevance: 高}
+          - {ticker: "6213", role: 利基, relevance: 高}
+          - {ticker: "6274", role: 龍頭, relevance: 高}

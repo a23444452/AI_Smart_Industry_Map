@@ -1,0 +1,40 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: power-discrete-tw
+title: 半導體製造｜功率離散元件
+market_tab: tw
+description: >-
+  功率離散元件涵蓋二極體、MOSFET、IGBT 與化合物半導體等分立元件，負責電能轉換與功率控制，廣用於電源、車用與工控。台廠具晶圓製造與封裝一條龍能量，並往中高壓與碳化矽等第三代半導體延伸。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2481", name: 強茂}
+  - {ticker: "3016", name: 嘉晶}
+  - {ticker: "3317", name: 尼克森}
+  - {ticker: "3675", name: 德微}
+  - {ticker: "3707", name: 漢磊}
+  - {ticker: "5299", name: 杰力}
+  - {ticker: "5347", name: 世界}
+  - {ticker: "5425", name: 台半}
+  - {ticker: "6138", name: 茂達}
+  - {ticker: "6435", name: 大中}
+  - {ticker: "8255", name: 朋程}
+  - {ticker: "8261", name: 富鼎}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 功率離散元件
+        desc: 涵蓋二極體、MOSFET 與化合物半導體的功率離散元件成員。
+        companies:
+          - {ticker: "2481", role: 利基, relevance: 高}
+          - {ticker: "3016", role: 利基, relevance: 高}
+          - {ticker: "3317", role: 新興, relevance: 高}
+          - {ticker: "3675", role: 新興, relevance: 高}
+          - {ticker: "3707", role: 利基, relevance: 高}
+          - {ticker: "5299", role: 新興, relevance: 高}
+          - {ticker: "5347", role: 龍頭, relevance: 高}
+          - {ticker: "5425", role: 利基, relevance: 高}
+          - {ticker: "6138", role: 新興, relevance: 高}
+          - {ticker: "6435", role: 新興, relevance: 高}
+          - {ticker: "8255", role: 新興, relevance: 高}
+          - {ticker: "8261", role: 利基, relevance: 高}

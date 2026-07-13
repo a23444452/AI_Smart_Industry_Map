@@ -1,0 +1,44 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: advanced-packaging-automation
+title: 先進封裝｜封裝量測自動化
+market_tab: tw
+description: >-
+  封裝量測自動化提供先進封裝所需的檢測、量測與自動化設備，涵蓋 AOI 光學檢測、測試分選機與製程自動化。隨異質整合與 2.5D／3D 封裝良率要求提高，量測與自動化滲透率同步上升，設備精度與客製整合是門檻。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2360", name: 致茂}
+  - {ticker: "3030", name: 德律}
+  - {ticker: "3055", name: 蔚華科}
+  - {ticker: "3455", name: 由田}
+  - {ticker: "3535", name: 晶彩科}
+  - {ticker: "3563", name: 牧德}
+  - {ticker: "3680", name: 家登}
+  - {ticker: "5443", name: 均豪}
+  - {ticker: "6187", name: 萬潤}
+  - {ticker: "6261", name: 久元}
+  - {ticker: "6425", name: 易發}
+  - {ticker: "6788", name: 華景電}
+  - {ticker: "7751", name: 竑騰}
+  - {ticker: "7769", name: 鴻勁}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 封裝量測自動化
+        desc: 提供先進封裝檢測、量測與分選自動化設備的成員。
+        companies:
+          - {ticker: "2360", role: 龍頭, relevance: 高}
+          - {ticker: "3030", role: 利基, relevance: 高}
+          - {ticker: "3055", role: 新興, relevance: 高}
+          - {ticker: "3455", role: 新興, relevance: 高}
+          - {ticker: "3535", role: 新興, relevance: 高}
+          - {ticker: "3563", role: 利基, relevance: 高}
+          - {ticker: "3680", role: 利基, relevance: 高}
+          - {ticker: "5443", role: 新興, relevance: 高}
+          - {ticker: "6187", role: 利基, relevance: 高}
+          - {ticker: "6261", role: 新興, relevance: 高}
+          - {ticker: "6425", role: 新興, relevance: 高}
+          - {ticker: "6788", role: 新興, relevance: 高}
+          - {ticker: "7751", role: 利基, relevance: 高}
+          - {ticker: "7769", role: 龍頭, relevance: 高}

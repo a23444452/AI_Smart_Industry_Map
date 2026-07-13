@@ -1,0 +1,24 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: ivd-diagnostics
+title: 生技醫療｜體外診斷 IVD
+market_tab: tw
+description: >-
+  體外診斷 IVD 涵蓋血糖監測、快篩試劑、分子檢測與檢驗儀器等產品，服務臨床檢驗與居家自我檢測。台廠在血糖與快篩具量產經驗，產品取決於檢測準確度、法規認證與通路布局，並隨慢性病與居家醫療需求擴張。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1733", name: 五鼎}
+  - {ticker: "4155", name: 訊映}
+  - {ticker: "4736", name: 泰博}
+  - {ticker: "4737", name: 華廣}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 體外診斷 IVD
+        desc: 涵蓋血糖、快篩、分子檢測與檢驗儀器的體外診斷成員。
+        companies:
+          - {ticker: "1733", role: 新興, relevance: 高}
+          - {ticker: "4155", role: 新興, relevance: 高}
+          - {ticker: "4736", role: 新興, relevance: 高}
+          - {ticker: "4737", role: 新興, relevance: 高}

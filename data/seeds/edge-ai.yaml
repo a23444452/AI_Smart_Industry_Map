@@ -1,0 +1,38 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: edge-ai
+title: IC 設計｜Edge AI / AIoT
+market_tab: tw
+description: >-
+  Edge AI / AIoT 把推論運算下放到終端與邊緣裝置，涵蓋邊緣運算平台、感測、通訊晶片與工業電腦。台廠在工業電腦與 SoC 具優勢，應用橫跨智慧製造、安防與車載，低功耗、即時性與軟硬整合是關鍵。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2379", name: 瑞昱}
+  - {ticker: "2395", name: 研華}
+  - {ticker: "2454", name: 聯發科}
+  - {ticker: "3022", name: 威強電}
+  - {ticker: "3227", name: 原相}
+  - {ticker: "5484", name: 慧友}
+  - {ticker: "6166", name: 凌華}
+  - {ticker: "6414", name: 樺漢}
+  - {ticker: "6579", name: 研揚}
+  - {ticker: "8072", name: 陞泰}
+  - {ticker: "8234", name: 新漢}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: Edge AI / AIoT
+        desc: 把推論下放終端的邊緣運算平台、感測與工業電腦成員。
+        companies:
+          - {ticker: "2379", role: 龍頭, relevance: 高}
+          - {ticker: "2395", role: 龍頭, relevance: 高}
+          - {ticker: "2454", role: 龍頭, relevance: 高}
+          - {ticker: "3022", role: 新興, relevance: 高}
+          - {ticker: "3227", role: 利基, relevance: 高}
+          - {ticker: "5484", role: 新興, relevance: 高}
+          - {ticker: "6166", role: 新興, relevance: 高}
+          - {ticker: "6414", role: 利基, relevance: 高}
+          - {ticker: "6579", role: 新興, relevance: 高}
+          - {ticker: "8072", role: 新興, relevance: 高}
+          - {ticker: "8234", role: 新興, relevance: 高}

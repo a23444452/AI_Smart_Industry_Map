@@ -1,0 +1,50 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: connector-highspeed
+title: 網通｜AI 互連元件
+market_tab: tw
+description: >-
+  AI 互連元件涵蓋高速連接器、線纜組件與背板互連方案，負責 AI 伺服器內部與機櫃間的高頻寬訊號傳輸。運算密度提高使互連速率與訊號完整性要求攀升，帶動高階連接器與 Cable 方案價值量成長。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2392", name: 正崴}
+  - {ticker: "2460", name: 建通}
+  - {ticker: "3023", name: 信邦}
+  - {ticker: "3217", name: 優群}
+  - {ticker: "3322", name: 建舜電}
+  - {ticker: "3526", name: 凡甲}
+  - {ticker: "3533", name: 嘉澤}
+  - {ticker: "3605", name: 宏致}
+  - {ticker: "3665", name: "貿聯-KY"}
+  - {ticker: "6190", name: 萬泰科}
+  - {ticker: "6197", name: 佳必琪}
+  - {ticker: "6205", name: 詮欣}
+  - {ticker: "6290", name: 良維}
+  - {ticker: "6715", name: 嘉基}
+  - {ticker: "6913", name: 鴻呈}
+  - {ticker: "8103", name: 瀚荃}
+  - {ticker: "8147", name: 正淩}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: AI 互連元件
+        desc: 涵蓋高速連接器、線纜組件與背板互連的 AI 互連成員。
+        companies:
+          - {ticker: "2392", role: 新興, relevance: 高}
+          - {ticker: "2460", role: 新興, relevance: 高}
+          - {ticker: "3023", role: 利基, relevance: 高}
+          - {ticker: "3217", role: 新興, relevance: 高}
+          - {ticker: "3322", role: 新興, relevance: 高}
+          - {ticker: "3526", role: 新興, relevance: 高}
+          - {ticker: "3533", role: 利基, relevance: 高}
+          - {ticker: "3605", role: 新興, relevance: 高}
+          - {ticker: "3665", role: 龍頭, relevance: 高}
+          - {ticker: "6190", role: 新興, relevance: 高}
+          - {ticker: "6197", role: 利基, relevance: 高}
+          - {ticker: "6205", role: 新興, relevance: 高}
+          - {ticker: "6290", role: 利基, relevance: 高}
+          - {ticker: "6715", role: 新興, relevance: 高}
+          - {ticker: "6913", role: 新興, relevance: 高}
+          - {ticker: "8103", role: 新興, relevance: 高}
+          - {ticker: "8147", role: 新興, relevance: 高}

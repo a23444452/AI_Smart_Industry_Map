@@ -1,0 +1,30 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: cnc-machine-tool
+title: 傳產｜CNC工具機
+market_tab: tw
+description: >-
+  CNC工具機涵蓋車床、綜合加工機與相關控制系統，是金屬加工製造的母機產業。景氣循環明顯且高度倚賴出口，台廠以中高階綜合加工機與客製化整線爭取訂單，精度、穩定度與交期為競爭關鍵。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1530", name: 亞崴}
+  - {ticker: "1540", name: 喬福}
+  - {ticker: "1583", name: 程泰}
+  - {ticker: "4510", name: 高鋒}
+  - {ticker: "4526", name: 東台}
+  - {ticker: "4563", name: 百德}
+  - {ticker: "6609", name: 瀧澤科}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: CNC工具機
+        desc: 涵蓋車床、綜合加工機與控制系統的 CNC 工具機成員。
+        companies:
+          - {ticker: "1530", role: 新興, relevance: 高}
+          - {ticker: "1540", role: 新興, relevance: 高}
+          - {ticker: "1583", role: 新興, relevance: 高}
+          - {ticker: "4510", role: 新興, relevance: 高}
+          - {ticker: "4526", role: 新興, relevance: 高}
+          - {ticker: "4563", role: 新興, relevance: 高}
+          - {ticker: "6609", role: 新興, relevance: 高}

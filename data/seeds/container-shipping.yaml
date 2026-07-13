@@ -1,0 +1,38 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: container-shipping
+title: 傳產｜貨櫃航運
+market_tab: tw
+description: >-
+  貨櫃航運提供全球定期貨櫃運輸與海空承攬服務，運價與全球貿易景氣、供需及運能調度高度連動。台灣三大貨櫃輪商具規模船隊，並延伸物流承攬與碼頭營運，運價波動是獲利的主要變數。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2208", name: 台船}
+  - {ticker: "2603", name: 長榮}
+  - {ticker: "2607", name: 榮運}
+  - {ticker: "2609", name: 陽明}
+  - {ticker: "2612", name: 中航}
+  - {ticker: "2613", name: 中櫃}
+  - {ticker: "2615", name: 萬海}
+  - {ticker: "2636", name: 台驊控股}
+  - {ticker: "2643", name: 捷迅}
+  - {ticker: "5609", name: 中菲行}
+  - {ticker: "8367", name: 建新國際}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 貨櫃航運
+        desc: 提供定期貨櫃運輸與海空承攬的貨櫃航運成員。
+        companies:
+          - {ticker: "2208", role: 新興, relevance: 高}
+          - {ticker: "2603", role: 龍頭, relevance: 高}
+          - {ticker: "2607", role: 新興, relevance: 高}
+          - {ticker: "2609", role: 利基, relevance: 高}
+          - {ticker: "2612", role: 新興, relevance: 高}
+          - {ticker: "2613", role: 新興, relevance: 高}
+          - {ticker: "2615", role: 利基, relevance: 高}
+          - {ticker: "2636", role: 新興, relevance: 高}
+          - {ticker: "2643", role: 新興, relevance: 高}
+          - {ticker: "5609", role: 新興, relevance: 高}
+          - {ticker: "8367", role: 新興, relevance: 高}

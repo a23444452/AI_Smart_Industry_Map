@@ -1,0 +1,52 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: offshore-wind
+title: 能源｜離岸風電
+market_tab: tw
+description: >-
+  離岸風電圍繞水下基礎、風機零組件、海事工程與電網併接等本土化供應鏈。隨政府區塊開發推進，重電、鋼構、造船與海纜業者陸續切入國產化訂單，工程實績、大型化製造能量與融資能力是切入門檻。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1503", name: 士電}
+  - {ticker: "1504", name: 東元}
+  - {ticker: "1513", name: 中興電}
+  - {ticker: "1589", name: "永冠-KY"}
+  - {ticker: "1605", name: 華新}
+  - {ticker: "2002", name: 中鋼}
+  - {ticker: "2031", name: 新光鋼}
+  - {ticker: "2072", name: 世紀風電}
+  - {ticker: "2208", name: 台船}
+  - {ticker: "2606", name: 裕民}
+  - {ticker: "3708", name: 上緯投控}
+  - {ticker: "6753", name: 龍德造船}
+  - {ticker: "6793", name: 天力離岸}
+  - {ticker: "6869", name: 雲豹能源}
+  - {ticker: "6994", name: 富威電力}
+  - {ticker: "7786", name: 東方風能}
+  - {ticker: "9933", name: 中鼎}
+  - {ticker: "9958", name: 世紀鋼}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 離岸風電
+        desc: 圍繞水下基礎、鋼構、海事工程與併接的離岸風電本土供應鏈成員。
+        companies:
+          - {ticker: "1503", role: 利基, relevance: 高}
+          - {ticker: "1504", role: 利基, relevance: 高}
+          - {ticker: "1513", role: 利基, relevance: 高}
+          - {ticker: "1589", role: 新興, relevance: 高}
+          - {ticker: "1605", role: 利基, relevance: 高}
+          - {ticker: "2002", role: 利基, relevance: 高}
+          - {ticker: "2031", role: 新興, relevance: 高}
+          - {ticker: "2072", role: 新興, relevance: 高}
+          - {ticker: "2208", role: 新興, relevance: 高}
+          - {ticker: "2606", role: 利基, relevance: 高}
+          - {ticker: "3708", role: 新興, relevance: 高}
+          - {ticker: "6753", role: 新興, relevance: 高}
+          - {ticker: "6793", role: 新興, relevance: 高}
+          - {ticker: "6869", role: 新興, relevance: 高}
+          - {ticker: "6994", role: 新興, relevance: 高}
+          - {ticker: "7786", role: 新興, relevance: 高}
+          - {ticker: "9933", role: 利基, relevance: 高}
+          - {ticker: "9958", role: 新興, relevance: 高}

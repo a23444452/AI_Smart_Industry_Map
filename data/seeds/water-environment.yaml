@@ -1,0 +1,44 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: water-environment
+title: 傳產｜水資源環保工程
+market_tab: tw
+description: >-
+  水資源環保工程涵蓋自來水與污水處理、環境工程、水處理設備與資源循環服務。營運多以政府標案與長期營運（BOT／ROT）為主，現金流相對穩定，工程實績與營運管理能力是承接大型案場的門檻。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1535", name: 中宇}
+  - {ticker: "2515", name: 中工}
+  - {ticker: "2547", name: 日勝生}
+  - {ticker: "3703", name: 欣陸}
+  - {ticker: "5434", name: 崇越}
+  - {ticker: "6624", name: 萬年清}
+  - {ticker: "6803", name: 崑鼎}
+  - {ticker: "6944", name: 兆聯實業}
+  - {ticker: "6971", name: 惠民實業}
+  - {ticker: "8383", name: 千附}
+  - {ticker: "8435", name: 鉅邁}
+  - {ticker: "8473", name: 山林水}
+  - {ticker: "8936", name: 國統}
+  - {ticker: "9933", name: 中鼎}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 水資源環保工程
+        desc: 涵蓋水處理、環境工程與長期營運的水資源環保成員。
+        companies:
+          - {ticker: "1535", role: 新興, relevance: 高}
+          - {ticker: "2515", role: 新興, relevance: 高}
+          - {ticker: "2547", role: 新興, relevance: 高}
+          - {ticker: "3703", role: 新興, relevance: 高}
+          - {ticker: "5434", role: 利基, relevance: 高}
+          - {ticker: "6624", role: 新興, relevance: 高}
+          - {ticker: "6803", role: 新興, relevance: 高}
+          - {ticker: "6944", role: 利基, relevance: 高}
+          - {ticker: "6971", role: 新興, relevance: 高}
+          - {ticker: "8383", role: 新興, relevance: 高}
+          - {ticker: "8435", role: 新興, relevance: 高}
+          - {ticker: "8473", role: 新興, relevance: 高}
+          - {ticker: "8936", role: 新興, relevance: 高}
+          - {ticker: "9933", role: 利基, relevance: 高}

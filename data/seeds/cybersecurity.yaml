@@ -1,0 +1,50 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: cybersecurity
+title: 數位服務｜資安防護
+market_tab: tw
+description: >-
+  資安防護涵蓋端點防護、網路安全、威脅偵測應變與資安服務，是企業與關鍵基礎設施數位化的防線。法規遵循與資安事件頻傳推升需求，台廠以資安服務、系統整合與自研產品切入，專業人才與威脅情資是核心。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2412", name: 中華電}
+  - {ticker: "2480", name: 敦陽科}
+  - {ticker: "3029", name: 零壹}
+  - {ticker: "3664", name: "安瑞-KY"}
+  - {ticker: "5403", name: 中菲}
+  - {ticker: "6112", name: 邁達特}
+  - {ticker: "6214", name: 精誠}
+  - {ticker: "6245", name: 立端}
+  - {ticker: "6416", name: 瑞祺電通}
+  - {ticker: "6590", name: 普鴻}
+  - {ticker: "6690", name: 安碁資訊}
+  - {ticker: "6752", name: 叡揚}
+  - {ticker: "6865", name: 偉康科技}
+  - {ticker: "7714", name: 創泓科技}
+  - {ticker: "7765", name: 中華資安}
+  - {ticker: "7823", name: 奧義智慧}
+  - {ticker: "8272", name: 全景軟體}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 資安防護
+        desc: 涵蓋端點防護、威脅偵測與資安服務的資安成員。
+        companies:
+          - {ticker: "2412", role: 龍頭, relevance: 高}
+          - {ticker: "2480", role: 新興, relevance: 高}
+          - {ticker: "3029", role: 新興, relevance: 高}
+          - {ticker: "3664", role: 新興, relevance: 高}
+          - {ticker: "5403", role: 新興, relevance: 高}
+          - {ticker: "6112", role: 新興, relevance: 高}
+          - {ticker: "6214", role: 利基, relevance: 高}
+          - {ticker: "6245", role: 新興, relevance: 高}
+          - {ticker: "6416", role: 新興, relevance: 高}
+          - {ticker: "6590", role: 新興, relevance: 高}
+          - {ticker: "6690", role: 新興, relevance: 高}
+          - {ticker: "6752", role: 新興, relevance: 高}
+          - {ticker: "6865", role: 新興, relevance: 高}
+          - {ticker: "7714", role: 新興, relevance: 高}
+          - {ticker: "7765", role: 新興, relevance: 高}
+          - {ticker: "7823", role: 新興, relevance: 高}
+          - {ticker: "8272", role: 新興, relevance: 高}

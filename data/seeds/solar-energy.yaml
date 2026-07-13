@@ -1,0 +1,48 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: solar-energy
+title: 能源｜太陽能產業
+market_tab: tw
+description: >-
+  太陽能產業涵蓋矽晶圓、電池片、模組到電廠開發與維運的垂直鏈。台廠歷經產業洗牌後轉向高效電池、系統整合與電站營運，並結合農電、漁電共生與屋頂型案場拓展內需，發電效率、成本控管與案場取得為勝負關鍵。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2406", name: 國碩}
+  - {ticker: "2429", name: 銘旺科}
+  - {ticker: "2481", name: 強茂}
+  - {ticker: "3073", name: 天方能源}
+  - {ticker: "3576", name: 聯合再生}
+  - {ticker: "3686", name: 達能}
+  - {ticker: "3691", name: 碩禾}
+  - {ticker: "4934", name: 太極}
+  - {ticker: "5483", name: 中美晶}
+  - {ticker: "6244", name: 茂迪}
+  - {ticker: "6443", name: 元晶}
+  - {ticker: "6477", name: 安集}
+  - {ticker: "6692", name: 進能服}
+  - {ticker: "6869", name: 雲豹能源}
+  - {ticker: "6873", name: 泓德能源}
+  - {ticker: "6987", name: "寶晶能源*"}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 太陽能產業
+        desc: 涵蓋電池片、模組到電站開發維運的太陽能垂直鏈成員。
+        companies:
+          - {ticker: "2406", role: 新興, relevance: 高}
+          - {ticker: "2429", role: 新興, relevance: 高}
+          - {ticker: "2481", role: 利基, relevance: 高}
+          - {ticker: "3073", role: 新興, relevance: 高}
+          - {ticker: "3576", role: 新興, relevance: 高}
+          - {ticker: "3686", role: 新興, relevance: 高}
+          - {ticker: "3691", role: 新興, relevance: 高}
+          - {ticker: "4934", role: 新興, relevance: 高}
+          - {ticker: "5483", role: 利基, relevance: 高}
+          - {ticker: "6244", role: 新興, relevance: 高}
+          - {ticker: "6443", role: 新興, relevance: 高}
+          - {ticker: "6477", role: 新興, relevance: 高}
+          - {ticker: "6692", role: 新興, relevance: 高}
+          - {ticker: "6869", role: 新興, relevance: 高}
+          - {ticker: "6873", role: 新興, relevance: 高}
+          - {ticker: "6987", role: 新興, relevance: 高}

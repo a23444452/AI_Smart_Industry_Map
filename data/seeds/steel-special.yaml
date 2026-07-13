@@ -1,0 +1,42 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: steel-special
+title: 傳產｜鋼鐵與特鋼
+market_tab: tw
+description: >-
+  鋼鐵與特鋼涵蓋碳鋼、不銹鋼、特殊鋼與鋼構加工，供應營建、機械、能源與運輸等基礎產業。價格隨原料與景氣循環波動，台廠以高值特殊鋼、離岸風電鋼構與電線電纜等應用尋求差異化。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1605", name: 華新}
+  - {ticker: "2002", name: 中鋼}
+  - {ticker: "2006", name: 東和鋼鐵}
+  - {ticker: "2008", name: 高興昌}
+  - {ticker: "2010", name: 春源}
+  - {ticker: "2013", name: 中鋼構}
+  - {ticker: "2015", name: 豐興}
+  - {ticker: "2020", name: 美亞}
+  - {ticker: "2023", name: 燁輝}
+  - {ticker: "2025", name: 千興}
+  - {ticker: "2027", name: 大成鋼}
+  - {ticker: "2030", name: 彰源}
+  - {ticker: "5009", name: 榮剛}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 鋼鐵與特鋼
+        desc: 涵蓋碳鋼、不銹鋼、特殊鋼與鋼構加工的鋼鐵成員。
+        companies:
+          - {ticker: "1605", role: 利基, relevance: 高}
+          - {ticker: "2002", role: 利基, relevance: 高}
+          - {ticker: "2006", role: 利基, relevance: 高}
+          - {ticker: "2008", role: 新興, relevance: 高}
+          - {ticker: "2010", role: 新興, relevance: 高}
+          - {ticker: "2013", role: 新興, relevance: 高}
+          - {ticker: "2015", role: 利基, relevance: 高}
+          - {ticker: "2020", role: 新興, relevance: 高}
+          - {ticker: "2023", role: 新興, relevance: 高}
+          - {ticker: "2025", role: 新興, relevance: 高}
+          - {ticker: "2027", role: 利基, relevance: 高}
+          - {ticker: "2030", role: 新興, relevance: 高}
+          - {ticker: "5009", role: 新興, relevance: 高}

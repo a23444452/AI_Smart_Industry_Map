@@ -1,0 +1,30 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: biotech-cdmo-api
+title: 生技醫療｜CDMO與原料藥
+market_tab: tw
+description: >-
+  CDMO與原料藥提供醫藥研發與生產的委託開發製造服務，以及原料藥（API）與中間體供應。營運模式偏向穩定接單與產能利用率，法規稽核合規、製程放大與品質一致性是承接國際藥廠訂單的核心競爭力。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1762", name: 中化生}
+  - {ticker: "1789", name: 神隆}
+  - {ticker: "4119", name: 旭富}
+  - {ticker: "4726", name: 永昕}
+  - {ticker: "4746", name: 台耀}
+  - {ticker: "6472", name: 保瑞}
+  - {ticker: "6589", name: 台康生技}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: CDMO與原料藥
+        desc: 提供委託開發製造服務與原料藥供應的成員，重法規合規與製程放大。
+        companies:
+          - {ticker: "1762", role: 新興, relevance: 高}
+          - {ticker: "1789", role: 新興, relevance: 高}
+          - {ticker: "4119", role: 新興, relevance: 高}
+          - {ticker: "4726", role: 新興, relevance: 高}
+          - {ticker: "4746", role: 新興, relevance: 高}
+          - {ticker: "6472", role: 利基, relevance: 高}
+          - {ticker: "6589", role: 新興, relevance: 高}

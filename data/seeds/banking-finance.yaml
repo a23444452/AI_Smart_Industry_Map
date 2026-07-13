@@ -1,0 +1,64 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: banking-finance
+title: 金融與消費｜銀行金融
+market_tab: tw
+description: >-
+  銀行金融涵蓋金控、銀行、保險、證券與租賃等金融服務，是資金中介與風險管理的核心。獲利受利率環境、資本市場表現與資產品質影響，台廠金控多採銀行、壽險與證券並行的綜合經營，資本適足與風控能力是體質關鍵。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2801", name: 彰銀}
+  - {ticker: "2812", name: 台中銀}
+  - {ticker: "2834", name: 臺企銀}
+  - {ticker: "2850", name: 新產}
+  - {ticker: "2851", name: 中再保}
+  - {ticker: "2867", name: 三商壽}
+  - {ticker: "2880", name: 華南金}
+  - {ticker: "2881", name: 富邦金}
+  - {ticker: "2882", name: 國泰金}
+  - {ticker: "2883", name: 凱基金}
+  - {ticker: "2884", name: 玉山金}
+  - {ticker: "2885", name: 元大金}
+  - {ticker: "2886", name: 兆豐金}
+  - {ticker: "2887", name: 台新新光金}
+  - {ticker: "2889", name: 國票金}
+  - {ticker: "2890", name: 永豐金}
+  - {ticker: "2891", name: 中信金}
+  - {ticker: "2892", name: 第一金}
+  - {ticker: "5871", name: "中租-KY"}
+  - {ticker: "5876", name: 上海商銀}
+  - {ticker: "5880", name: 合庫金}
+  - {ticker: "6005", name: 群益證}
+  - {ticker: "6592", name: 和潤企業}
+  - {ticker: "9941", name: 裕融}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 銀行金融
+        desc: 涵蓋金控、銀行、保險、證券與租賃的銀行金融成員。
+        companies:
+          - {ticker: "2801", role: 利基, relevance: 高}
+          - {ticker: "2812", role: 利基, relevance: 高}
+          - {ticker: "2834", role: 利基, relevance: 高}
+          - {ticker: "2850", role: 利基, relevance: 高}
+          - {ticker: "2851", role: 利基, relevance: 高}
+          - {ticker: "2867", role: 利基, relevance: 高}
+          - {ticker: "2880", role: 龍頭, relevance: 高}
+          - {ticker: "2881", role: 龍頭, relevance: 高}
+          - {ticker: "2882", role: 龍頭, relevance: 高}
+          - {ticker: "2883", role: 龍頭, relevance: 高}
+          - {ticker: "2884", role: 龍頭, relevance: 高}
+          - {ticker: "2885", role: 龍頭, relevance: 高}
+          - {ticker: "2886", role: 龍頭, relevance: 高}
+          - {ticker: "2887", role: 龍頭, relevance: 高}
+          - {ticker: "2889", role: 利基, relevance: 高}
+          - {ticker: "2890", role: 龍頭, relevance: 高}
+          - {ticker: "2891", role: 龍頭, relevance: 高}
+          - {ticker: "2892", role: 龍頭, relevance: 高}
+          - {ticker: "5871", role: 利基, relevance: 高}
+          - {ticker: "5876", role: 利基, relevance: 高}
+          - {ticker: "5880", role: 龍頭, relevance: 高}
+          - {ticker: "6005", role: 利基, relevance: 高}
+          - {ticker: "6592", role: 利基, relevance: 高}
+          - {ticker: "9941", role: 利基, relevance: 高}

@@ -1,0 +1,50 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: ess-storage
+title: 能源｜儲能系統整合
+market_tab: tw
+description: >-
+  儲能系統整合把電池、變流器（PCS）、能量管理系統與電網併接整合為可調度的儲能案場，支援電網調頻、削峰填谷與再生能源穩定併網。台廠橫跨重電設備、變流器與案場開發營運，隨電網強韌化與綠電滲透率提升，表後與表前儲能需求同步擴張。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "1101", name: 台泥}
+  - {ticker: "1503", name: 士電}
+  - {ticker: "1504", name: 東元}
+  - {ticker: "1513", name: 中興電}
+  - {ticker: "1514", name: 亞力}
+  - {ticker: "1519", name: 華城}
+  - {ticker: "2308", name: 台達電}
+  - {ticker: "2371", name: 大同}
+  - {ticker: "3027", name: 盛達}
+  - {ticker: "3058", name: 立德}
+  - {ticker: "3576", name: 聯合再生}
+  - {ticker: "6441", name: 廣錠}
+  - {ticker: "6869", name: 雲豹能源}
+  - {ticker: "6873", name: 泓德能源}
+  - {ticker: "7740", name: "熙特爾-創"}
+  - {ticker: "8038", name: 長園科}
+  - {ticker: "8171", name: 天宇}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 儲能系統整合
+        desc: 整合電池、變流器與電網併接的儲能案場成員，支援電網調頻與綠電併網。
+        companies:
+          - {ticker: "1101", role: 利基, relevance: 高}
+          - {ticker: "1503", role: 利基, relevance: 高}
+          - {ticker: "1504", role: 利基, relevance: 高}
+          - {ticker: "1513", role: 利基, relevance: 高}
+          - {ticker: "1514", role: 利基, relevance: 高}
+          - {ticker: "1519", role: 利基, relevance: 高}
+          - {ticker: "2308", role: 龍頭, relevance: 高}
+          - {ticker: "2371", role: 利基, relevance: 高}
+          - {ticker: "3027", role: 新興, relevance: 高}
+          - {ticker: "3058", role: 新興, relevance: 高}
+          - {ticker: "3576", role: 新興, relevance: 高}
+          - {ticker: "6441", role: 新興, relevance: 高}
+          - {ticker: "6869", role: 新興, relevance: 高}
+          - {ticker: "6873", role: 新興, relevance: 高}
+          - {ticker: "7740", role: 新興, relevance: 高}
+          - {ticker: "8038", role: 新興, relevance: 高}
+          - {ticker: "8171", role: 新興, relevance: 高}

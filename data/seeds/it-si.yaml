@@ -1,0 +1,36 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: it-si
+title: 數位服務｜整合與委外
+market_tab: tw
+description: >-
+  整合與委外涵蓋系統整合（SI）、資訊委外與軟體開發服務，協助企業與政府建置與維運資訊系統。營收多來自專案與長期維運合約，台廠以垂直產業 know-how、系統整合實績與委外服務爭取訂單。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2453", name: 凌群}
+  - {ticker: "2471", name: 資通}
+  - {ticker: "2480", name: 敦陽科}
+  - {ticker: "3570", name: 大塚}
+  - {ticker: "4953", name: 緯軟}
+  - {ticker: "5212", name: 凌網}
+  - {ticker: "5403", name: 中菲}
+  - {ticker: "6183", name: 關貿}
+  - {ticker: "6214", name: 精誠}
+  - {ticker: "8099", name: 大世科}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 整合與委外
+        desc: 涵蓋系統整合、資訊委外與軟體開發服務的成員。
+        companies:
+          - {ticker: "2453", role: 新興, relevance: 高}
+          - {ticker: "2471", role: 新興, relevance: 高}
+          - {ticker: "2480", role: 新興, relevance: 高}
+          - {ticker: "3570", role: 新興, relevance: 高}
+          - {ticker: "4953", role: 新興, relevance: 高}
+          - {ticker: "5212", role: 新興, relevance: 高}
+          - {ticker: "5403", role: 新興, relevance: 高}
+          - {ticker: "6183", role: 新興, relevance: 高}
+          - {ticker: "6214", role: 利基, relevance: 高}
+          - {ticker: "8099", role: 新興, relevance: 高}

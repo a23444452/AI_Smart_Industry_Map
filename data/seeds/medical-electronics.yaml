@@ -1,0 +1,28 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: medical-electronics
+title: 生技醫療｜醫療電子與數位健康
+market_tab: tw
+description: >-
+  醫療電子與數位健康結合醫用影像、監測儀器、工業電腦與 AI 輔助診斷，把資通訊技術導入醫療場域。台廠以醫用電腦與影像裝置切入，並延伸智慧醫療與遠距照護，產品需兼顧醫材法規與資安要求。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "4116", name: 明基醫}
+  - {ticker: "4164", name: 承業醫}
+  - {ticker: "6527", name: 明達醫}
+  - {ticker: "6569", name: 醫揚}
+  - {ticker: "6796", name: 晉弘}
+  - {ticker: "6857", name: 宏碁智醫}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 醫療電子與數位健康
+        desc: 結合醫用影像、監測儀器與 AI 輔助診斷的醫療電子成員。
+        companies:
+          - {ticker: "4116", role: 新興, relevance: 高}
+          - {ticker: "4164", role: 新興, relevance: 高}
+          - {ticker: "6527", role: 新興, relevance: 高}
+          - {ticker: "6569", role: 新興, relevance: 高}
+          - {ticker: "6796", role: 新興, relevance: 高}
+          - {ticker: "6857", role: 新興, relevance: 高}

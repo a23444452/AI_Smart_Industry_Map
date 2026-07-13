@@ -1,0 +1,32 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: dry-bulk-shipping
+title: 傳產｜散裝航運
+market_tab: tw
+description: >-
+  散裝航運承運穀物、礦砂、煤炭等大宗物資，運價以波羅的海指數（BDI）為風向球，隨大宗商品需求與船隊供需波動。台廠以中小型散裝船隊經營，租傭船策略與船隊調度是穿越景氣循環的關鍵。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2601", name: 益航}
+  - {ticker: "2605", name: 新興}
+  - {ticker: "2606", name: 裕民}
+  - {ticker: "2612", name: 中航}
+  - {ticker: "2617", name: 台航}
+  - {ticker: "2637", name: "慧洋-KY"}
+  - {ticker: "2641", name: 正德}
+  - {ticker: "5608", name: 四維航}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 散裝航運
+        desc: 承運大宗物資、隨 BDI 波動的散裝航運成員。
+        companies:
+          - {ticker: "2601", role: 新興, relevance: 高}
+          - {ticker: "2605", role: 新興, relevance: 高}
+          - {ticker: "2606", role: 利基, relevance: 高}
+          - {ticker: "2612", role: 新興, relevance: 高}
+          - {ticker: "2617", role: 新興, relevance: 高}
+          - {ticker: "2637", role: 利基, relevance: 高}
+          - {ticker: "2641", role: 新興, relevance: 高}
+          - {ticker: "5608", role: 新興, relevance: 高}

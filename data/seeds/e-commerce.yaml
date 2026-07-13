@@ -1,0 +1,42 @@
+# 角色為市值啟發式初稿（市值 ≥3000 億→龍頭；≥300 億→利基；<300 億→新興），relevance 暫全為高，待人工細分。
+slug: e-commerce
+title: 金融與消費｜電商零售
+market_tab: tw
+description: >-
+  電商零售涵蓋線上購物平台、超商通路、支付與零售品牌，串接消費者的線上線下購物體驗。競爭聚焦流量、物流履約與會員經營，台廠以超商密集通路、平台生態與支付服務深化虛實整合。
+verified_at: "2026-07-13"
+
+companies:
+  - {ticker: "2912", name: 統一超}
+  - {ticker: "2949", name: 欣新網}
+  - {ticker: "3687", name: 歐買尬}
+  - {ticker: "5287", name: 數字}
+  - {ticker: "5321", name: 美而快}
+  - {ticker: "5903", name: 全家}
+  - {ticker: "5904", name: 寶雅}
+  - {ticker: "6763", name: "綠界科技*"}
+  - {ticker: "7722", name: LINEPAY}
+  - {ticker: "8044", name: 網家}
+  - {ticker: "8454", name: 富邦媒}
+  - {ticker: "8472", name: 夠麻吉}
+  - {ticker: "8477", name: 創業家}
+
+chain:
+  - level: 成員總覽
+    categories:
+      - name: 電商零售
+        desc: 涵蓋線上平台、超商通路、支付與零售品牌的電商成員。
+        companies:
+          - {ticker: "2912", role: 利基, relevance: 高}
+          - {ticker: "2949", role: 新興, relevance: 高}
+          - {ticker: "3687", role: 新興, relevance: 高}
+          - {ticker: "5287", role: 新興, relevance: 高}
+          - {ticker: "5321", role: 新興, relevance: 高}
+          - {ticker: "5903", role: 利基, relevance: 高}
+          - {ticker: "5904", role: 龍頭, relevance: 高}
+          - {ticker: "6763", role: 新興, relevance: 高}
+          - {ticker: "7722", role: 新興, relevance: 高}
+          - {ticker: "8044", role: 新興, relevance: 高}
+          - {ticker: "8454", role: 利基, relevance: 高}
+          - {ticker: "8472", role: 新興, relevance: 高}
+          - {ticker: "8477", role: 新興, relevance: 高}
